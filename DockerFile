@@ -1,0 +1,24 @@
+# Use a node base image
+FROM node:14-alpine AS build
+
+# Set working directory
+WORKDIR /app
+
+# Copy both frontend and backend code to the container
+COPY client /app/frontend
+COPY backend /app/backend
+
+# Build the frontend
+WORKDIR /app/client
+RUN npm install
+RUN npm run build
+
+# Build the backend
+WORKDIR /app/backend
+RUN npm install
+
+# Expose ports for frontend and backend
+EXPOSE 3000 5173
+
+# Command to run the applications
+CMD ["npm", "start"]
