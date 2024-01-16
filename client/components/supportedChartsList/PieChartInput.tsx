@@ -1,7 +1,7 @@
 "use client"
 
 import { ChartDataInput, FetchDataResponse } from '@/app/(root)/addInsight/page'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
     Select,
     SelectContent,
@@ -19,7 +19,15 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { CompactPicker, SwatchesPicker } from 'react-color'
+import { Checkbox } from "@/components/ui/checkbox"
+import { GithubPicker } from 'react-color'
+import { CheckedState } from '@radix-ui/react-checkbox'
+import { Input } from '../ui/input'
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 
 interface BarChartInputListProps {
@@ -42,30 +50,68 @@ export const PieChartInput: React.FC<BarChartInputListProps> = ({
     setChartUIData,
     insightData }) => {
 
+    const [pieChartData, setPieChartData] = useState<PirChartColumnData>()
 
-    const randomColors = getRandomNeonColor(Number(insightData?.countOfFields))
+    useEffect(() => {
 
-    var pieChartData: PirChartColumnData = []
+        const randomColors = getRandomNeonColor(Number(insightData?.countOfFields))
+        const pieData: PirChartColumnData = []
 
-    var idx = 0;
+        var idx = 0;
+        insightData?.fields.forEach((field) => {
+            pieData.push(
+                {
+                    column: field,
+                    alias: field.toUpperCase(),
+                    color: randomColors[idx++],
+                    isEnabled: true
+                }
+            )
+        })
 
-    insightData?.fields.forEach((field) => {
-        pieChartData.push(
-            {
-                column: field,
-                alias: field.toUpperCase(),
-                color: randomColors[idx++],
-                isEnabled: true
-            }
-        )
-    })
+        setPieChartData(pieData)
+
+    },[insightData])
+
+ 
 
     const createChart = () => {
         const temp: PieChartData = {
             type: 'pie',
-            columns: pieChartData
+            columns: pieChartData!
         }
         setChartUIData(temp)
+    }
+
+    const changeEnabled = (idx: number, enable: boolean | string) => {
+        if (typeof (enable) === 'string') return
+        setPieChartData(prevColumns => {
+            if (prevColumns) {
+                const updatedColumns = [...prevColumns];
+                updatedColumns[idx] = { ...updatedColumns[idx], isEnabled: enable };
+                return updatedColumns;
+            }
+        });
+    }
+
+    const changeAlias = (idx: number, newAlias: string) => {
+        setPieChartData(prevColumns => {
+            if (prevColumns) {
+                const updatedColumns = [...prevColumns];
+                updatedColumns[idx] = { ...updatedColumns[idx], alias: newAlias };
+                return updatedColumns;
+            }
+        });
+    }
+
+    const changeColor = (idx: number, newColor: string) => {
+        setPieChartData(prevColumns => {
+            if (prevColumns) {
+                const updatedColumns = [...prevColumns];
+                updatedColumns[idx] = { ...updatedColumns[idx], color: newColor };
+                return updatedColumns;
+            }
+        });
     }
 
     return (
@@ -76,6 +122,7 @@ export const PieChartInput: React.FC<BarChartInputListProps> = ({
             <Table>
                 <TableHeader>
                     <TableRow>
+                        <TableHead>Enable</TableHead>
                         <TableHead>Name</TableHead>
                         <TableHead>Column</TableHead>
                         <TableHead>Color</TableHead>
@@ -84,11 +131,26 @@ export const PieChartInput: React.FC<BarChartInputListProps> = ({
                 <TableBody>
                     {pieChartData?.map((column, idx) => (
                         <TableRow key={idx}>
-                            <TableCell className="font-medium">{column.alias}</TableCell>
+                            <TableCell>
+                                <Checkbox
+                                    checked={column.isEnabled}
+                                    onCheckedChange={(e: CheckedState) => changeEnabled(idx, e)} />
+                            </TableCell>
+                            <TableCell className="font-medium">
+                                <Input
+                                    value={column.alias}
+                                    onChange={(e) => changeAlias(idx, e.target.value)} />
+                            </TableCell>
                             <TableCell>{column.column}</TableCell>
                             <TableCell>
-                                {/* <CompactPicker/> */}
-                                <div style={{ borderColor: column.color, borderWidth: 2, background: `${column.color}40` }} className={"h-5 w-5"} />
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <div style={{ borderColor: column.color, borderWidth: 2, background: `${column.color}40` }} className={"h-5 w-5"} />
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent className="mr-3">
+                                        <GithubPicker onChangeComplete={(e) => changeColor(idx, e.hex)} />
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
                             </TableCell>
                         </TableRow>
                     ))}

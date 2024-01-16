@@ -45,11 +45,7 @@ export const LineChart: React.FC<LineChartProps> = ({
         plugins: {
             legend: {
                 position: 'top' as const,
-            },
-            title: {
-                display: true,
-                text: 'Bar Chart'
-            },
+            }
         },
     };
 
@@ -63,8 +59,8 @@ export const LineChart: React.FC<LineChartProps> = ({
                 fill: isFilled,
                 label: alias,
                 data: chartData.map((item: any) => item[column]),
-                backgroundColor: color[bgIdx++] + '40',
-                borderColor: color[boIdx++],
+                backgroundColor: color + "40",
+                borderColor: color,
                 borderWidth: 2
             };
         }

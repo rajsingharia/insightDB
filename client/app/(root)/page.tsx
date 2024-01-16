@@ -123,9 +123,9 @@ export default function Home() {
         !loading && userInsights && userInsights.length > 0 &&
         <GridLayout
           className="layout"
-          cols={10}
+          cols={12}
           rowHeight={30}
-          width={1000}
+          width={1130}
           isDraggable={enableEdit}
           isResizable={enableEdit}
           onLayoutChange={onLayoutChange}>

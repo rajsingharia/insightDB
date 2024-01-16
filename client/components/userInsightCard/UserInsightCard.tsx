@@ -17,6 +17,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { MoreVerticalIcon } from 'lucide-react';
+import { SelectSeparator } from '../ui/select';
 
 type UserInsightCardProps = {
     insight: IUserInsights;
@@ -72,10 +73,43 @@ export const UserInsightCard: React.FC<UserInsightCardProps> = ({ insight }) => 
         const refreshRate = insight.refreshRate;
 
         if (refreshRate > 0) {
-            makeSSEConnection();
+            // makeSSEConnection();
+            startPolling(refreshRate)
         }
 
     }, [insight]);
+
+
+    const startPolling = (refreshRate: number) => {
+        setInterval(() => {
+            const authAxios = AuthAxios.getAuthAxios();
+
+            const body = {
+                integrationId: insight.integrationId,
+                rawQuery: insight.rawQuery
+            }
+
+            authAxios.post('/fetchData', body)
+                .then((res) => {
+                    console.log("Data: ", res.data.data);
+                    setChartData(res.data);
+                })
+                .catch((err) => {
+                    console.log(err);
+                    setError(err.message);
+                });
+
+            const chartType = insight.graphData.type;
+
+            authAxios.get(`/charts/chart-details/${chartType}`)
+                .then((res) => {
+                    setChartType(res.data);
+                })
+                .catch((err) => {
+                    console.log(err)
+                });
+        }, refreshRate)
+    }
 
     const makeSSEConnection = () => {
 
@@ -111,7 +145,8 @@ export const UserInsightCard: React.FC<UserInsightCardProps> = ({ insight }) => 
             {
                 chartData && chartType ?
                     <div className="flex flex-col justify-between items-center w-full">
-                        <h4 className="text-l font-bold font-mono text-black">{insight.title}</h4>
+                        <h4 className="text-l font-bold font-mono">{insight.title}</h4>
+                        <div className='w-full h-[0.5px] bg-slate-500 rounded bg-opacity-30 mb-3' />
                         <InsightChart
                             insightData={chartData}
                             chartType={chartType}

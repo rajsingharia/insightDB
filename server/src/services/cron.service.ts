@@ -1,5 +1,6 @@
 import cron from 'cron';
 import { AlertService } from './alert.service';
+import { AlertDTO } from '../dto/response/alert.dto';
 
 export class CronService {
 
@@ -10,18 +11,14 @@ export class CronService {
     }
 
 
-    public startAllCronJob() {
-        // get all alerts (alertId, options, cronStringExp)
-        const alerts: string[] = [];
-        alerts.forEach((alertId) => {
-            const refreshRate = 5 // fetch from alert
-            const data = JSON.parse("{name: raj}")
-            const alertJob = new cron.CronJob(`*/${refreshRate} * * * *`, () => {
-                AlertService.makeAlert(data);
-                // reduce the count of alert made
-                // add this to alertPerformed DB
+    public async startAllCronJob() {
+        const alerts: AlertDTO[] = await AlertService.getAllAlerts();
+        alerts.forEach((alert) => {
+            const configuration = alert.configuration
+            const alertJob = new cron.CronJob(alert.cronExpression, () => {
+                AlertService.makeAlert(configuration);
             });
-            this.cronAlertMapping.set(alertId, alertJob)
+            this.cronAlertMapping.set(alert.id, alertJob)
         })
 
         this.cronAlertMapping.forEach((cronJob) => {
@@ -30,17 +27,19 @@ export class CronService {
 
     }
 
-    public startNewCronJon(alertId: string) {
+    public async startNewCronJon(alertId: string) {
         if (this.cronAlertMapping.get(alertId)) {
             this.cronAlertMapping.get(alertId)?.start()
             return
         }
-        const refreshRate = 5 // fetch from alert
-        const data = JSON.parse("{name: raj}")
-        const alertJob = new cron.CronJob(`*/${refreshRate} * * * *`, () => {
-            AlertService.makeAlert(data);
-            // reduce the count of alert made
-            // add this to alertPerformed DB
+
+        const alert = await AlertService.getAlertById(alertId)
+        if(!alert) {
+            throw new Error("Unable to find Alert")
+        }
+        const configuration = alert.configuration
+        const alertJob = new cron.CronJob(alert.cronExpression, () => {
+            AlertService.makeAlert(configuration);
         });
         this.cronAlertMapping.set(alertId, alertJob)
         this.cronAlertMapping.get(alertId)?.start()

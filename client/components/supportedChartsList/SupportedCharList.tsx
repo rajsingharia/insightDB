@@ -45,7 +45,7 @@ export const SupportedCharList: React.FC<SupportedCharListProps> = ({
                     insightData={insightData} />
             )
         }
-        else if(chartType === 'line') {
+        else if (chartType === 'line') {
             return (
                 <LineChartInput
                     setChartUIData={setChartUIData}
@@ -67,7 +67,10 @@ export const SupportedCharList: React.FC<SupportedCharListProps> = ({
                             <PopoverTrigger>
                                 <Card
                                     key={index}
-                                    onClick={() => setSelectedChart(chart)}>
+                                    onClick={() => {
+                                        setChartUIData(undefined) // resetting chartUI
+                                        setSelectedChart(chart)
+                                    }}>
                                     <div className={chart.value === selectedChart.value ?
                                         'border-4 border-purple-500 bg-purple-600 bg-opacity-40 rounded-lg' :
                                         'border-4 border-transparent'}>

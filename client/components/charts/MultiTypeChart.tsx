@@ -1,40 +1,44 @@
-
 import {
     Chart as ChartJS,
     CategoryScale,
     LinearScale,
-    BarElement,
+    PointElement,
+    LineElement,
     Title,
     Tooltip,
+    Filler,
     Legend,
     ChartData
 } from 'chart.js';
-
-import { Bar } from 'react-chartjs-2';
-import moment from 'moment';
-import { ChartColors } from '../../types/ChartColors';
-import { BarChartYAxisColumnData } from '../supportedChartsList/BarChartInput';
+import { Line } from 'react-chartjs-2';
 
 ChartJS.register(
     CategoryScale,
     LinearScale,
-    BarElement,
+    PointElement,
+    LineElement,
     Title,
     Tooltip,
+    Filler,
     Legend
 );
 
-interface TimeBarGraphProps {
+import moment from 'moment';
+import { LineChartYAxisColumnData } from '../supportedChartsList/LineChartInput';
+
+
+interface LineChartProps {
     chartData: unknown[];
     xAxis: string;
-    yAxis: BarChartYAxisColumnData
+    yAxis: LineChartYAxisColumnData
 }
 
 
-export const TimeBarGraph: React.FC<TimeBarGraphProps> = ({
-    chartData,
-    xAxis,
+export const MultiTypeChart: React.FC<LineChartProps> = ({ 
+    chartData, 
+    xAxis, 
     yAxis }) => {
+
 
     const options = {
         responsive: true,
@@ -45,18 +49,14 @@ export const TimeBarGraph: React.FC<TimeBarGraphProps> = ({
         },
     };
 
-    const labels = chartData.map((item: any) => {
-        if (moment(item[xAxis]).isValid()) {
-            return moment(item[xAxis]).format('MMM YYYY')
-        }
-        return item[xAxis]
-    });
+    // only if its time axis
+    const labels = chartData.map((item: any) => moment(item[xAxis]).format('MMM YYYY'));
+    let bgIdx = 0, boIdx = 0;
 
-
-    const datasets = yAxis.map(({ column, alias, color, isEnabled }) => {
+    const datasets = yAxis.map(({column, alias, color, isEnabled, isFilled}) => {
         if (isEnabled) {
             return {
-                fill: true,
+                fill: isFilled,
                 label: alias,
                 data: chartData.map((item: any) => item[column]),
                 backgroundColor: color + "40",
@@ -66,15 +66,14 @@ export const TimeBarGraph: React.FC<TimeBarGraphProps> = ({
         }
     });
 
-    const data: ChartData<"bar", any[], string> = {
+    const data: ChartData<"line", any[], string> = {
         labels,
         datasets: datasets as any[]
     };
 
     return (
-        <Bar
-            data={data}
+        <Line
             options={options}
-        />
+            data={data} />
     );
 }

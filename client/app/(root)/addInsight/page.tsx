@@ -95,7 +95,7 @@ export default function AddInsightPage() {
     //     toast({ title: "Error Fetching Supported Charts" });
     //   });
 
-  }, []);
+  }, [toast]);
 
   const handelSelectedIntegrationChange = (selectedIntegration: userIntegrationResponse | null) => {
     if (selectedIntegration) setSelectedIntegration(selectedIntegration);
@@ -179,11 +179,9 @@ export default function AddInsightPage() {
               insightData && insightData.countOfFields > 0 && selectedChart &&
               <div className="z-10 h-full w-full flex justify-end absolute">
                 <Button
-                  variant="outline"
-                  size="icon"
                   onClick={saveInsight}>
                   <DrawingPinFilledIcon
-                    className="h-4 w-4" />
+                    className="mr-2 h-4 w-4" /> Save
                 </Button>
               </div>
             }

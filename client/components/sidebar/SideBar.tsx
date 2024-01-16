@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation'
 import { Card } from "@/components/ui/card"
 import { Button } from '../ui/button'
 import {
+    AreaChart,
     BadgePlus,
     Bell,
     Blocks,
@@ -40,7 +41,7 @@ const sideBarPages = [
         activeIcon: <Settings width={22} height={22} color="#7AF8FF" />
     },
     {
-        to: "alerts",
+        to: "/alerts",
         icon: <Bell width={22} height={22} />,
         activeIcon: <Bell width={22} height={22} color="#7AF8FF" />
     }
@@ -54,7 +55,16 @@ export const SideBar = () => {
 
     return (
         <Card className="flex flex-col justify-center items-center h-full w-14">
-            <div className="flex flex-col mt-5 items-center grow w-full">
+            <div>
+                <Link href='/'>
+                    <img
+                        width={35}
+                        height={35}
+                        className='mt-3'
+                        src="https://cdn-icons-png.flaticon.com/128/13539/13539249.png" />
+                </Link>
+            </div>
+            <div className="flex flex-col mt-5 justify-center items-center grow w-full">
                 {
                     sideBarPages.map((page, index) => {
                         const isActive = pathname === page.to
@@ -72,9 +82,9 @@ export const SideBar = () => {
             </div>
             <div className="mb-3">
                 {
-                    <Button variant="outline" size="icon">
-                        <Sun onClick={() => setTheme("dark")} className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-                        <Moon onClick={() => setTheme("light")} className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                    <Button variant="theme" size="icon">
+                        <Sun onClick={() => setTheme("dark")} width={22} height={22} className="rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                        <Moon onClick={() => setTheme("light")} width={22} height={22} className="absolute rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
                     </Button>
                 }
             </div>

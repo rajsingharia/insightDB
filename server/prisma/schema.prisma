@@ -104,5 +104,6 @@ model AlertTriggered {
   alert        Alerts   @relation(fields: [alertId], references: [id])
   alertId      String
   isSuccessful Boolean
+  errorMessage String
   createdAt    DateTime @default(now())
 }

@@ -10,6 +10,7 @@ import { BarChartData } from "../supportedChartsList/BarChartInput";
 import { useEffect } from "react";
 import { PieChartData } from "../supportedChartsList/PieChartInput";
 import { LineChartData } from "../supportedChartsList/LineChartInput";
+import { MultiTypeChart } from "./MultiTypeChart";
 
 type InsightChartProps = {
     insightData: FetchDataResponse;
@@ -67,6 +68,16 @@ export const InsightChart: React.FC<InsightChartProps> = ({
                 chartDataColumns={chartDataColumns}
                 chartColors={chartColors}
             />
+        )
+    }
+
+    else if (chartType.value === 'multi_type') {
+        const lineChartUiData = chartUIData as LineChartData
+        return (
+            <MultiTypeChart
+                chartData={chartData}
+                xAxis={lineChartUiData.xAxisColumn}
+                yAxis={lineChartUiData.yAxis} />
         )
     }
 

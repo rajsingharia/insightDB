@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react'
-import { QueryInfo } from './QueryFields';
+import { format } from 'sql-formatter';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import {
@@ -69,13 +69,13 @@ export const SQLQueryInput: React.FC<QueryInputProps> = ({
             var currentQuery = "SELECT ";
             columns.forEach((column, idx) => {
                 if (column.aggregationType && column.aggregationType !== "" && column.aggregationType !== "none") {
-                    currentQuery += column.aggregationType + "(" + column.columnName + ") ";
+                    currentQuery += column.aggregationType + "(" + column.columnName + ")";
                 }
                 else {
                     currentQuery += column.columnName
                 }
                 if (column.alias) {
-                    currentQuery += "AS " + column.alias
+                    currentQuery += " AS " + column.alias
                 }
                 if (idx != columns.length - 1) {
                     currentQuery += " ,"
@@ -286,7 +286,7 @@ export const SQLQueryInput: React.FC<QueryInputProps> = ({
                                 placeholder="Raw Query"
                                 readOnly={true}
                                 className="mt-5"
-                                value={rawQuery}
+                                value={format(rawQuery)}
                             />
                             <Button
                                 onClick={getInsightData}>
@@ -298,7 +298,7 @@ export const SQLQueryInput: React.FC<QueryInputProps> = ({
                         <Card className='p-1 flex flex-col gap-1'>
                             <Textarea
                                 placeholder="Raw Query"
-                                value={rawQuery}
+                                value={format(rawQuery)}
                                 onChange={(e) => setRawQuery(e.target.value)}
                             />
                             <Button

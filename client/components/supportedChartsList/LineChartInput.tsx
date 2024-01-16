@@ -19,7 +19,15 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { CompactPicker, SwatchesPicker } from 'react-color'
+import { Checkbox } from "@/components/ui/checkbox"
+import { GithubPicker } from 'react-color'
+import { CheckedState } from '@radix-ui/react-checkbox'
+import { Input } from '../ui/input'
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 
 interface LineChartInputListProps {
@@ -47,18 +55,17 @@ export const LineChartInput: React.FC<LineChartInputListProps> = ({
     const [xAxis, setXAxis] = useState<string>();
     const [yAxisList, setYAxisList] = useState<LineChartYAxisColumnData>()
 
-    const randomColors = getRandomNeonColor(Number(insightData?.countOfFields))
+    
 
     const onXAxisChange = (value: string) => {
         setXAxis(value)
-
-        var temp: LineChartYAxisColumnData = []
-
+        
+        const randomColors = getRandomNeonColor(Number(insightData?.countOfFields))
+        var lineChartYAxisColumnData: LineChartYAxisColumnData = []
         var idx = 0;
-
         insightData?.fields.forEach((field) => {
             if (field != value) {
-                temp.push(
+                lineChartYAxisColumnData.push(
                     {
                         column: field,
                         alias: field.toUpperCase(),
@@ -70,7 +77,7 @@ export const LineChartInput: React.FC<LineChartInputListProps> = ({
             }
         })
 
-        setYAxisList(temp)
+        setYAxisList(lineChartYAxisColumnData)
 
     }
 
@@ -81,6 +88,48 @@ export const LineChartInput: React.FC<LineChartInputListProps> = ({
             yAxis: yAxisList!
         }
         setChartUIData(temp)
+    }
+
+    const changeEnabled = (idx: number, enable: boolean | string) => {
+        if (typeof (enable) === 'string') return
+        setYAxisList(prevColumns => {
+            if (prevColumns) {
+                const updatedColumns = [...prevColumns];
+                updatedColumns[idx] = { ...updatedColumns[idx], isEnabled: enable };
+                return updatedColumns;
+            }
+        });
+    }
+
+    const changeFilled = (idx: number, filled: boolean | string) => {
+        if (typeof (filled) === 'string') return
+        setYAxisList(prevColumns => {
+            if (prevColumns) {
+                const updatedColumns = [...prevColumns];
+                updatedColumns[idx] = { ...updatedColumns[idx], isFilled: filled };
+                return updatedColumns;
+            }
+        });
+    }
+
+    const changeAlias = (idx: number, newAlias: string) => {
+        setYAxisList(prevColumns => {
+            if (prevColumns) {
+                const updatedColumns = [...prevColumns];
+                updatedColumns[idx] = { ...updatedColumns[idx], alias: newAlias };
+                return updatedColumns;
+            }
+        });
+    }
+
+    const changeColor = (idx: number, newColor: string) => {
+        setYAxisList(prevColumns => {
+            if (prevColumns) {
+                const updatedColumns = [...prevColumns];
+                updatedColumns[idx] = { ...updatedColumns[idx], color: newColor };
+                return updatedColumns;
+            }
+        });
     }
 
     return (
@@ -112,6 +161,8 @@ export const LineChartInput: React.FC<LineChartInputListProps> = ({
             <Table>
                 <TableHeader>
                     <TableRow>
+                        <TableHead>Enable</TableHead>
+                        <TableHead>Filled</TableHead>
                         <TableHead>Name</TableHead>
                         <TableHead>Column</TableHead>
                         <TableHead>Color</TableHead>
@@ -120,11 +171,31 @@ export const LineChartInput: React.FC<LineChartInputListProps> = ({
                 <TableBody>
                     {yAxisList?.map((yAxis, idx) => (
                         <TableRow key={idx}>
-                            <TableCell className="font-medium">{yAxis.alias}</TableCell>
+                            <TableCell>
+                                <Checkbox
+                                    checked={yAxis.isEnabled}
+                                    onCheckedChange={(e: CheckedState) => changeEnabled(idx, e)} />
+                            </TableCell>
+                            <TableCell>
+                                <Checkbox
+                                    checked={yAxis.isFilled}
+                                    onCheckedChange={(e: CheckedState) => changeFilled(idx, e)} />
+                            </TableCell>
+                            <TableCell className="font-medium">
+                                <Input
+                                    value={yAxis.alias}
+                                    onChange={(e) => changeAlias(idx, e.target.value)} />
+                            </TableCell>
                             <TableCell>{yAxis.column}</TableCell>
                             <TableCell>
-                                {/* <CompactPicker/> */}
-                                <div style={{ borderColor: yAxis.color, borderWidth: 2, background: `${yAxis.color}40` }} className={"h-5 w-5"} />
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <div style={{ borderColor: yAxis.color, borderWidth: 2, background: `${yAxis.color}40` }} className={"h-5 w-5"} />
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent className="mr-3">
+                                        <GithubPicker onChangeComplete={(e) => changeColor(idx, e.hex)} />
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
                             </TableCell>
                         </TableRow>
                     ))}

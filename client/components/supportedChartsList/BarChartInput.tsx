@@ -20,7 +20,7 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { Checkbox } from "@/components/ui/checkbox"
-import { CirclePicker, CompactPicker, GithubPicker, SwatchesPicker, TwitterPicker } from 'react-color'
+import { GithubPicker } from 'react-color'
 import { CheckedState } from '@radix-ui/react-checkbox'
 import { Input } from '../ui/input'
 import {
@@ -54,18 +54,14 @@ export const BarChartInput: React.FC<BarChartInputListProps> = ({
     const [xAxis, setXAxis] = useState<string>();
     const [yAxisList, setYAxisList] = useState<BarChartYAxisColumnData>()
 
-    const randomColors = getRandomNeonColor(Number(insightData?.countOfFields))
-
     const onXAxisChange = (value: string) => {
         setXAxis(value)
-
-        var temp: BarChartYAxisColumnData = []
-
+        const randomColors = getRandomNeonColor(Number(insightData?.countOfFields))
+        var barChartYAxisColumnData: BarChartYAxisColumnData = []
         var idx = 0;
-
         insightData?.fields.forEach((field) => {
             if (field != value) {
-                temp.push(
+                barChartYAxisColumnData.push(
                     {
                         column: field,
                         alias: field.toUpperCase(),
@@ -76,7 +72,7 @@ export const BarChartInput: React.FC<BarChartInputListProps> = ({
             }
         })
 
-        setYAxisList(temp)
+        setYAxisList(barChartYAxisColumnData)
 
     }
 
@@ -175,10 +171,9 @@ export const BarChartInput: React.FC<BarChartInputListProps> = ({
                                         <div style={{ borderColor: yAxis.color, borderWidth: 2, background: `${yAxis.color}40` }} className={"h-5 w-5"} />
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent className="mr-3">
-                                        <TwitterPicker onChangeComplete={(e) => changeColor(idx, e.hex)} />
+                                        <GithubPicker onChangeComplete={(e) => changeColor(idx, e.hex)} />
                                     </DropdownMenuContent>
                                 </DropdownMenu>
-
                             </TableCell>
                         </TableRow>
                     ))}
