@@ -5,12 +5,13 @@ import { ChartColors } from "../../types/ChartColors";
 import { LineChart } from "./LineChart";
 import { PieChart } from "./PieChart";
 import { ScatterChart } from "./ScatterChart";
-import { TimeBarGraph } from "./TimeBarGraph";
+import { BarGraph } from "./BarGraph";
 import { BarChartData } from "../supportedChartsList/BarChartInput";
 import { useEffect } from "react";
 import { PieChartData } from "../supportedChartsList/PieChartInput";
 import { LineChartData } from "../supportedChartsList/LineChartInput";
 import { MultiTypeChart } from "./MultiTypeChart";
+import { ScatterChartData } from "../supportedChartsList/scatterChartInput";
 
 type InsightChartProps = {
     insightData: FetchDataResponse;
@@ -37,10 +38,9 @@ export const InsightChart: React.FC<InsightChartProps> = ({
     if (chartType.value === 'bar') {
         const barChartUiData = chartUIData as BarChartData
         return (
-            <TimeBarGraph
+            <BarGraph
                 chartData={chartData}
-                xAxis={barChartUiData.xAxisColumn}
-                yAxis={barChartUiData.yAxis}
+                barChartUiData={barChartUiData}
             />
         )
     } else if (chartType.value === 'pie') {
@@ -48,7 +48,7 @@ export const InsightChart: React.FC<InsightChartProps> = ({
         return (
             <PieChart
                 chartData={chartData}
-                chartDataColumns={pieChartUiData.columns}
+                pieChartUiData={pieChartUiData}
             />
         )
     } else if (chartType.value === 'line') {
@@ -56,17 +56,15 @@ export const InsightChart: React.FC<InsightChartProps> = ({
         return (
             <LineChart
                 chartData={chartData}
-                xAxis={lineChartUiData.xAxisColumn}
-                yAxis={lineChartUiData.yAxis}
+                lineChartUiData={lineChartUiData}
             />
         )
     } else if (chartType.value === 'scatter') {
-
+        const scatterChartUiData = chartUIData as ScatterChartData
         return (
             <ScatterChart
                 chartData={chartData}
-                chartDataColumns={chartDataColumns}
-                chartColors={chartColors}
+                scatterChartUiData={scatterChartUiData}
             />
         )
     }

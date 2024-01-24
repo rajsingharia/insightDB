@@ -56,13 +56,13 @@ export const SideBar = () => {
     return (
         <Card className="flex flex-col justify-center items-center h-full w-14">
             <div>
-                <Link href='/'>
+                {/* <Link href='/'>
                     <img
                         width={35}
                         height={35}
                         className='mt-3'
                         src="https://cdn-icons-png.flaticon.com/128/13539/13539249.png" />
-                </Link>
+                </Link> */}
             </div>
             <div className="flex flex-col mt-5 justify-center items-center grow w-full">
                 {

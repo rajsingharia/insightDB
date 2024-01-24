@@ -6,18 +6,20 @@ import {
     ChartData
 } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
-import { PirChartColumnData } from '../supportedChartsList/PieChartInput';
+import { PieChartData } from '../supportedChartsList/PieChartInput';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 interface PieChartProps {
     chartData: unknown[];
-    chartDataColumns: PirChartColumnData;
+    pieChartUiData: PieChartData;
 }
 
 export const PieChart: React.FC<PieChartProps> = ({ 
     chartData, 
-    chartDataColumns}) => {
+    pieChartUiData}) => {
+
+    const chartDataColumns = pieChartUiData.columns
 
     const datasets = [
         {
@@ -25,7 +27,7 @@ export const PieChart: React.FC<PieChartProps> = ({
                 return chartData.map((item: any) => item[column.column])
             }),
             backgroundColor: chartDataColumns.map((value)=> value.color + '40'),
-            borderColor: chartDataColumns.map((value)=> value.color + '40'),
+            borderColor: chartDataColumns.map((value)=> value.color),
             borderWidth: 2
         }
     ];

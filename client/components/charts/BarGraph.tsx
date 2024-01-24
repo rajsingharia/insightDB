@@ -13,7 +13,7 @@ import {
 import { Bar } from 'react-chartjs-2';
 import moment from 'moment';
 import { ChartColors } from '../../types/ChartColors';
-import { BarChartYAxisColumnData } from '../supportedChartsList/BarChartInput';
+import { BarChartData } from '../supportedChartsList/BarChartInput';
 
 ChartJS.register(
     CategoryScale,
@@ -26,15 +26,16 @@ ChartJS.register(
 
 interface TimeBarGraphProps {
     chartData: unknown[];
-    xAxis: string;
-    yAxis: BarChartYAxisColumnData
+    barChartUiData: BarChartData
 }
 
 
-export const TimeBarGraph: React.FC<TimeBarGraphProps> = ({
+export const BarGraph: React.FC<TimeBarGraphProps> = ({
     chartData,
-    xAxis,
-    yAxis }) => {
+    barChartUiData }) => {
+    
+    const xAxis = barChartUiData.xAxisColumn
+    const yAxis = barChartUiData.yAxis
 
     const options = {
         responsive: true,

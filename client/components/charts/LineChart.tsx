@@ -24,21 +24,21 @@ ChartJS.register(
 );
 
 import moment from 'moment';
-import { LineChartYAxisColumnData } from '../supportedChartsList/LineChartInput';
+import { LineChartData } from '../supportedChartsList/LineChartInput';
 
 
 interface LineChartProps {
     chartData: unknown[];
-    xAxis: string;
-    yAxis: LineChartYAxisColumnData
+    lineChartUiData: LineChartData
 }
 
 
 export const LineChart: React.FC<LineChartProps> = ({ 
     chartData, 
-    xAxis, 
-    yAxis }) => {
+    lineChartUiData }) => {
 
+    const xAxis = lineChartUiData.xAxisColumn
+    const yAxis = lineChartUiData.yAxis
 
     const options = {
         responsive: true,

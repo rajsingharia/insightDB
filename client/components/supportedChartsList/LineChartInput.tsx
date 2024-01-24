@@ -20,7 +20,7 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { Checkbox } from "@/components/ui/checkbox"
-import { GithubPicker } from 'react-color'
+import { SwatchesPicker } from 'react-color'
 import { CheckedState } from '@radix-ui/react-checkbox'
 import { Input } from '../ui/input'
 import {
@@ -35,7 +35,7 @@ interface LineChartInputListProps {
     insightData: FetchDataResponse | undefined,
 }
 
-export type LineChartYAxisColumnData = {
+type LineChartYAxisColumnData = {
     column: string;
     alias: string;
     color: string;
@@ -193,7 +193,7 @@ export const LineChartInput: React.FC<LineChartInputListProps> = ({
                                         <div style={{ borderColor: yAxis.color, borderWidth: 2, background: `${yAxis.color}40` }} className={"h-5 w-5"} />
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent className="mr-3">
-                                        <GithubPicker onChangeComplete={(e) => changeColor(idx, e.hex)} />
+                                        <SwatchesPicker onChangeComplete={(e) => changeColor(idx, e.hex)} />
                                     </DropdownMenuContent>
                                 </DropdownMenu>
                             </TableCell>

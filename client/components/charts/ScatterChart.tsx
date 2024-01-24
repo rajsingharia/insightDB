@@ -9,6 +9,7 @@ import {
 } from 'chart.js';
 import { Scatter } from 'react-chartjs-2';
 import { ChartColors } from '../../types/ChartColors';
+import { ScatterChartData } from '../supportedChartsList/scatterChartInput';
 
 ChartJS.register(LinearScale,
     PointElement,
@@ -18,11 +19,12 @@ ChartJS.register(LinearScale,
 
 interface ScatterChartProps {
     chartData: unknown[];
-    chartDataColumns: string[];
-    chartColors: ChartColors;
+    scatterChartUiData: ScatterChartData
 }
 
-export const ScatterChart: React.FC<ScatterChartProps> = ({ chartData, chartDataColumns, chartColors}) => {
+export const ScatterChart: React.FC<ScatterChartProps> = ({
+    chartData,
+    scatterChartUiData }) => {
 
     const options = {
         scales: {
@@ -32,17 +34,17 @@ export const ScatterChart: React.FC<ScatterChartProps> = ({ chartData, chartData
         },
     };
 
-    const labels = chartDataColumns;
-    let bgIdx = 0, boIdx = 0;
+    const labels = [scatterChartUiData.xAxisColumn, scatterChartUiData.yAxisColumn]
+
     const datasets = chartData.map((item: any) => {
         return {
             label: `(${labels[0]},${labels[1]})`,
             data: [{
-                x: item[chartDataColumns[0]],
-                y: item[chartDataColumns[1]]
+                x: item[scatterChartUiData.xAxisColumn],
+                y: item[scatterChartUiData.yAxisColumn]
             }],
-            backgroundColor: chartColors.backgroundColor[bgIdx++],
-            borderColor: chartColors.borderColor[boIdx++],
+            backgroundColor: scatterChartUiData.color + "40",
+            borderColor: scatterChartUiData.color,
             borderWidth: 2
         }
     });
