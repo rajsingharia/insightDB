@@ -35,19 +35,13 @@ export const SupportedCharts: ICharts[] = [
     {
         id: 5,
         icon: 'https://cdn-icons-png.flaticon.com/512/3815/3815321.png',
-        name: 'Stacked Area Chart',
-        value: 'stackedArea'
+        name: 'Multi Type Chart',
+        value: 'multi'
     },
     {
         id: 6,
-        icon: 'https://cdn-icons-png.flaticon.com/512/3815/3815321.png',
-        name: 'Stacked Bar Chart',
-        value: 'stackedBar'
-    },
-    {
-        id: 7,
         icon: 'https://cdn-icons-png.flaticon.com/128/7358/7358747.png',
         name: 'Text Area',
-        value: 'textArea'
+        value: 'text'
     }
 ]

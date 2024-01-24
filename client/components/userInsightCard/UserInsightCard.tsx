@@ -74,7 +74,7 @@ export const UserInsightCard: React.FC<UserInsightCardProps> = ({ insight }) => 
 
         if (refreshRate > 0) {
             // makeSSEConnection();
-            startPolling(refreshRate)
+            startPolling(refreshRate * 1000)
         }
 
     }, [insight]);

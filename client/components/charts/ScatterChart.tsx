@@ -38,7 +38,7 @@ export const ScatterChart: React.FC<ScatterChartProps> = ({
 
     const datasets = chartData.map((item: any) => {
         return {
-            label: `(${labels[0]},${labels[1]})`,
+            label: `(${item[scatterChartUiData.xAxisColumn]},${item[scatterChartUiData.yAxisColumn]})`,
             data: [{
                 x: item[scatterChartUiData.xAxisColumn],
                 y: item[scatterChartUiData.yAxisColumn]

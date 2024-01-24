@@ -15,7 +15,8 @@ import { ChartDataInput, FetchDataResponse } from '@/app/(root)/addInsight/page'
 import BarChartInput from './BarChartInput'
 import PieChartInput from './PieChartInput'
 import LineChartInput from './LineChartInput'
-import ScatterChartInput from './scatterChartInput'
+import ScatterChartInput from './ScatterChartInput'
+import TextAreaInput from './TextInput'
 
 interface SupportedCharListProps {
     selectedChart: ICharts,
@@ -58,7 +59,13 @@ export const SupportedCharList: React.FC<SupportedCharListProps> = ({
                 <ScatterChartInput
                     setChartUIData={setChartUIData}
                     insightData={insightData} />
-
+            )
+        }
+        else if (chartType === 'text') {
+            return (
+                <TextAreaInput
+                    setChartUIData={setChartUIData}
+                    insightData={insightData} />
             )
         }
     }

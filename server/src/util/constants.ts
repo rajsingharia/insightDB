@@ -245,5 +245,11 @@ export const SupportedCharts = [
         icon: 'https://cdn-icons-png.flaticon.com/512/3815/3815321.png',
         name: 'Stacked Bar Chart',
         value: 'stackedBar'
+    },
+    {
+        id: 8,
+        icon: 'https://cdn-icons-png.flaticon.com/128/7358/7358747.png',
+        name: 'Text Area',
+        value: 'text'
     }
 ]

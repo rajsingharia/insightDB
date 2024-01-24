@@ -30,48 +30,43 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 
-interface ScatterChartInputListProps {
+interface TextAreaInputListProps {
     setChartUIData: React.Dispatch<React.SetStateAction<ChartDataInput | undefined>>,
     insightData: FetchDataResponse | undefined
 }
 
-export interface ScatterChartData extends ChartDataInput {
-    xAxisColumn: string;
-    yAxisColumn: string;
+
+export interface TextAreaData extends ChartDataInput {
+    column: string;
+    suffixString: string;
+    prefixString: string;
     color: string;
 }
 
-export const ScatterChartInput: React.FC<ScatterChartInputListProps> = ({
+export const TextAreaInput: React.FC<TextAreaInputListProps> = ({
     setChartUIData,
     insightData }) => {
 
-    const [xAxis, setXAxis] = useState<string>();
-    const [yAxis, setYAxis] = useState<string>();
+    const [column, setColumn] = useState<string>();
+    const [suffixString, setSuffixString] = useState<string>("");
+    const [prefixString, setPrefixString] = useState<string>("");
     const [color, setColor] = useState<string>();
 
     useEffect(() => {
         const randomColor = getRandomNeonColor(1)
         setColor(randomColor[0])
-    },[])
-
-    const onXAxisChange = (value: string) => {
-        setXAxis(value)
-    }
-
-    const onYAxisChange = (value: string) => {
-        setYAxis(value)
-    }
+    }, [])
 
     const createChart = () => {
-        const temp: ScatterChartData = {
-            type: 'Scatter',
-            xAxisColumn: xAxis!,
-            yAxisColumn: yAxis!,
+        const temp: TextAreaData = {
+            type: 'text',
+            column: column!,
+            suffixString: suffixString!,
+            prefixString: prefixString!,
             color: color!
         }
         setChartUIData(temp)
     }
-
 
     const changeColor = (newColor: string) => {
         setColor(newColor)
@@ -80,11 +75,11 @@ export const ScatterChartInput: React.FC<ScatterChartInputListProps> = ({
     return (
         <div>
             <h4 className="scroll-m-20 text-l font-semibold tracking-tight">
-                X Axis
+                Column
             </h4>
-            <Select onValueChange={(value) => onXAxisChange(value)}>
+            <Select onValueChange={(value) => setColumn(value)}>
                 <SelectTrigger>
-                    <SelectValue placeholder="xAxis" />
+                    <SelectValue placeholder="column" />
                 </SelectTrigger>
                 <SelectContent>
                     {
@@ -100,30 +95,19 @@ export const ScatterChartInput: React.FC<ScatterChartInputListProps> = ({
                     }
                 </SelectContent>
             </Select>
-            <h4 className="scroll-m-20 text-l font-semibold tracking-tight">
-                Y Axis
-            </h4>
-            <Select onValueChange={(value) => onYAxisChange(value)}>
-                <SelectTrigger>
-                    <SelectValue placeholder="xAxis" />
-                </SelectTrigger>
-                <SelectContent>
-                    {
-                        insightData?.fields.map((field, index) => {
-                            return (
-                                <SelectItem
-                                    key={index}
-                                    value={field}>
-                                    {field}
-                                </SelectItem>
-                            )
-                        })
-                    }
-                </SelectContent>
-            </Select>
-            <DropdownMenu>
+            <Input
+                className='mt-2'
+                placeholder="Suffix"
+                value={suffixString}
+                onChange={(event) => setSuffixString(event.target.value)} />
+            <Input
+                className='mt-2 mb-2'
+                placeholder="prefix"
+                value={prefixString}
+                onChange={(event) => setPrefixString(event.target.value)} />
+            <DropdownMenu >
                 <DropdownMenuTrigger asChild>
-                    <div style={{ borderColor: color, borderWidth: 2, background: `${color}40` }} className={"h-5 w-5"} />
+                    <div style={{ background: `${color}` }} className={"h-5 w-5"} />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="mr-3">
                     <SwatchesPicker onChangeComplete={(e) => changeColor(e.hex)} />
@@ -136,4 +120,4 @@ export const ScatterChartInput: React.FC<ScatterChartInputListProps> = ({
     )
 }
 
-export default ScatterChartInput
+export default TextAreaInput

@@ -11,7 +11,9 @@ import { useEffect } from "react";
 import { PieChartData } from "../supportedChartsList/PieChartInput";
 import { LineChartData } from "../supportedChartsList/LineChartInput";
 import { MultiTypeChart } from "./MultiTypeChart";
-import { ScatterChartData } from "../supportedChartsList/scatterChartInput";
+import { ScatterChartData } from "../supportedChartsList/ScatterChartInput";
+import { TextAreaData } from "../supportedChartsList/TextInput";
+import { TextArea } from "./TextArea";
 
 type InsightChartProps = {
     insightData: FetchDataResponse;
@@ -69,13 +71,22 @@ export const InsightChart: React.FC<InsightChartProps> = ({
         )
     }
 
-    else if (chartType.value === 'multi_type') {
+    else if (chartType.value === 'multi') {
         const lineChartUiData = chartUIData as LineChartData
         return (
             <MultiTypeChart
                 chartData={chartData}
                 xAxis={lineChartUiData.xAxisColumn}
                 yAxis={lineChartUiData.yAxis} />
+        )
+    }
+
+    else if (chartType.value === 'text') {
+        const textUiData = chartUIData as TextAreaData
+        return (
+            <TextArea
+                chartData={chartData}
+                textAreaUiData={textUiData}/>
         )
     }
 

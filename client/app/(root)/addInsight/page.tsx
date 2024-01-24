@@ -8,8 +8,6 @@ import { InsightChart } from "@/components/charts/InsightChart";
 import { QueryFields } from "@/components/query/QueryFields";
 import { ICharts } from "@/interfaces/ICharts";
 import { ChartSettings } from "@/components/chartSettings/ChartSettings";
-import { ChartColors } from "@/types/ChartColors";
-import { GraphData } from "@/types/GraphData";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast"
 import {
@@ -18,7 +16,15 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable"
 import { Button } from "@/components/ui/button";
-import { DrawingPinFilledIcon } from "@radix-ui/react-icons";
+import { PinIcon, RefreshCcw } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 export type userIntegrationResponse = {
   id: string;
@@ -66,11 +72,9 @@ export default function AddInsightPage() {
   const [insightData, setInsightData] = useState<FetchDataResponse | undefined>(undefined);
   const [chartUIData, setChartUIData] = useState<ChartDataInput>()
 
-
   const changeRefreshRate = (refreshRate: number) => {
     setRefreshRate(refreshRate);
   }
-
 
   useEffect(() => {
     const authAxios = AuthAxios.getAuthAxios();
@@ -83,18 +87,6 @@ export default function AddInsightPage() {
         console.log(err);
         toast({ title: "Error Fetching Integrations" })
       });
-
-    // authAxios.get('/charts/supported-charts')
-    //   .then((res) => {
-    //     console.log(`Supported Charts: `, res.data)
-    //     setSupportedChartsList(res.data.supportedCharts);
-    //     setSelectedChart(res.data.defaultChart);
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //     toast({ title: "Error Fetching Supported Charts" });
-    //   });
-
   }, [toast]);
 
   const handelSelectedIntegrationChange = (selectedIntegration: userIntegrationResponse | null) => {
@@ -117,19 +109,6 @@ export default function AddInsightPage() {
       toast({ title: "No Query" });
       return;
     }
-    // else if (!selectedChartColors) {
-    //   toast({ title: "No Chart Colors" });
-    //   return;
-    // }
-
-    //insightGraphData -> should contain chartType and chartData(color, labels)
-
-    // const graphData: GraphData = {
-    //   chartType: selectedChart.value,
-    //   chartColors: selectedChartColors
-    // }
-
-    // const insightGraphData = JSON.stringify(graphData);
 
     const saveInsightRequest: saveInsightRequest = {
       title: insightTitle,
@@ -148,7 +127,6 @@ export default function AddInsightPage() {
       .then((res) => {
         console.log(`Insight Saved: `, res.data)
         toast({ title: "Insight Saved Successfully ✅🔒" });
-        // navigate('/',{ replace: true });
         router.push('/')
       })
       .catch((err) => {
@@ -177,11 +155,32 @@ export default function AddInsightPage() {
             }
             {
               insightData && insightData.countOfFields > 0 && selectedChart &&
-              <div className="z-10 h-full w-full flex justify-end absolute">
+              <div className="z-10 h-full w-full flex justify-end absolute gap-1 mt-[1px]">
+                <Select onValueChange={(value) => changeRefreshRate(Number(value))}>
+                  <SelectTrigger className="w-[100px]">
+                    <SelectValue placeholder="Refresh" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value="1">1 seconds</SelectItem>
+                      <SelectItem value="10">10 seconds</SelectItem>
+                      <SelectItem value="60">1 minutes</SelectItem>
+                      <SelectItem value="600">10 minutes</SelectItem>
+                      <SelectItem value="3600">1 hours</SelectItem>
+                      <SelectItem value="36000">10 hours</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <Button
+                  size="icon"
+                  onClick={saveInsight}>
+                  <RefreshCcw
+                    className="h-4 w-4" />
+                </Button>
                 <Button
                   onClick={saveInsight}>
-                  <DrawingPinFilledIcon
-                    className="mr-2 h-4 w-4" /> Save
+                  <PinIcon
+                    className="h-4 w-4 mr-2" /> Save
                 </Button>
               </div>
             }
