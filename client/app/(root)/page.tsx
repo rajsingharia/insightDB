@@ -8,6 +8,9 @@ import { CircularProgress } from '@/components/common/CircularProgress';
 import { Card } from "@/components/ui/card"
 import { useToast } from "@/components/ui/use-toast"
 import GridLayout from "react-grid-layout";
+import { Responsive, WidthProvider } from "react-grid-layout";
+
+const ResponsiveGridLayout = WidthProvider(Responsive);
 
 import "../../node_modules/react-grid-layout/css/styles.css"
 import "../../node_modules/react-resizable/css/styles.css"
@@ -79,7 +82,7 @@ export default function Home() {
       changeLayout?.forEach((layout) => {
         saveLayoutToDatabase(layout.i, layout.x, layout.y, layout.h, layout.w);
       });
-      toast({ title: "🎉 Successfully Layout Changed" })
+      toast({ title: "Successfully Layout Changed ✨" })
     }
     setEnableEdit(state)
   }
@@ -121,11 +124,11 @@ export default function Home() {
       }
       {
         !loading && userInsights && userInsights.length > 0 &&
-        <GridLayout
+        <ResponsiveGridLayout
           className="layout"
-          cols={12}
+          // cols={11}
           rowHeight={30}
-          width={1130}
+          // width={1130}
           isDraggable={enableEdit}
           isResizable={enableEdit}
           onLayoutChange={onLayoutChange}>
@@ -147,7 +150,7 @@ export default function Home() {
               )
             })
           }
-        </GridLayout>
+        </ResponsiveGridLayout>
       }
     </div>
   )

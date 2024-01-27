@@ -1,0 +1,3 @@
+# add kubernetes -> to auto scale 
+# edit, view, delete, duplicate -> insight
+# generate alert -> slack

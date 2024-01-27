@@ -36,15 +36,16 @@ const sideBarPages = [
         activeIcon: <Blocks width={22} height={22} color="#8D4BE0" />
     },
     {
-        to: "/settings",
-        icon: <Settings width={22} height={22} />,
-        activeIcon: <Settings width={22} height={22} color="#7AF8FF" />
-    },
-    {
         to: "/alerts",
         icon: <Bell width={22} height={22} />,
         activeIcon: <Bell width={22} height={22} color="#7AF8FF" />
+    },
+    {
+        to: "/settings",
+        icon: <Settings width={22} height={22} />,
+        activeIcon: <Settings width={22} height={22} color="#7AF8FF" />
     }
+    
 ]
 
 

@@ -15,6 +15,6 @@ integrationRoute.put('/:id', IntegrationController.updateIntegration);
 
 integrationRoute.delete('/', IntegrationController.deleteIntegration);
 
-integrationRoute.get('/query-types/:id', IntegrationController.getQueryInfoByIntegrationId);
+// integrationRoute.get('/query-types/:id', IntegrationController.getQueryInfoByIntegrationId);
 
 export default integrationRoute;

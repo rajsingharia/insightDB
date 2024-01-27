@@ -17,27 +17,21 @@ import { TextArea } from "./TextArea";
 
 type InsightChartProps = {
     insightData: FetchDataResponse;
-    chartType: ICharts;
+    chartDetail: ICharts;
     chartUIData: ChartDataInput | undefined
 }
 
 export const InsightChart: React.FC<InsightChartProps> = ({
     insightData,
-    chartType,
+    chartDetail,
     chartUIData }) => {
 
 
-    // process the data according to the chartType -> extract columns -> clean and format data
+    // process the data according to the chartDetail -> extract columns -> clean and format data
     // create the chart
-
     const chartData = insightData.data;
-    const chartDataColumns: string[] = insightData.fields;
 
-    //For Testing
-    const chartColors: any = null
-
-
-    if (chartType.value === 'bar') {
+    if (chartDetail.value === 'bar') {
         const barChartUiData = chartUIData as BarChartData
         return (
             <BarGraph
@@ -45,7 +39,7 @@ export const InsightChart: React.FC<InsightChartProps> = ({
                 barChartUiData={barChartUiData}
             />
         )
-    } else if (chartType.value === 'pie') {
+    } else if (chartDetail.value === 'pie') {
         const pieChartUiData = chartUIData as PieChartData
         return (
             <PieChart
@@ -53,7 +47,7 @@ export const InsightChart: React.FC<InsightChartProps> = ({
                 pieChartUiData={pieChartUiData}
             />
         )
-    } else if (chartType.value === 'line') {
+    } else if (chartDetail.value === 'line') {
         const lineChartUiData = chartUIData as LineChartData
         return (
             <LineChart
@@ -61,7 +55,7 @@ export const InsightChart: React.FC<InsightChartProps> = ({
                 lineChartUiData={lineChartUiData}
             />
         )
-    } else if (chartType.value === 'scatter') {
+    } else if (chartDetail.value === 'scatter') {
         const scatterChartUiData = chartUIData as ScatterChartData
         return (
             <ScatterChart
@@ -71,7 +65,7 @@ export const InsightChart: React.FC<InsightChartProps> = ({
         )
     }
 
-    else if (chartType.value === 'multi') {
+    else if (chartDetail.value === 'multi') {
         const lineChartUiData = chartUIData as LineChartData
         return (
             <MultiTypeChart
@@ -81,7 +75,7 @@ export const InsightChart: React.FC<InsightChartProps> = ({
         )
     }
 
-    else if (chartType.value === 'text') {
+    else if (chartDetail.value === 'text') {
         const textUiData = chartUIData as TextAreaData
         return (
             <TextArea

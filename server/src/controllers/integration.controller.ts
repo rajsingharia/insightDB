@@ -3,9 +3,7 @@ import { IntegrationService } from "../services/integration.service";
 import { UserService } from "../services/user.service";
 import createHttpError from "http-errors";
 import { IntegrationDTO } from "../dto/request/integration.dto";
-import { QueryParameterService } from "../services/queryParameter.service";
 import { validate } from "class-validator";
-import { DataBaseType } from "../util/constants";
 
 
 interface IAddIntegrationRequest extends Request {
@@ -15,14 +13,6 @@ interface IAddIntegrationRequest extends Request {
     }
 }
 
-interface IGetQueryInfoByIntegrationIdRequest extends Request {
-    body: {
-        userId: string
-    },
-    params: {
-        id: string
-    }
-}
 
 
 export class IntegrationController {
@@ -106,19 +96,6 @@ export class IntegrationController {
     public static async getSupportedIntegration(req: Request, res: Response, next: NextFunction) {
         try {
             const response = await IntegrationService.getSupportedIntegrations();
-            res.status(200).json(response);
-        } catch (error) {
-            next(error);
-        }
-    }
-
-    public static async getQueryInfoByIntegrationId(req: IGetQueryInfoByIntegrationIdRequest, res: Response, next: NextFunction) {
-        try {
-            const integrationId = req.params.id;
-
-            const IntegrationType = await IntegrationService.getIntegrationTypeByIntegrationId(integrationId);
-
-            const response = await QueryParameterService.getQueryInfo(DataBaseType.POSTGRES_QL);
             res.status(200).json(response);
         } catch (error) {
             next(error);

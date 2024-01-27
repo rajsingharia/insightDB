@@ -3,7 +3,7 @@ import { MongoDBParametersDTO } from "../dto/request/parameters/Mongodb.paramete
 import { PostgresParametersDTO } from "../dto/request/parameters/Postgres.parameters.dto";
 
 
-export class QueryBilderService {
+export class QueryBuilderService {
 
     public static buildPostgresQuery = (postgresParams: PostgresParametersDTO): string => {
 

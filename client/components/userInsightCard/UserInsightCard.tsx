@@ -18,6 +18,18 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { MoreVerticalIcon } from 'lucide-react';
 import { SelectSeparator } from '../ui/select';
+import { SupportedCharts } from '@/utils/Constants';
+import {
+    Drawer,
+    DrawerClose,
+    DrawerContent,
+    DrawerDescription,
+    DrawerFooter,
+    DrawerHeader,
+    DrawerTitle,
+    DrawerTrigger,
+} from "@/components/ui/drawer"
+import { Button } from '../ui/button';
 
 type UserInsightCardProps = {
     insight: IUserInsights;
@@ -37,7 +49,8 @@ export const UserInsightCard: React.FC<UserInsightCardProps> = ({ insight }) => 
     //TODO: Convert it into Atom (to share the states between the cards)
 
     const [chartData, setChartData] = useState<FetchDataResponse | undefined>(undefined);
-    const [chartType, setChartType] = useState<ICharts>({} as ICharts);
+    const chartType = insight.graphData.type;
+    const chartDetails = SupportedCharts.find((chart) => chart.value === chartType)
     const [error, setError] = useState<string>('');
 
     useEffect(() => {
@@ -59,15 +72,13 @@ export const UserInsightCard: React.FC<UserInsightCardProps> = ({ insight }) => 
                 setError(err.message);
             });
 
-        const chartType = insight.graphData.type;
-
-        authAxios.get(`/charts/chart-details/${chartType}`)
-            .then((res) => {
-                setChartType(res.data);
-            })
-            .catch((err) => {
-                console.log(err)
-            });
+        // authAxios.get(`/charts/chart-details/${chartType}`)
+        //     .then((res) => {
+        //         setChartDetail(res.data);
+        //     })
+        //     .catch((err) => {
+        //         console.log(err)
+        //     });
 
 
         const refreshRate = insight.refreshRate;
@@ -99,15 +110,13 @@ export const UserInsightCard: React.FC<UserInsightCardProps> = ({ insight }) => 
                     setError(err.message);
                 });
 
-            const chartType = insight.graphData.type;
-
-            authAxios.get(`/charts/chart-details/${chartType}`)
-                .then((res) => {
-                    setChartType(res.data);
-                })
-                .catch((err) => {
-                    console.log(err)
-                });
+            // authAxios.get(`/charts/chart-details/${chartType}`)
+            //     .then((res) => {
+            //         setChartDetail(res.data);
+            //     })
+            //     .catch((err) => {
+            //         console.log(err)
+            //     });
         }, refreshRate)
     }
 
@@ -143,47 +152,60 @@ export const UserInsightCard: React.FC<UserInsightCardProps> = ({ insight }) => 
     return (
         <div className="flex flex-col justify-center items-center h-full w-full border-purple-500 border-2 rounded px-4 py-2 bg-purple-500 bg-opacity-0 hover:bg-opacity-10">
             {
-                chartData && chartType ?
+                chartData && chartDetails ?
                     <div className="flex flex-col justify-between items-center w-full">
                         <h4 className="text-l font-bold font-mono">{insight.title}</h4>
                         <div className='w-full h-[0.5px] bg-slate-500 rounded bg-opacity-30 mb-3' />
                         <InsightChart
                             insightData={chartData}
-                            chartType={chartType}
+                            chartDetail={chartDetails}
                             chartUIData={insight.graphData}
                         />
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <div className='absolute top-0 right-0 z-50 p-1 mt-1 cursor-pointer'>
-                                    <MoreVerticalIcon className='h-[1.1rem] w-[1.1rem]' />
-                                </div>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent className="w-56">
-                                <DropdownMenuGroup>
+                        <Drawer>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <div className='absolute top-0 right-0 z-50 p-1 mt-1 cursor-pointer'>
+                                        <MoreVerticalIcon className='h-[1.1rem] w-[1.1rem]' />
+                                    </div>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent className="w-56">
+                                    <DropdownMenuGroup>
+                                        <DrawerTrigger asChild>
+                                            <DropdownMenuItem>
+                                                View
+                                                <DropdownMenuShortcut>⌘V</DropdownMenuShortcut>
+                                            </DropdownMenuItem>
+                                        </DrawerTrigger>
+                                        <DropdownMenuItem>
+                                            Edit
+                                            <DropdownMenuShortcut>⌘E</DropdownMenuShortcut>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem>
+                                            Share
+                                            <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem>
+                                            Duplicate
+                                            <DropdownMenuShortcut>⌘D</DropdownMenuShortcut>
+                                        </DropdownMenuItem>
+                                    </DropdownMenuGroup>
+                                    <DropdownMenuSeparator />
                                     <DropdownMenuItem>
-                                        View
-                                        <DropdownMenuShortcut>⌘V</DropdownMenuShortcut>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem>
-                                        Edit
-                                        <DropdownMenuShortcut>⌘E</DropdownMenuShortcut>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem>
-                                        Share
-                                        <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem>
-                                        Duplicate
+                                        Delete
                                         <DropdownMenuShortcut>⌘D</DropdownMenuShortcut>
                                     </DropdownMenuItem>
-                                </DropdownMenuGroup>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem>
-                                    Delete
-                                    <DropdownMenuShortcut>⌘D</DropdownMenuShortcut>
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                            <DrawerContent>
+                                <div className="flex flex-col w-full items-center justify-center mt-3 h-[350px]">
+                                    <InsightChart
+                                        insightData={chartData}
+                                        chartDetail={chartDetails}
+                                        chartUIData={insight.graphData}
+                                    />
+                                </div>
+                            </DrawerContent>
+                        </Drawer>
                     </div>
                     :
                     <div className="flex flex-col justify-between items-center w-full">

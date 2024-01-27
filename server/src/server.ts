@@ -32,7 +32,7 @@ app.use('/api/v1/user', ValidateTokenMiddleware, Route.userRouter);
 app.use('/api/v1/integrations', ValidateTokenMiddleware, Route.integrationRoute);
 app.use('/api/v1/fetchData', ValidateTokenMiddleware, Route.fetchDataRoute);
 app.use('/api/v1/insights', ValidateTokenMiddleware, Route.insightRoute);
-app.use('/api/v1/charts', ValidateTokenMiddleware, Route.chartsRoute);
+// app.use('/api/v1/charts', ValidateTokenMiddleware, Route.chartsRoute);
 app.use('/api/v1/fetchSSEData', ValidateTokenMiddlewareFromSSE, Route.fetchDataRouteSSE);
 app.use('/api/v1/alert', ValidateTokenMiddleware, Route.alertRouter)
 

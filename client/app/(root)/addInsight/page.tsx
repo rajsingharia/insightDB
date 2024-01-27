@@ -149,7 +149,7 @@ export default function AddInsightPage() {
               insightData && insightData.countOfFields > 0 && chartUIData &&
               <InsightChart
                 insightData={insightData}
-                chartType={selectedChart}
+                chartDetail={selectedChart}
                 chartUIData={chartUIData}
               />
             }

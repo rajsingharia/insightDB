@@ -1,12 +1,8 @@
 import { JsonValue } from "@prisma/client/runtime/library";
-import { IParameters } from "../interfaces/IParameters";
 import { connectDataSourceService } from "./connectDataSource.service";
 import createHttpError from "http-errors";
-import { PostgresParametersDTO } from "../dto/request/parameters/Postgres.parameters.dto";
-import { MongoDBParametersDTO } from "../dto/request/parameters/Mongodb.parameters.dto";
 import pg from "pg";
 import mongoose from "mongoose";
-import { QueryBilderService } from "./queryBuilder.service";
 import { Axios } from "axios";
 import { RestApiParametersDTO } from "../dto/request/parameters/RestApi.parameters.dto";
 import { DataBaseType } from "../util/constants";
