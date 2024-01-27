@@ -1,8 +1,7 @@
 import axios from "axios";
 import prisma from "../config/database.config";
-import { AlertDTO } from "../dto/response/alert.dto";
-import { AlertDestinations } from "@prisma/client";
-import { JsonValue } from "@prisma/client/runtime/library";
+import { AlertDTO } from "../dto/request/alert.dto";
+import { Alerts } from "@prisma/client";
 
 export class AlertService {
 
@@ -20,13 +19,13 @@ export class AlertService {
         })
     }
 
-    public static addAlert = async (alertDestination: AlertDestinations, userId: string, newAlert: AlertDTO) => {
+    public static addAlert = async (userId: string, newAlert: AlertDTO) => {
         const alert = await this.prismaClient.alerts.create({
             data: {
                 userId: userId,
                 title: newAlert.title,
                 rawQuery: newAlert.rawQuery,
-                destination: alertDestination,
+                destination: newAlert.destination,
                 configuration: newAlert.configuration!,
                 cronExpression: newAlert.cronExpression,
                 repeatCount: newAlert.repeatCount
@@ -36,10 +35,10 @@ export class AlertService {
         return alert.id
     }
 
-    public static changeAlertById = async (newAlert: AlertDTO) => {
+    public static changeAlertById = async (alertId:string, newAlert: AlertDTO) => {
         const alert = await this.prismaClient.alerts.update({
             where: {
-                id: newAlert.id
+                id: alertId
             },
             data: {
                 title: newAlert.title,
@@ -76,22 +75,22 @@ export class AlertService {
         return alertTriggers
     }
 
-    public static makeAlert = async (data: JsonValue) => {
+    public static makeAlert = async (alert: Alerts) => {
 
-        const dataObj = JSON.parse(JSON.stringify(data))
 
-        if (dataObj.type == 'EMAIL') {
+        if (alert.destination == 'EMAIL') {
             // Send an email
         }
-        else if (dataObj.type === 'SLACK') {
+        else if (alert.destination === 'SLACK') {
 
-            const data = dataObj.data
-            const alertId = dataObj.alertId
-            const messageFormat = data.message
-            const webHookUrlLink = data.webhook
+            const configurationObj = JSON.parse(JSON.stringify(alert.configuration))
 
-            if(!data || !alertId || !messageFormat || !webHookUrlLink) {
-                throw new Error("Fields missing while making alert on :" + dataObj.type);
+            const alertId = alert.id
+            const messageFormat = configurationObj?.message
+            const webHookUrlLink = configurationObj?.webhook
+
+            if(!alertId || !messageFormat || !webHookUrlLink) {
+                throw new Error("Fields missing while making alert on :" + alert.destination);
             }
 
             const response = await axios.post(webHookUrlLink, { text: messageFormat })

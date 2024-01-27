@@ -1,3 +1,4 @@
 # add kubernetes -> to auto scale 
-# edit, view, delete, duplicate -> insight
 # generate alert -> slack
+# find a way to show query in SQLQueryInput
+# run cron job in a different nodejs instance (Docker)

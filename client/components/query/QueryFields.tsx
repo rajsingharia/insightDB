@@ -73,30 +73,11 @@ export const QueryFields: React.FC<QueryFieldsProps> = ({
     integrationId,
     integrationType,
     setInsightData,
-    // setSelectedChartColors,
     chartType,
     rawQuery,
-    setRawQuery}) => {
-
-    // const [refreshRate, setRefreshRate] = useState<number>(0);
-
-    // useEffect(() => {
-    //     const authAxios = AuthAxios.getAuthAxios();
-    //     authAxios.get(`/charts/queries/${chartType.id}`)
-    //         .then((res) => {
-    //             console.log("Query Info: ", res.data);
-    //             setQueryInfo(res.data);
-    //             setInsightData(undefined);
-    //         })
-    //         .catch((err) => {
-    //             console.log(err)
-    //         });
-
-    // }, [chartType, setInsightData]);
+    setRawQuery }) => {
 
     const getInsightData = () => {
-        //event.preventDefault();
-
         const authAxios = AuthAxios.getAuthAxios();
 
         const body = {
@@ -108,24 +89,8 @@ export const QueryFields: React.FC<QueryFieldsProps> = ({
             .then((res) => {
                 console.log("Data: ", res.data.data);
                 const fetchedData = res.data as FetchDataResponse;
-
-                // const fieldsCount = fetchedData.countOfFields
-                // if (fieldsCount) {
-                //     const borderColors = getRandomNeonColor(Number(fieldsCount));
-                //     let backgroundColors = borderColors;
-                //     backgroundColors = backgroundColors.map((color) => color + '40');
-                //     if (backgroundColors.length > 0 && borderColors.length > 0) {
-                //         const chartColors = new ChartColors(
-                //             backgroundColors,
-                //             borderColors
-                //         )
-                //         console.log("Setting chart colors: ", chartColors);
-                //         setSelectedChartColors(chartColors);
-                //     }
-                // }
                 setInsightData(fetchedData);
                 setRawQuery(rawQuery);
-                // changeRefreshRate(refreshRate);
             })
             .catch((err) => {
                 console.log(err)
@@ -144,31 +109,23 @@ export const QueryFields: React.FC<QueryFieldsProps> = ({
 
     const getQueryInputForIntegrationType = (): ReactNode => {
         if (integrationType === DataBaseType.POSTGRES_QL.valueOf()) {
-            return <SQLQueryInput
-                rawQuery={rawQuery}
-                setRawQuery={setRawQuery}
-                getInsightData={getInsightData} />
+            return (
+                <SQLQueryInput
+                    rawQuery={rawQuery}
+                    setRawQuery={setRawQuery}
+                    getInsightData={getInsightData} />
+            )
         }
+        return (
+            <div>
+                Query Input
+            </div>
+        )
     }
 
 
     return (
         <div className="flex flex-col h-full w-full">
-            {
-                // <div className="flex flex-row justify-end items-center w-full gap-2">
-                //     <div className="text-black font-mono text-sm">Refresh Rate (in seconds):</div>
-                //     <Input
-                //         type="number"
-                //         className="bg-transparent text-black outline-none w-20 text-center h-full"
-                //         value={refreshRate}
-                //         onChange={(e) => setRefreshRate(parseInt(e.target.value))}
-                //     />
-                //     <div className="border-2 border-purple-500 rounded px-2 py-0 bg-purple-500 cursor-pointer bg-opacity-30"
-                //         onClick={saveInsight}>
-                //         <Save color="white" />
-                //     </div>
-                // </div>
-            }
             <div className="p-2 w-full h-full overflow-y-scroll">
                 {
                     getQueryInputForIntegrationType()

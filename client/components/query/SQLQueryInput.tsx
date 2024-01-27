@@ -60,9 +60,14 @@ export const SQLQueryInput: React.FC<QueryInputProps> = ({
         setColumns([...columns, { columnName: '' }])
     }
 
+    useEffect(() => {
+        if(rawQuery && rawQuery.length > 0) {
+            // write logic to extract source, columns, where, sortedBy, limit from rawQuery
+        }
+    },[])
+
 
     useEffect(() => {
-
         // Make the raw Query
 
         if (source !== "" && columns[0].columnName !== "") {

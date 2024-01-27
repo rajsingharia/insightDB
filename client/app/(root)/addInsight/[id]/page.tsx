@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/select"
 import IUserInsights from "@/interfaces/IUserInsights";
 import { SupportedCharts } from "@/utils/Constants";
+import { CircularProgress } from "@/components/common/CircularProgress";
 
 export type userIntegrationResponse = {
   id: string;
@@ -81,6 +82,7 @@ export default function AddInsightPageQuery() {
   const [rawQuery, setRawQuery] = useState<string>('');
   const [insightChartData, setInsightChartData] = useState<FetchDataResponse | undefined>(undefined);
   const [chartUIData, setChartUIData] = useState<ChartDataInput>()
+  const [loading, setLoading] = useState<boolean>(true)
 
 
   const changeRefreshRate = (refreshRate: number) => {
@@ -140,7 +142,7 @@ export default function AddInsightPageQuery() {
         toast({ title: "Error fetching user Insight: " + err.message })
       })
       .finally(() => {
-        //setLoading(false);
+        setLoading(false);
       });
 
   }, [toast, insightId])
@@ -192,101 +194,112 @@ export default function AddInsightPageQuery() {
 
 
   return (
-    <ResizablePanelGroup
-      direction="horizontal"
-      className="h-full w-full gap-2">
-      <ResizablePanel defaultSize={75} className="h-full">
-        <ResizablePanelGroup
-          direction="vertical"
-          className="gap-2">
-          <ResizablePanel defaultSize={40} className="flex justify-center items-center w-full p-1 rounded-lg relative">
-            {
-              // TODO: Explore lazy loading of chart component
-              insightChartData && insightChartData.countOfFields > 0 && chartUIData &&
-              <InsightChart
-                insightData={insightChartData}
-                chartDetail={selectedChart}
-                chartUIData={chartUIData}
-              />
-            }
-            {
-              insightChartData && insightChartData.countOfFields > 0 && selectedChart &&
-              <div className="z-10 h-full w-full flex justify-end absolute gap-1 mt-[1px]">
-                <Select value={refreshRate?.toString()} onValueChange={(value) => changeRefreshRate(Number(value))}>
-                  <SelectTrigger className="w-[110px]">
-                    <SelectValue placeholder="Refresh" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectItem value="0">No repeat</SelectItem>
-                      <SelectItem value="1">1 seconds</SelectItem>
-                      <SelectItem value="10">10 seconds</SelectItem>
-                      <SelectItem value="60">1 minutes</SelectItem>
-                      <SelectItem value="600">10 minutes</SelectItem>
-                      <SelectItem value="3600">1 hours</SelectItem>
-                      <SelectItem value="36000">10 hours</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-                <Button
-                  size="icon"
-                  onClick={editInsight}>
-                  <RefreshCcw
-                    className="h-4 w-4" />
-                </Button>
-                <Button
-                  onClick={editInsight}>
-                  <PinIcon
-                    className="h-4 w-4 mr-2" /> Update
-                </Button>
-              </div>
-            }
-          </ResizablePanel>
-          <ResizableHandle withHandle />
-          <ResizablePanel defaultSize={60} className="w-full p-1 rounded-lg">
-            {
-              selectedIntegration &&
-              <QueryFields
-                integrationId={selectedIntegration.id}
-                integrationType={selectedIntegration.type}
-                setInsightData={setInsightChartData}
-                chartType={selectedChart}
-                rawQuery={rawQuery}
-                setRawQuery={setRawQuery}
-              />
-            }
-          </ResizablePanel>
-        </ResizablePanelGroup>
-
-      </ResizablePanel >
-      <ResizableHandle withHandle />
-      <ResizablePanel defaultSize={25} className="flex flex-col justify-start items-center h-full rounded-lg">
-        <div className="flex flex-col justify-start items-center h-full w-full p-1">
-          Settings
-          {
-            <ChartSettings
-              selectedIntegration={selectedIntegration}
-              handelSelectedIntegrationChange={handelSelectedIntegrationChange}
-              userIntegrations={userIntegrations}
-              insightTitle={insightTitle}
-              setInsightTitle={setInsightTitle}
-              insightDescription={insightDescription}
-              setInsightDescription={setInsightDescription}
-            />
-          }
-          <div className="w-full mt-4 pr-4 overflow-y-scroll rounded">
-            {
-              insightChartData && insightChartData.countOfFields > 0 &&
-              <SupportedCharList
-                selectedChart={selectedChart}
-                setSelectedChart={setSelectedChart}
-                setChartUIData={setChartUIData}
-                insightData={insightChartData}
-              />
-            }
-          </div>
+    <>
+      {
+        loading &&
+        <div className="flex flex-col justify-center items-center w-full h-full ">
+          <CircularProgress />
         </div>
-      </ResizablePanel>
-    </ResizablePanelGroup >
+      }
+      {
+        !loading &&
+        <ResizablePanelGroup
+          direction="horizontal"
+          className="h-full w-full gap-2">
+          <ResizablePanel defaultSize={75} className="h-full">
+            <ResizablePanelGroup
+              direction="vertical"
+              className="gap-2">
+              <ResizablePanel defaultSize={40} className="flex justify-center items-center w-full p-1 rounded-lg relative">
+                {
+                  // TODO: Explore lazy loading of chart component
+                  insightChartData && insightChartData.countOfFields > 0 && chartUIData &&
+                  <InsightChart
+                    insightData={insightChartData}
+                    chartDetail={selectedChart}
+                    chartUIData={chartUIData}
+                  />
+                }
+                {
+                  insightChartData && insightChartData.countOfFields > 0 && selectedChart &&
+                  <div className="z-10 h-full w-full flex justify-end absolute gap-1 mt-[1px]">
+                    <Select value={refreshRate?.toString()} onValueChange={(value) => changeRefreshRate(Number(value))}>
+                      <SelectTrigger className="w-[110px]">
+                        <SelectValue placeholder="Refresh" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectItem value="0">No repeat</SelectItem>
+                          <SelectItem value="1">1 seconds</SelectItem>
+                          <SelectItem value="10">10 seconds</SelectItem>
+                          <SelectItem value="60">1 minutes</SelectItem>
+                          <SelectItem value="600">10 minutes</SelectItem>
+                          <SelectItem value="3600">1 hours</SelectItem>
+                          <SelectItem value="36000">10 hours</SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                    <Button
+                      size="icon"
+                      onClick={editInsight}>
+                      <RefreshCcw
+                        className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      onClick={editInsight}>
+                      <PinIcon
+                        className="h-4 w-4 mr-2" /> Update
+                    </Button>
+                  </div>
+                }
+              </ResizablePanel>
+              <ResizableHandle withHandle />
+              <ResizablePanel defaultSize={60} className="w-full p-1 rounded-lg">
+                {
+                  selectedIntegration &&
+                  <QueryFields
+                    integrationId={selectedIntegration.id}
+                    integrationType={selectedIntegration.type}
+                    setInsightData={setInsightChartData}
+                    chartType={selectedChart}
+                    rawQuery={rawQuery}
+                    setRawQuery={setRawQuery}
+                  />
+                }
+              </ResizablePanel>
+            </ResizablePanelGroup>
+
+          </ResizablePanel >
+          <ResizableHandle withHandle />
+          <ResizablePanel defaultSize={25} className="flex flex-col justify-start items-center h-full rounded-lg">
+            <div className="flex flex-col justify-start items-center h-full w-full p-1">
+              Settings
+              {
+                <ChartSettings
+                  selectedIntegration={selectedIntegration}
+                  handelSelectedIntegrationChange={handelSelectedIntegrationChange}
+                  userIntegrations={userIntegrations}
+                  insightTitle={insightTitle}
+                  setInsightTitle={setInsightTitle}
+                  insightDescription={insightDescription}
+                  setInsightDescription={setInsightDescription}
+                />
+              }
+              <div className="w-full mt-4 pr-4 overflow-y-scroll rounded">
+                {
+                  insightChartData && insightChartData.countOfFields > 0 &&
+                  <SupportedCharList
+                    selectedChart={selectedChart}
+                    setSelectedChart={setSelectedChart}
+                    setChartUIData={setChartUIData}
+                    insightData={insightChartData}
+                  />
+                }
+              </div>
+            </div>
+          </ResizablePanel>
+        </ResizablePanelGroup >
+      }
+    </>
   )
 }

@@ -2,7 +2,23 @@ import { NextFunction, Request, Response } from "express";
 import createHttpError from "http-errors";
 import { validate } from "class-validator";
 import { AlertService } from "../services/alert.service";
-import { AlertDTO } from "../dto/response/alert.dto";
+import { AlertDTO } from "../dto/request/alert.dto";
+
+interface IAddAlertRequest extends Request {
+    body: {
+        userId: string;
+        alert: AlertDTO
+    }
+}
+
+interface IUpdateAlertRequest extends Request {
+    body: {
+        alert: AlertDTO;
+    },
+    params: {
+        alertId: string;
+    }
+}
 
 
 export const getAlerts = async (req: Request, res: Response, next: NextFunction) => {
@@ -14,18 +30,31 @@ export const getAlerts = async (req: Request, res: Response, next: NextFunction)
     }
 }
 
-export const updateAlert = async (req: Request, res: Response, next: NextFunction) => {
+
+export const addAlerts = async (req: IAddAlertRequest, res: Response, next: NextFunction) => {
+    try {
+        const userId = req.body.userId
+        const newAlert = req.body.alert
+        const response = await AlertService.addAlert(userId, newAlert)
+        res.status(200).send(response);
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const updateAlert = async (req: IUpdateAlertRequest, res: Response, next: NextFunction) => {
     try {
         // const userId  = req.params.id;
-        const updateAlertDto: AlertDTO = req.body;
+        const updateAlertDto = req.body.alert;
+        const alertId = req.params.alertId
 
         const validationErrors = await validate(updateAlertDto);
         if (validationErrors.length > 0) {
             throw createHttpError(400, `Validation error: ${validationErrors}`);
         }
 
-        const alertId = await AlertService.changeAlertById(updateAlertDto);
-        res.status(200).send(alertId);
+        const response = await AlertService.changeAlertById(alertId, updateAlertDto);
+        res.status(200).send(response);
     } catch (error) {
         next(error);
     }

@@ -1,6 +1,5 @@
 import cron from 'cron';
 import { AlertService } from './alert.service';
-import { AlertDTO } from '../dto/response/alert.dto';
 
 export class CronService {
 
@@ -12,19 +11,20 @@ export class CronService {
 
 
     public async startAllCronJob() {
-        const alerts: AlertDTO[] = await AlertService.getAllAlerts();
-        alerts.forEach((alert) => {
-            const configuration = alert.configuration
-            const alertJob = new cron.CronJob(alert.cronExpression, () => {
-                AlertService.makeAlert(configuration);
-            });
-            this.cronAlertMapping.set(alert.id, alertJob)
-        })
+        const alerts = await AlertService.getAllAlerts();
+        if (alerts && alerts.length > 0) {
+            // alerts.forEach((alert) => {
+            //     const configuration = alert.configuration
+            //     const alertJob = new cron.CronJob(alert.cronExpression, () => {
+            //         AlertService.makeAlert(configuration);
+            //     });
+            //     this.cronAlertMapping.set(alert.id, alertJob)
+            // })
 
-        this.cronAlertMapping.forEach((cronJob) => {
-            cronJob.start()
-        })
-
+            // this.cronAlertMapping.forEach((cronJob) => {
+            //     cronJob.start()
+            // })
+        }
     }
 
     public async startNewCronJon(alertId: string) {
@@ -34,12 +34,12 @@ export class CronService {
         }
 
         const alert = await AlertService.getAlertById(alertId)
-        if(!alert) {
+        if (!alert) {
             throw new Error("Unable to find Alert")
         }
-        const configuration = alert.configuration
+        
         const alertJob = new cron.CronJob(alert.cronExpression, () => {
-            AlertService.makeAlert(configuration);
+            AlertService.makeAlert(alert);
         });
         this.cronAlertMapping.set(alertId, alertJob)
         this.cronAlertMapping.get(alertId)?.start()

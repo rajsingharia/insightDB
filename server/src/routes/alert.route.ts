@@ -5,6 +5,8 @@ const alertRouter = express.Router();
 
 alertRouter.get('/', alertController.getAlerts);
 
+alertRouter.post('/', alertController.addAlerts);
+
 alertRouter.put('/', alertController.updateAlert);
 
 alertRouter.delete('/', alertController.deleteAlert);
