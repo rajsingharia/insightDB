@@ -41,7 +41,6 @@ interface QueryFieldsProps {
     chartType: ICharts;
     rawQuery: string;
     setRawQuery: React.Dispatch<React.SetStateAction<string>>;
-    changeRefreshRate: (refreshRate: number) => void;
 }
 
 const getRawData = (event: React.FormEvent<HTMLFormElement>, queryInfo: QueryInfoResponse) => {
@@ -77,10 +76,9 @@ export const QueryFields: React.FC<QueryFieldsProps> = ({
     // setSelectedChartColors,
     chartType,
     rawQuery,
-    setRawQuery,
-    changeRefreshRate }) => {
+    setRawQuery}) => {
 
-    const [refreshRate, setRefreshRate] = useState<number>(0);
+    // const [refreshRate, setRefreshRate] = useState<number>(0);
 
     // useEffect(() => {
     //     const authAxios = AuthAxios.getAuthAxios();
@@ -111,7 +109,7 @@ export const QueryFields: React.FC<QueryFieldsProps> = ({
                 console.log("Data: ", res.data.data);
                 const fetchedData = res.data as FetchDataResponse;
 
-                const fieldsCount = fetchedData.countOfFields
+                // const fieldsCount = fetchedData.countOfFields
                 // if (fieldsCount) {
                 //     const borderColors = getRandomNeonColor(Number(fieldsCount));
                 //     let backgroundColors = borderColors;
@@ -127,7 +125,7 @@ export const QueryFields: React.FC<QueryFieldsProps> = ({
                 // }
                 setInsightData(fetchedData);
                 setRawQuery(rawQuery);
-                changeRefreshRate(refreshRate);
+                // changeRefreshRate(refreshRate);
             })
             .catch((err) => {
                 console.log(err)

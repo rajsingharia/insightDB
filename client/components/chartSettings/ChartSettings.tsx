@@ -9,12 +9,13 @@ import {
     SelectLabel,
     SelectTrigger,
     SelectValue,
-  } from "@/components/ui/select"
+} from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { useToast } from '../ui/use-toast'
 
 interface ChartSettingsProps {
-    handelSelectedIntegrationChange: (selectedIntegration : userIntegrationResponse | null) => void,
+    selectedIntegration: userIntegrationResponse | undefined,
+    handelSelectedIntegrationChange: (selectedIntegration: userIntegrationResponse | null) => void,
     userIntegrations: userIntegrationResponse[],
     insightTitle: string,
     setInsightTitle: React.Dispatch<React.SetStateAction<string>>,
@@ -25,6 +26,7 @@ interface ChartSettingsProps {
 
 export const ChartSettings: React.FC<ChartSettingsProps> = (
     {
+        selectedIntegration,
         handelSelectedIntegrationChange,
         userIntegrations,
         insightTitle,
@@ -58,10 +60,12 @@ export const ChartSettings: React.FC<ChartSettingsProps> = (
 
     return (
         <div className="flex flex-col justify-start items-start w-full mt-2 gap-3">
-            <Select onValueChange={(value: string) => {
-                console.log(value)
-                handelSelectedIntegrationChange(JSON.parse(value) as userIntegrationResponse)
-            }}>
+            <Select
+                value={JSON.stringify(selectedIntegration)}
+                onValueChange={(value: string) => {
+                    console.log(value)
+                    handelSelectedIntegrationChange(JSON.parse(value) as userIntegrationResponse)
+                }}>
                 <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select Integration" />
                 </SelectTrigger>
@@ -69,18 +73,18 @@ export const ChartSettings: React.FC<ChartSettingsProps> = (
                     <SelectGroup>
                         <SelectLabel>Integrations</SelectLabel>
                         {
-                        userIntegrations &&
-                        userIntegrations.map((integration: any) => {
-                            return (
-                                <SelectItem
-                                    id={integration?.id}
-                                    value={JSON.stringify(integration)}
-                                    key={integration?.id}>
-                                    {integration?.name}
-                                </SelectItem>
-                            )
-                        })
-                    }
+                            userIntegrations &&
+                            userIntegrations.map((integration: any) => {
+                                return (
+                                    <SelectItem
+                                        id={integration?.id}
+                                        value={JSON.stringify(integration)}
+                                        key={integration?.id}>
+                                        {integration?.name}
+                                    </SelectItem>
+                                )
+                            })
+                        }
                     </SelectGroup>
                 </SelectContent>
             </Select>

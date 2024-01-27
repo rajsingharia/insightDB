@@ -21,16 +21,13 @@ import { SelectSeparator } from '../ui/select';
 import { SupportedCharts } from '@/utils/Constants';
 import {
     Drawer,
-    DrawerClose,
     DrawerContent,
-    DrawerDescription,
-    DrawerFooter,
-    DrawerHeader,
-    DrawerTitle,
     DrawerTrigger,
 } from "@/components/ui/drawer"
 import { Button } from '../ui/button';
+import { useRouter } from 'next/navigation';
 
+import { useToast } from "@/components/ui/use-toast"
 type UserInsightCardProps = {
     insight: IUserInsights;
 }
@@ -52,10 +49,12 @@ export const UserInsightCard: React.FC<UserInsightCardProps> = ({ insight }) => 
     const chartType = insight.graphData.type;
     const chartDetails = SupportedCharts.find((chart) => chart.value === chartType)
     const [error, setError] = useState<string>('');
+    const router = useRouter()
+    const authAxios = AuthAxios.getAuthAxios();
+    const { toast } = useToast()
+
 
     useEffect(() => {
-
-        const authAxios = AuthAxios.getAuthAxios();
 
         const body = {
             integrationId: insight.integrationId,
@@ -72,20 +71,11 @@ export const UserInsightCard: React.FC<UserInsightCardProps> = ({ insight }) => 
                 setError(err.message);
             });
 
-        // authAxios.get(`/charts/chart-details/${chartType}`)
-        //     .then((res) => {
-        //         setChartDetail(res.data);
-        //     })
-        //     .catch((err) => {
-        //         console.log(err)
-        //     });
-
-
         const refreshRate = insight.refreshRate;
 
         if (refreshRate > 0) {
             // makeSSEConnection();
-            startPolling(refreshRate * 1000)
+            //startPolling(refreshRate * 1000)
         }
 
     }, [insight]);
@@ -110,13 +100,6 @@ export const UserInsightCard: React.FC<UserInsightCardProps> = ({ insight }) => 
                     setError(err.message);
                 });
 
-            // authAxios.get(`/charts/chart-details/${chartType}`)
-            //     .then((res) => {
-            //         setChartDetail(res.data);
-            //     })
-            //     .catch((err) => {
-            //         console.log(err)
-            //     });
         }, refreshRate)
     }
 
@@ -147,7 +130,29 @@ export const UserInsightCard: React.FC<UserInsightCardProps> = ({ insight }) => 
 
     }
 
-    //const chartColors = insight?.graphData?.chartColors;
+    const duplicateInsight = () => {
+        const insightId = insight.id
+        authAxios.post(`/insights/duplicate/${insightId}`)
+            .then((res) => {
+                // router.refresh()
+                location.reload();
+            })
+            .catch((err) => {
+                toast({ title: "Error while duplicating insight :" + err.message })
+            });
+    }
+
+    const deleteInsight = () => {
+        const insightId = insight.id
+        authAxios.delete(`/insights/${insightId}`)
+            .then((res) => {
+                // router.refresh()
+                location.reload();
+            })
+            .catch((err) => {
+                toast({ title: "Error while deleting insight :" + err.message })
+            });
+    }
 
     return (
         <div className="flex flex-col justify-center items-center h-full w-full border-purple-500 border-2 rounded px-4 py-2 bg-purple-500 bg-opacity-0 hover:bg-opacity-10">
@@ -176,7 +181,7 @@ export const UserInsightCard: React.FC<UserInsightCardProps> = ({ insight }) => 
                                                 <DropdownMenuShortcut>⌘V</DropdownMenuShortcut>
                                             </DropdownMenuItem>
                                         </DrawerTrigger>
-                                        <DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => router.push(`/addInsight/${insight.id}`)}>
                                             Edit
                                             <DropdownMenuShortcut>⌘E</DropdownMenuShortcut>
                                         </DropdownMenuItem>
@@ -184,13 +189,13 @@ export const UserInsightCard: React.FC<UserInsightCardProps> = ({ insight }) => 
                                             Share
                                             <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
                                         </DropdownMenuItem>
-                                        <DropdownMenuItem>
+                                        <DropdownMenuItem onClick={duplicateInsight}>
                                             Duplicate
                                             <DropdownMenuShortcut>⌘D</DropdownMenuShortcut>
                                         </DropdownMenuItem>
                                     </DropdownMenuGroup>
                                     <DropdownMenuSeparator />
-                                    <DropdownMenuItem>
+                                    <DropdownMenuItem onClick={deleteInsight} className='bg-red-400'>
                                         Delete
                                         <DropdownMenuShortcut>⌘D</DropdownMenuShortcut>
                                     </DropdownMenuItem>

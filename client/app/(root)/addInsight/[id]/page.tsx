@@ -10,6 +10,7 @@ import { ICharts } from "@/interfaces/ICharts";
 import { ChartSettings } from "@/components/chartSettings/ChartSettings";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast"
+import { useParams } from "next/navigation";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -25,6 +26,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import IUserInsights from "@/interfaces/IUserInsights";
+import { SupportedCharts } from "@/utils/Constants";
 
 export type userIntegrationResponse = {
   id: string;
@@ -57,43 +60,96 @@ export interface ChartDataInput {
 }
 
 
-export default function AddInsightPage() {
+export default function AddInsightPageQuery() {
   const router = useRouter()
   const { toast } = useToast()
+  const param = useParams()
+  var insightId: string = ""
+  if (typeof (param.id) === 'string') {
+    insightId = param.id
+  } else {
+    insightId = param.id[0]
+  }
 
   const [userIntegrations, setUserIntegrations] = useState<userIntegrationResponse[]>([]);
   const [selectedIntegration, setSelectedIntegration] = useState<userIntegrationResponse | undefined>(undefined);
   const [selectedChart, setSelectedChart] = useState<ICharts>({} as ICharts);
   // const [selectedChartColors, setSelectedChartColors] = useState<ChartColors | undefined>(undefined);
-  const [refreshRate, setRefreshRate] = useState<number>(0);
+  const [refreshRate, setRefreshRate] = useState<number>();
   const [insightTitle, setInsightTitle] = useState<string>('');
   const [insightDescription, setInsightDescription] = useState<string>('');
   const [rawQuery, setRawQuery] = useState<string>('');
-  const [insightData, setInsightData] = useState<FetchDataResponse | undefined>(undefined);
+  const [insightChartData, setInsightChartData] = useState<FetchDataResponse | undefined>(undefined);
   const [chartUIData, setChartUIData] = useState<ChartDataInput>()
+
 
   const changeRefreshRate = (refreshRate: number) => {
     setRefreshRate(refreshRate);
   }
 
+
+
   useEffect(() => {
     const authAxios = AuthAxios.getAuthAxios();
-    authAxios.get('/integrations')
+
+    authAxios.get(`/insights/${insightId}`)
       .then((res) => {
-        console.log(`User Integrations: `, res.data)
-        setUserIntegrations(res.data)
+        console.log("Insights: ", res.data);
+        const insight = res.data;
+        setRawQuery(insight.rawQuery)
+        setRefreshRate(insight.refreshRate)
+        setChartUIData(insight.graphData)
+        const chart = SupportedCharts.find((chart) => chart.value === insight.graphData.type)
+        if (chart != null) {
+          setSelectedChart(chart)
+        }
+        setInsightTitle(insight.title)
+        setInsightDescription(insight.description)
+
+
+        const body = {
+          integrationId: insight.integrationId,
+          rawQuery: insight.rawQuery
+        }
+
+        authAxios.post('/fetchData', body)
+          .then((res) => {
+            const fetchedData = res.data as FetchDataResponse;
+            setInsightChartData(fetchedData);
+          })
+          .catch((err) => {
+            console.log(err);
+            toast({ title: "Error fetching data : " + err.message })
+          });
+
+        authAxios.get('/integrations')
+          .then((res) => {
+            console.log(`User Integrations: `, res.data)
+            setUserIntegrations(res.data)
+            const selectedIntegration = res.data.find((integration: any) => integration.id == insight.integrationId)
+            setSelectedIntegration(selectedIntegration)
+          })
+          .catch((err) => {
+            console.log(err);
+            toast({ title: "Error Fetching Integrations" })
+          });
+
       })
       .catch((err) => {
-        console.log(err);
-        toast({ title: "Error Fetching Integrations" })
+        console.log(err)
+        toast({ title: "Error fetching user Insight: " + err.message })
+      })
+      .finally(() => {
+        //setLoading(false);
       });
-  }, [toast]);
+
+  }, [toast, insightId])
 
   const handelSelectedIntegrationChange = (selectedIntegration: userIntegrationResponse | null) => {
     if (selectedIntegration) setSelectedIntegration(selectedIntegration);
   };
 
-  const saveInsight = () => {
+  const editInsight = () => {
 
     const authAxios = AuthAxios.getAuthAxios();
 
@@ -123,10 +179,10 @@ export default function AddInsightPage() {
       insight: saveInsightRequest
     }
 
-    authAxios.post('/insights', body)
+    authAxios.patch(`/insights/${insightId}`, body)
       .then((res) => {
         console.log(`Insight Saved: `, res.data)
-        toast({ title: "Insight Saved Successfully ✅🔒" });
+        toast({ title: "Insight Updated Successfully ✅" });
         router.push('/')
       })
       .catch((err) => {
@@ -146,22 +202,23 @@ export default function AddInsightPage() {
           <ResizablePanel defaultSize={40} className="flex justify-center items-center w-full p-1 rounded-lg relative">
             {
               // TODO: Explore lazy loading of chart component
-              insightData && insightData.countOfFields > 0 && chartUIData &&
+              insightChartData && insightChartData.countOfFields > 0 && chartUIData &&
               <InsightChart
-                insightData={insightData}
+                insightData={insightChartData}
                 chartDetail={selectedChart}
                 chartUIData={chartUIData}
               />
             }
             {
-              insightData && insightData.countOfFields > 0 && selectedChart &&
+              insightChartData && insightChartData.countOfFields > 0 && selectedChart &&
               <div className="z-10 h-full w-full flex justify-end absolute gap-1 mt-[1px]">
-                <Select onValueChange={(value) => changeRefreshRate(Number(value))}>
-                  <SelectTrigger className="w-[100px]">
+                <Select value={refreshRate?.toString()} onValueChange={(value) => changeRefreshRate(Number(value))}>
+                  <SelectTrigger className="w-[110px]">
                     <SelectValue placeholder="Refresh" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
+                      <SelectItem value="0">No repeat</SelectItem>
                       <SelectItem value="1">1 seconds</SelectItem>
                       <SelectItem value="10">10 seconds</SelectItem>
                       <SelectItem value="60">1 minutes</SelectItem>
@@ -173,14 +230,14 @@ export default function AddInsightPage() {
                 </Select>
                 <Button
                   size="icon"
-                  onClick={saveInsight}>
+                  onClick={editInsight}>
                   <RefreshCcw
                     className="h-4 w-4" />
                 </Button>
                 <Button
-                  onClick={saveInsight}>
+                  onClick={editInsight}>
                   <PinIcon
-                    className="h-4 w-4 mr-2" /> Save
+                    className="h-4 w-4 mr-2" /> Update
                 </Button>
               </div>
             }
@@ -192,7 +249,7 @@ export default function AddInsightPage() {
               <QueryFields
                 integrationId={selectedIntegration.id}
                 integrationType={selectedIntegration.type}
-                setInsightData={setInsightData}
+                setInsightData={setInsightChartData}
                 chartType={selectedChart}
                 rawQuery={rawQuery}
                 setRawQuery={setRawQuery}
@@ -219,12 +276,12 @@ export default function AddInsightPage() {
           }
           <div className="w-full mt-4 pr-4 overflow-y-scroll rounded">
             {
-              insightData && insightData.countOfFields > 0 &&
+              insightChartData && insightChartData.countOfFields > 0 &&
               <SupportedCharList
                 selectedChart={selectedChart}
                 setSelectedChart={setSelectedChart}
                 setChartUIData={setChartUIData}
-                insightData={insightData}
+                insightData={insightChartData}
               />
             }
           </div>

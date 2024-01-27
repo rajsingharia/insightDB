@@ -46,7 +46,7 @@ export class fetchDataService {
 
         const pool: Connection = await connectDataSourceService.connectDataSource(type, credentials);
         if (!pool) throw createHttpError(500, "Internal Server Error");
-        console.log(typeof pool);
+        //console.log(typeof pool);
 
         if (type === DataBaseType.POSTGRES_QL.valueOf()) {
             const response = await this.getAllDataPostgres(pool as pg.PoolClient, rawQuery);
@@ -72,7 +72,7 @@ export class fetchDataService {
 
         try {
             const response = await pool.query(query);
-            console.log(response)
+            //console.log(response)
             const fields = Object.keys(response.rows[0])
 
             return {

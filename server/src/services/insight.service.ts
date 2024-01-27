@@ -19,6 +19,25 @@ export class InsightService {
         return insights;
     }
 
+    public static async getInsightWithId(insightId: string): Promise<Insight | null> {
+        const insights = await this.prismaClient.insight.findUnique({   
+            where: {
+                id: insightId
+            }
+        });
+        return insights;
+    }
+
+    public static async deleteInsightWithId(insightId: string): Promise<Insight | null> {
+        const insights = await this.prismaClient.insight.delete({   
+            where: {
+                id: insightId
+            }
+        });
+        return insights;
+    }
+
+
     public static async addInsight(userId: string, insight: InsightDTO): Promise<string> {
 
         const newInsight = await this.prismaClient.insight.create({
@@ -27,6 +46,26 @@ export class InsightService {
                 description: insight.description,
                 integrationId: insight.integrationId,
                 creatorId: userId,
+                graphData: insight.graphData!,
+                rawQuery: insight.rawQuery!,
+                refreshRate: insight.refreshRate!
+            }
+        });
+
+        return newInsight.id;
+        
+    }
+
+    public static async updateInsight(insightId: string, insight: InsightDTO): Promise<string> {
+
+        const newInsight = await this.prismaClient.insight.update({
+            where: {
+                id: insightId
+            },
+            data: {
+                title: insight.title,
+                description: insight.description,
+                integrationId: insight.integrationId,
                 graphData: insight.graphData!,
                 rawQuery: insight.rawQuery!,
                 refreshRate: insight.refreshRate!

@@ -12,6 +12,7 @@ export class InsightDTO {
 
     @IsString()
     integrationId!: string;
+
     @IsJSON()
     graphData!: JsonValue;
 
