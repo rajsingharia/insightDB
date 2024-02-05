@@ -4,6 +4,7 @@ import { DatasourceConfig } from "../config/datasource.config";
 import mongoose, { ConnectOptions } from "mongoose";
 import { Axios } from "axios";
 import { DataBaseType } from "../util/constants";
+import createHttpError from "http-errors";
 
 type Connection = pg.PoolClient | mongoose.Mongoose | Axios | undefined;
 
@@ -31,13 +32,23 @@ export class connectDataSourceService {
         }
         else if (type === DataBaseType.MONGO_DB.valueOf()) {
             const getMongoDBConfig = await DatasourceConfig.getMongoDBConfig(credentials);
-            const mongoConnection = await mongoose.connect(
-                getMongoDBConfig,
-                { useNewUrlParser: true, useUnifiedTopology: true } as ConnectOptions
-            );
-            this.allConnections.set(credentials, mongoConnection);
-            return this.allConnections.get(credentials);
-        } 
+
+            console.log("mongoDb getMongoDBConfig :: " + getMongoDBConfig)
+            console.log("mongoDb credentials :: " + credentials)
+
+            try {
+                const mongoConnection = await mongoose.connect(
+                    getMongoDBConfig,
+                    { useNewUrlParser: true, useUnifiedTopology: true } as ConnectOptions
+                );
+                this.allConnections.set(credentials, mongoConnection);
+                return this.allConnections.get(credentials);
+            } catch (error) {
+                console.log("Error while connecting to mongoDB : " + error)
+                throw createHttpError("Error while connecting to mongoDB : " + error)
+            }
+
+        }
         else if (type === DataBaseType.REST_API.valueOf()) {
             const axiosConfig = await DatasourceConfig.getAxiosConfig(credentials);
             const axios = new Axios(axiosConfig);

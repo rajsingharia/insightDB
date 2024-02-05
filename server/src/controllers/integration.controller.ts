@@ -40,7 +40,24 @@ export class IntegrationController {
         }
     }
 
+    public static async checkConnection(req: IAddIntegrationRequest, res: Response, next: NextFunction): Promise<Response | void> {
+        try {
+            const userId = req.body.userId;
+            const integration = req.body.integration;
 
+            const validationErrors = await validate(integration);
+            if (validationErrors.length > 0) {
+                throw createHttpError(400, `Validation error: ${validationErrors}`);
+            }
+
+            const newIntegrationId = await IntegrationService.createIntegration(integration);
+            if (!newIntegrationId) throw createHttpError(404, "Unable to create integration");
+            await UserService.addIntegration(userId, newIntegrationId);
+            res.status(201).json({ integrationId: newIntegrationId });
+        } catch (error) {
+            next(error);
+        }
+    }
 
 
     public static async addIntegration(req: IAddIntegrationRequest, res: Response, next: NextFunction) {

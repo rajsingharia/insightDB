@@ -10,7 +10,7 @@ export class InsightService {
     public static async getInsights(userId: string): Promise<Insight[]> {
         const insights = await this.prismaClient.insight.findMany({   
             where: {
-                creatorId: userId
+                dashboardId: "TODO"
             },
             orderBy: {
                 createdAt: 'desc'
@@ -40,15 +40,16 @@ export class InsightService {
 
     public static async addInsight(userId: string, insight: InsightDTO): Promise<string> {
 
+
         const newInsight = await this.prismaClient.insight.create({
             data: {
                 title: insight.title,
                 description: insight.description,
                 integrationId: insight.integrationId,
-                creatorId: userId,
                 graphData: insight.graphData!,
                 rawQuery: insight.rawQuery!,
-                refreshRate: insight.refreshRate!
+                refreshRate: insight.refreshRate!,
+                dashboardId: "TODO"
             }
         });
 

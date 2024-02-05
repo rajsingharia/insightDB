@@ -60,6 +60,7 @@ export const SQLQueryInput: React.FC<QueryInputProps> = ({
         setColumns([...columns, { columnName: '' }])
     }
 
+    // TODO: If query is already present -> add it to states
     useEffect(() => {
         if(rawQuery && rawQuery.length > 0) {
             // write logic to extract source, columns, where, sortedBy, limit from rawQuery
@@ -175,6 +176,17 @@ export const SQLQueryInput: React.FC<QueryInputProps> = ({
             }
             return updatedWhere;
         });
+    }
+
+
+    const getData = () => {
+
+        if(!rawQuery || rawQuery.length == 0) {
+            toast({title: "Provide appropriate query input"})
+            return
+        }
+
+        getInsightData()
     }
 
 
@@ -307,7 +319,7 @@ export const SQLQueryInput: React.FC<QueryInputProps> = ({
                                 onChange={(e) => setRawQuery(e.target.value)}
                             />
                             <Button
-                                onClick={getInsightData}>
+                                onClick={getData}>
                                 Get Data
                             </Button>
                         </Card>

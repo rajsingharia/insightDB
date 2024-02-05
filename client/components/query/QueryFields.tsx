@@ -3,6 +3,7 @@ import AuthAxios from '../../utils/AuthAxios';
 import { ICharts } from '../../interfaces/ICharts';
 import { FetchDataResponse } from '@/app/(root)/addInsight/page';
 import { SQLQueryInput } from './SQLQueryInput';
+import { MongoQueryInput } from './MongoQueryInput';
 
 
 export type QueryInfo = {
@@ -116,6 +117,15 @@ export const QueryFields: React.FC<QueryFieldsProps> = ({
                     getInsightData={getInsightData} />
             )
         }
+
+        else if (integrationType === DataBaseType.MONGO_DB.valueOf()) {
+            return (
+                <MongoQueryInput
+                    setRawQuery={setRawQuery}
+                    getInsightData={getInsightData} />
+            )
+        }
+
         return (
             <div>
                 Query Input

@@ -1,3 +1,5 @@
+
+# add support for mongoDB
 # add kubernetes -> to auto scale 
 # generate alert -> slack
 # find a way to show query in SQLQueryInput

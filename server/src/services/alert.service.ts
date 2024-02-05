@@ -8,11 +8,11 @@ export class AlertService {
     private static prismaClient = prisma.getInstance();
 
     public static getAllAlerts = async () => {
-        return this.prismaClient.alerts.findMany()
+        return await this.prismaClient.alerts.findMany()
     }
 
     public static getAlertById = async (alertId: string) => {
-        return this.prismaClient.alerts.findFirst({
+        return await this.prismaClient.alerts.findFirst({
             where: {
                 id: alertId
             }
@@ -94,6 +94,7 @@ export class AlertService {
             }
 
             const response = await axios.post(webHookUrlLink, { text: messageFormat })
+            console.log("Alert Cron Triggered For "  + alertId + ": " + response.status)
 
             if (response.status == 200) {
 

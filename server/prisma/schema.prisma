@@ -19,20 +19,29 @@ enum Role {
   ADMIN
 }
 
+model Organisation {
+  id           String        @id @default(uuid())
+  name         String        @unique
+  users        User[]
+  Alerts       Alerts[]
+  dashboards   Dashboard[]
+  integrations Integration[]
+}
+
 // Define your data model
 model User {
-  id           String         @id @default(uuid())
-  firstName    String
-  lastName     String
-  email        String         @unique
-  password     String
-  integrations Integration[]
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  role         Role           @default(USER)
-  RefreshToken RefreshToken[]
-  Insight      Insight[]
-  Alerts       Alerts[]
+  id             String         @id @default(uuid())
+  firstName      String
+  lastName       String
+  email          String         @unique
+  password       String
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  role           Role           @default(USER)
+  RefreshToken   RefreshToken[]
+  organisation   Organisation?  @relation(fields: [organisationId], references: [id])
+  organisationId String?
+  Permission     Permission[]
 
   @@index([email])
 }
@@ -50,15 +59,41 @@ model RefreshToken {
 }
 
 model Integration {
-  id          String    @id @default(uuid())
-  name        String
-  type        String
-  credentials Json // not all db doest support json type (postgres does)
-  user        User?     @relation(fields: [creatorId], references: [id])
-  creatorId   String?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  Insight     Insight[]
+  id             String        @id @default(uuid())
+  name           String
+  type           String
+  credentials    Json // not all db doest support json type (postgres does)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  Insight        Insight[]
+  Organisation   Organisation? @relation(fields: [organisationId], references: [id])
+  organisationId String?
+}
+
+model Dashboard {
+  id           String        @id @default(uuid())
+  title        String
+  description  String?
+  Insight      Insight[]
+  organisation Organisation? @relation(fields: [orgId], references: [id])
+  orgId        String
+  permissions  Permission[]
+  createdAt    DateTime      @default(now())
+}
+
+enum AccessType {
+  READ
+  WRITE
+  BOTH
+}
+
+model Permission {
+  id         String     @id @default(uuid())
+  dashboard  Dashboard  @relation(fields: [dashId], references: [id])
+  dashId     String
+  userId     String
+  accessType AccessType @default(READ)
+  User       User       @relation(fields: [userId], references: [id])
 }
 
 model Insight {
@@ -67,8 +102,8 @@ model Insight {
   description   String?
   integration   Integration? @relation(fields: [integrationId], references: [id])
   integrationId String
-  creator       User?        @relation(fields: [creatorId], references: [id])
-  creatorId     String
+  dashboard     Dashboard?   @relation(fields: [dashboardId], references: [id])
+  dashboardId   String
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
   graphData     Json
@@ -88,7 +123,6 @@ enum AlertDestinations {
 
 model Alerts {
   id             String            @id @default(uuid())
-  user           User              @relation(fields: [userId], references: [id])
   userId         String
   title          String
   rawQuery       String
@@ -97,6 +131,8 @@ model Alerts {
   cronExpression String
   repeatCount    Int               @default(1)
   AlertTriggered AlertTriggered[]
+  Organisation   Organisation?     @relation(fields: [organisationId], references: [id])
+  organisationId String?
 }
 
 model AlertTriggered {

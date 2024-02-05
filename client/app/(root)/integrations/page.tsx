@@ -50,12 +50,13 @@ type IntegrationCreateBody = {
 export default function IntegrationsPage() {
 
   const [supportedIntegrations, setSupportedIntegrations] = useState<Integration[]>([])
-  const authAxios = AuthAxios.getAuthAxios();
+  
   const [clickedIntegration, setClickedIntegration] = useState<Integration | null>(null)
   const { toast } = useToast()
   const [loading, setLoading] = useState<boolean>(true)
 
   useEffect(() => {
+    const authAxios = AuthAxios.getAuthAxios();
     authAxios.get('/integrations/supported')
       .then((res: { data: Integration[] }) => {
         console.log(res.data)
@@ -68,7 +69,7 @@ export default function IntegrationsPage() {
       .finally(() => {
         setLoading(false)
       })
-  }, [authAxios, toast]);
+  }, [toast]);
 
 
   const addIntegration = (event: React.FormEvent<HTMLFormElement>) => {
@@ -90,6 +91,7 @@ export default function IntegrationsPage() {
       credentials: credentials
     }
     console.log(body)
+    const authAxios = AuthAxios.getAuthAxios();
     authAxios.post('/integrations', { integration: body })
       .then((res) => {
         console.log(res.data)

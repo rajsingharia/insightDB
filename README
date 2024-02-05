@@ -1,1 +1,8 @@
-Visualize diverse data with charts and graphs. Set up alerts for critical events or thresholds.
+# Data Visualization Tool
+
+## Description
+Developed a web-based data visualization tool for gaining valuable insights from various databases, including PostgreSQL, MongoDB, and SQL.
+
+## Features
+- **Database Integration:** Allows users to add multiple databases using their cloud credentials.
+- **Graph Customization:** Users can customize a wide range of graph types, such as bar charts, pie charts, line charts, etc.

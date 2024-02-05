@@ -82,11 +82,7 @@ export class UserService {
                 id: userId
             },
             data: {
-                integrations: {
-                    connect: {
-                        id: integrationId
-                    }
-                }
+                organisationId: "TODO"
             }
         });
         return updatedUser;
@@ -98,11 +94,7 @@ export class UserService {
                 id: userId
             },
             data: {
-                integrations: {
-                    disconnect: {
-                        id: integrationId
-                    }
-                }
+                organisationId: "TODO"
             }
         });
         return updatedUser;
@@ -136,5 +128,16 @@ export class UserService {
         });
         if (!user) throw createHttpError(404, "User not found");
         return user.integrations[0];
+
+
+        // this.prismaClient.integration.findMany({
+        //     where: {
+        //         user: {
+        //             id: user.id
+
+        //         }
+        //     }
+        // })
+
     }
 }

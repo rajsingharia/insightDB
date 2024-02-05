@@ -68,7 +68,7 @@ export class fetchDataService {
 
     private static async getAllDataPostgres(pool: pg.PoolClient, query: string): Promise<IGetAllData> {
 
-        //const query = QueryBilderService.buildPostgresQuery(parameters);
+        //const query = QueryBuilderService.buildPostgresQuery(parameters);
 
         try {
             const response = await pool.query(query);
@@ -91,17 +91,25 @@ export class fetchDataService {
     private static async getAllDataMongoDB(mongoose: mongoose.Mongoose, query: string): Promise<IGetAllData> {
         //const mongoParams = parameters as MongoDBParametersDTO;
         //const collectionName = mongoParams.sourceName!;
-        const splitted = query.split(':')
-        const collectionConnection = mongoose.connection.db.collection(splitted[0]);
-        //const query = QueryBilderService.buildMongoDBQuery(mongoParams);
-
+        console.log("mongoDB :: " + query)
+        const { collectionName, queryConditions } = JSON.parse(query);
+        const collectionConnection = mongoose.connection.db.collection(collectionName);
+        //const query = QueryBuilderService.buildMongoDBQuery(mongoParams);
         try {
-            const response = await collectionConnection.aggregate(eval(`(${splitted[1]})`)).toArray();
+            const { project, filters, sort, limit } = queryConditions;
+            const response = await collectionConnection
+                .aggregate([
+                    { $match: filters },
+                    { $project: project },
+                    { $sort: sort },
+                    { $limit: limit },
+                ])
+                .toArray();
             return {
                 fields: undefined,
                 data: response,
-                countOfFields: 0
-            }
+                countOfFields: 0,
+            };
         } catch (error) {
             console.log(`Mongodb Error: ${error}`);
             throw createHttpError(500, "Internal Server Error");
