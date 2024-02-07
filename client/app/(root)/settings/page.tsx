@@ -21,7 +21,7 @@ export default function Settings() {
 
   useEffect(() => {
 
-    authAxios.get('/integrations')
+    authAxios.get('3001/api/v1/integrations')
       .then((res) => {
         setUserIntegrations(res.data)
       })

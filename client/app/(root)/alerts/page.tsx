@@ -68,7 +68,7 @@ export default function AlertsPage() {
 
 
     useEffect(() => {
-        axios.get('/alert')
+        axios.get('3002/api/v1/alert')
             .then((response) => {
                 setAlerts(response.data)
             })
@@ -80,7 +80,7 @@ export default function AlertsPage() {
                 setLoading(false)
             })
 
-        axios.get('/alert/alertTriggered')
+        axios.get('3002/api/v1/alert/alertTriggered')
             .then((response) => {
                 setAlertTriggers(response.data)
             })

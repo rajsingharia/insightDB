@@ -1,0 +1,145 @@
+// npx prisma init
+// npx prisma migrate dev --name init
+// npx prisma migrate dev --name init --preview-feature
+// npx prisma migrate dev --name refreshtoken --preview-feature
+
+// Generator used to generate Prisma Client(there are other generators too)
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Set the url of the database to the value of the environment variable DATABASE_URL
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model Organisation {
+  id           String        @id @default(uuid())
+  name         String        @unique
+  users        User[]
+  Alerts       Alerts[]
+  dashboards   Dashboard[]
+  integrations Integration[]
+}
+
+// Define your data model
+model User {
+  id             String         @id @default(uuid())
+  firstName      String
+  lastName       String
+  email          String         @unique
+  password       String
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  role           Role           @default(USER)
+  RefreshToken   RefreshToken[]
+  organisation   Organisation?  @relation(fields: [organisationId], references: [id])
+  organisationId String?
+  Permission     Permission[]
+
+  @@index([email])
+}
+
+model RefreshToken {
+  id          String   @id @default(uuid())
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String
+  jwtid       String
+  used        Boolean  @default(false)
+  invalidated Boolean  @default(false)
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Integration {
+  id             String        @id @default(uuid())
+  name           String
+  type           String
+  credentials    Json // not all db doest support json type (postgres does)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  Insight        Insight[]
+  Organisation   Organisation? @relation(fields: [organisationId], references: [id])
+  organisationId String?
+}
+
+model Dashboard {
+  id           String        @id @default(uuid())
+  title        String
+  description  String?
+  Insight      Insight[]
+  organisation Organisation? @relation(fields: [orgId], references: [id])
+  orgId        String
+  permissions  Permission[]
+  createdAt    DateTime      @default(now())
+}
+
+enum AccessType {
+  READ
+  WRITE
+  BOTH
+}
+
+model Permission {
+  id         String     @id @default(uuid())
+  dashboard  Dashboard  @relation(fields: [dashId], references: [id])
+  dashId     String
+  userId     String
+  accessType AccessType @default(READ)
+  User       User       @relation(fields: [userId], references: [id])
+}
+
+model Insight {
+  id            String       @id @default(uuid())
+  title         String
+  description   String?
+  integration   Integration? @relation(fields: [integrationId], references: [id])
+  integrationId String
+  dashboard     Dashboard?   @relation(fields: [dashboardId], references: [id])
+  dashboardId   String
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  graphData     Json
+  rawQuery      String
+  refreshRate   Int          @default(0)
+  lastRefresh   DateTime?    @default(now())
+  xCoords       Int          @default(0)
+  yCoords       Int          @default(0)
+  height        Int          @default(4)
+  width         Int          @default(4)
+}
+
+enum AlertDestinations {
+  SLACK
+  EMAIL
+}
+
+model Alerts {
+  id             String            @id @default(uuid())
+  userId         String
+  title          String
+  rawQuery       String
+  destination    AlertDestinations
+  configuration  Json
+  cronExpression String
+  repeatCount    Int               @default(1)
+  AlertTriggered AlertTriggered[]
+  Organisation   Organisation?     @relation(fields: [organisationId], references: [id])
+  organisationId String?
+}
+
+model AlertTriggered {
+  id           String   @id @default(uuid())
+  alert        Alerts   @relation(fields: [alertId], references: [id])
+  alertId      String
+  isSuccessful Boolean
+  errorMessage String
+  createdAt    DateTime @default(now())
+}

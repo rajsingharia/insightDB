@@ -94,7 +94,7 @@ export default function AddInsightPageQuery() {
   useEffect(() => {
     const authAxios = AuthAxios.getAuthAxios();
 
-    authAxios.get(`/insights/${insightId}`)
+    authAxios.get(`3001/api/v1/insights/${insightId}`)
       .then((res) => {
         console.log("Insights: ", res.data);
         const insight = res.data;
@@ -114,7 +114,7 @@ export default function AddInsightPageQuery() {
           rawQuery: insight.rawQuery
         }
 
-        authAxios.post('/fetchData', body)
+        authAxios.post('3001/api/v1/fetchData', body)
           .then((res) => {
             const fetchedData = res.data as FetchDataResponse;
             setInsightChartData(fetchedData);
@@ -124,7 +124,7 @@ export default function AddInsightPageQuery() {
             toast({ title: "Error fetching data : " + err.message })
           });
 
-        authAxios.get('/integrations')
+        authAxios.get('3001/api/v1/integrations')
           .then((res) => {
             console.log(`User Integrations: `, res.data)
             setUserIntegrations(res.data)
@@ -181,7 +181,7 @@ export default function AddInsightPageQuery() {
       insight: saveInsightRequest
     }
 
-    authAxios.patch(`/insights/${insightId}`, body)
+    authAxios.patch(`3001/api/v1/insights/${insightId}`, body)
       .then((res) => {
         console.log(`Insight Saved: `, res.data)
         toast({ title: "Insight Updated Successfully ✅" });

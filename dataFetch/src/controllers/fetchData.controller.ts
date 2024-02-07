@@ -3,8 +3,6 @@ import { UserService } from "../services/user.service";
 import createHttpError from "http-errors";
 import { fetchDataService } from "../services/fetchData.service";
 import FetchDataDTO from "../dto/response/fetchData.dto";
-import { createParametersDTO } from "../dto/request/parameters/parameters.factory";
-import { validate } from "class-validator";
 import { InsightService } from "../services/insight.service";
 
 

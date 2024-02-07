@@ -86,7 +86,7 @@ export const QueryFields: React.FC<QueryFieldsProps> = ({
             rawQuery: rawQuery
         }
 
-        authAxios.post('/fetchData', body)
+        authAxios.post('3001/api/v1/fetchData', body)
             .then((res) => {
                 console.log("Data: ", res.data.data);
                 const fetchedData = res.data as FetchDataResponse;

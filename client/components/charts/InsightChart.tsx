@@ -1,13 +1,11 @@
 import { ChartDataInput } from "@/app/(root)/addInsight/page";
 import { ICharts } from "../../interfaces/ICharts";
 import { FetchDataResponse } from "@/app/(root)/addInsight/page";
-import { ChartColors } from "../../types/ChartColors";
 import { LineChart } from "./LineChart";
 import { PieChart } from "./PieChart";
 import { ScatterChart } from "./ScatterChart";
 import { BarGraph } from "./BarGraph";
 import { BarChartData } from "../supportedChartsList/BarChartInput";
-import { useEffect } from "react";
 import { PieChartData } from "../supportedChartsList/PieChartInput";
 import { LineChartData } from "../supportedChartsList/LineChartInput";
 import { MultiTypeChart } from "./MultiTypeChart";

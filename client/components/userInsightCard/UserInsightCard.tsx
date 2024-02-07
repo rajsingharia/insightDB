@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import IUserInsights from '../../interfaces/IUserInsights';
-import { InsightChart } from '../charts/InsightChart';
+
 import AuthAxios from '../../utils/AuthAxios';
 import { CircularProgress } from '../common/CircularProgress';
-import { ICharts } from '../../interfaces/ICharts';
 //Different for prod and dev environment
 //import { BASE_URL } from '../../utils/Constants';
 import AuthEventSource from '../../utils/AuthEventSource';
@@ -17,17 +16,16 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { MoreVerticalIcon } from 'lucide-react';
-import { SelectSeparator } from '../ui/select';
 import { SupportedCharts } from '@/utils/Constants';
 import {
     Drawer,
     DrawerContent,
     DrawerTrigger,
 } from "@/components/ui/drawer"
-import { Button } from '../ui/button';
 import { useRouter } from 'next/navigation';
 
 import { useToast } from "@/components/ui/use-toast"
+import { InsightChart } from '../charts/InsightChart';
 type UserInsightCardProps = {
     insight: IUserInsights;
 }
@@ -61,7 +59,7 @@ export const UserInsightCard: React.FC<UserInsightCardProps> = ({ insight }) => 
             rawQuery: insight.rawQuery
         }
 
-        authAxios.post('/fetchData', body)
+        authAxios.post('3001/api/v1/fetchData', body)
             .then((res) => {
                 console.log("Data: ", res.data.data);
                 setChartData(res.data);
@@ -90,7 +88,7 @@ export const UserInsightCard: React.FC<UserInsightCardProps> = ({ insight }) => 
                 rawQuery: insight.rawQuery
             }
 
-            authAxios.post('/fetchData', body)
+            authAxios.post('3001/api/v1/fetchData', body)
                 .then((res) => {
                     console.log("Data: ", res.data.data);
                     setChartData(res.data);
@@ -132,7 +130,7 @@ export const UserInsightCard: React.FC<UserInsightCardProps> = ({ insight }) => 
 
     const duplicateInsight = () => {
         const insightId = insight.id
-        authAxios.post(`/insights/duplicate/${insightId}`)
+        authAxios.post(`3001/api/v1/insights/duplicate/${insightId}`)
             .then((res) => {
                 // router.refresh()
                 location.reload();
@@ -144,7 +142,7 @@ export const UserInsightCard: React.FC<UserInsightCardProps> = ({ insight }) => 
 
     const deleteInsight = () => {
         const insightId = insight.id
-        authAxios.delete(`/insights/${insightId}`)
+        authAxios.delete(`3001/api/v1/insights/${insightId}`)
             .then((res) => {
                 // router.refresh()
                 location.reload();

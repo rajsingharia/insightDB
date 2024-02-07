@@ -23,12 +23,30 @@ services:
     ports:
       - 5050:5050
 
-  server:
+  auth:
     build:
-      context: ./server
+      context: ./auth
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
+    depends_on:
+      - postgres
+  
+  data-fetch:
+    build:
+      context: ./dataFetch
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    depends_on:
+      - postgres
+
+  alert:
+    build:
+      context: ./alert
+      dockerfile: Dockerfile
+    ports:
+      - "3002:3002"
     depends_on:
       - postgres
 

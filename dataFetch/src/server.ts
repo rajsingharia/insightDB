@@ -7,7 +7,6 @@ import { ValidateTokenMiddleware } from "./middlewares/validateToken.middleware"
 
 import morgan from "morgan";
 import cors from "cors";
-import { CronService } from "./services/cron.service";
 import cookieParser from "cookie-parser";
 
 
@@ -30,9 +29,6 @@ prisma.connect();
 app.use('/api/v1/integrations', ValidateTokenMiddleware, Route.integrationRoute);
 app.use('/api/v1/fetchData', ValidateTokenMiddleware, Route.fetchDataRoute);
 app.use('/api/v1/insights', ValidateTokenMiddleware, Route.insightRoute);
-
-const cronService = new CronService()
-cronService.startAllCronJob()
 
 
 // 404 handling

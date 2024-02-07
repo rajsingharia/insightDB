@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from "react"
 import { AuthContext } from "../../context/AuthContext"
 import AuthAxios from "../../utils/AuthAxios";
 import IUserInsights from "../../interfaces/IUserInsights";
-import { UserInsightCard } from "../../components/userInsightCard/UserInsightCard";
+import { UserInsightCard } from "@/components/userInsightCard/UserInsightCard";
 import { CircularProgress } from '@/components/common/CircularProgress';
 import { Card } from "@/components/ui/card"
 import { useToast } from "@/components/ui/use-toast"
@@ -30,7 +30,7 @@ export default function Home() {
   const authAxios = AuthAxios.getAuthAxios();
 
   useEffect(() => {
-    authAxios.get('/insights')
+    authAxios.get('3001/api/v1/insights')
       .then((res) => {
         console.log("Insights: ", res.data);
         const insights = res.data;

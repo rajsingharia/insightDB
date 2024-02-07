@@ -80,7 +80,7 @@ export default function AddInsightPage() {
 
   useEffect(() => {
     const authAxios = AuthAxios.getAuthAxios();
-    authAxios.get('/integrations')
+    authAxios.get('3001/api/v1/integrations')
       .then((res) => {
         console.log(`User Integrations: `, res.data)
         setUserIntegrations(res.data)
@@ -128,7 +128,7 @@ export default function AddInsightPage() {
       insight: saveInsightRequest
     }
 
-    authAxios.post('/insights', body)
+    authAxios.post('3001/api/v1/insights', body)
       .then((res) => {
         console.log(`Insight Saved: `, res.data)
         toast({ title: "Insight Saved Successfully ✅🔒" });
