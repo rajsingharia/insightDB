@@ -56,8 +56,8 @@ export default function IntegrationsPage() {
   const [loading, setLoading] = useState<boolean>(true)
 
   useEffect(() => {
-    const authAxios = AuthAxios.getAuthAxios();
-    authAxios.get('3001/api/v1/integrations/supported')
+    const authAxios = AuthAxios.getFetchDataAxios();
+    authAxios.get('/supported')
       .then((res: { data: Integration[] }) => {
         console.log(res.data)
         setSupportedIntegrations(res.data)
@@ -91,8 +91,8 @@ export default function IntegrationsPage() {
       credentials: credentials
     }
     console.log(body)
-    const authAxios = AuthAxios.getAuthAxios();
-    authAxios.post('3001/api/v1/integrations', { integration: body })
+    const authAxios = AuthAxios.getFetchDataAxios();
+    authAxios.post('/integrations', { integration: body })
       .then((res) => {
         console.log(res.data)
         toast({ title: "Integration added : " })

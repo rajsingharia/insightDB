@@ -15,8 +15,26 @@ const ResponsiveGridLayout = WidthProvider(Responsive);
 import "../../node_modules/react-grid-layout/css/styles.css"
 import "../../node_modules/react-resizable/css/styles.css"
 import { Button } from "@/components/ui/button";
-import { LockClosedIcon, LockOpen2Icon } from "@radix-ui/react-icons";
-import { Lock, Unlock } from "lucide-react";
+import { FolderPlus, Lock, Unlock } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
 
 
 export default function Home() {
@@ -26,11 +44,17 @@ export default function Home() {
   const [enableEdit, setEnableEdit] = useState<boolean>(false)
   const [changeLayout, setChangeLayout] = useState<GridLayout.Layout[] | undefined>(undefined)
   const [loading, setLoading] = useState<boolean>(true);
+  const [allDashboard, setAllDashboard] = useState<any[]>([])
+  const [selectedDashboardId, setSelectedDashboardId] = useState<string>()
+
+  const [dashboardTitle, setDashboardTitle] = useState<string>()
+  const [dashboardDescription, setDashboardDescription] = useState<string>()
+
   const { toast } = useToast()
-  const authAxios = AuthAxios.getAuthAxios();
+  const fetchDataAxios = AuthAxios.getFetchDataAxios();
 
   useEffect(() => {
-    authAxios.get('3001/api/v1/insights')
+    fetchDataAxios.get('/insights/default')
       .then((res) => {
         console.log("Insights: ", res.data);
         const insights = res.data;
@@ -38,18 +62,48 @@ export default function Home() {
         // insights.push(insights[0]);
         // insights.push(insights[1]);
         setUserInsights(insights);
-
       })
       .catch((err) => {
         console.log(err)
         toast({ title: "Error fetching user Insight: " + err.message })
       })
       .finally(() => {
-        //setTimeout(() => {
         setLoading(false);
-        //}, 1000);
       });
+
+
+    fetchDataAxios.get('/dashboard/all')
+      .then((res) => {
+        setAllDashboard(res.data)
+      })
+      .catch((err) => {
+        toast({ title: "Error fetching user Insight: " + err.message })
+      })
+
   }, [])
+
+
+  useEffect(() => {
+    if (selectedDashboardId) {
+
+      setLoading(true)
+      fetchDataAxios.get(`/insights/dashboard/${selectedDashboardId}`)
+        .then((res) => {
+          console.log("Insights: ", res.data);
+          const insights = res.data;
+          setUserInsights(insights);
+
+        })
+        .catch((err) => {
+          console.log(err)
+          toast({ title: "Error fetching user Insight: " + err.message })
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+
+    }
+  }, [selectedDashboardId])
 
   const onLayoutChange = (newLayout: GridLayout.Layout[]) => {
     if (!enableEdit) return
@@ -67,9 +121,9 @@ export default function Home() {
       }
     }
 
-    authAxios.patch(`/insights/onLayoutChange/${insightId}`, body)
+    fetchDataAxios.patch(`/insights/onLayoutChange/${insightId}`, body)
       .then((res) => {
-
+        toast({ title: "Successfully Layout Changed ✨" })
       })
       .catch((err) => {
         console.log(err)
@@ -82,9 +136,25 @@ export default function Home() {
       changeLayout?.forEach((layout) => {
         saveLayoutToDatabase(layout.i, layout.x, layout.y, layout.h, layout.w);
       });
-      toast({ title: "Successfully Layout Changed ✨" })
     }
     setEnableEdit(state)
+  }
+
+  const addDashboard = () => {
+
+    const body = {
+      title: dashboardTitle,
+      description: dashboardDescription
+    }
+
+    fetchDataAxios.post(`/dashboard`, body)
+      .then((res) => {
+        const dashboardAdded = res.data;
+        setSelectedDashboardId(dashboardAdded.id);
+      })
+      .catch((err) => {
+        toast({ title: "Error adding dashboard: " + err.message })
+      })
   }
 
   return (
@@ -104,53 +174,109 @@ export default function Home() {
       }
       {
         !loading && userInsights && userInsights.length > 0 &&
-        <div className="absolute top-0 right-0 z-50 p-4">
-          <Button variant={enableEdit ? 'secondary' : 'destructive'} size="icon">
-            {
-              enableEdit ? (
-                <Unlock
-                  onClick={() => changeEnableState(false)}
-                  className="h-[1.5rem] w-[1.5rem] rotate-0 scale-100 transition-all"
-                />
-              ) : (
-                <Lock
-                  onClick={() => changeEnableState(true)}
-                  className="h-[1.5rem] w-[1.5rem] rotate-0 scale-100 transition-all"
-                />
-              )
-            }
-          </Button>
-        </div>
-      }
-      {
-        !loading && userInsights && userInsights.length > 0 &&
-        <ResponsiveGridLayout
-          className="layout"
-          // cols={11}
-          rowHeight={30}
-          // width={1130}
-          isDraggable={enableEdit}
-          isResizable={enableEdit}
-          onLayoutChange={onLayoutChange}>
-          {
-            userInsights.map((insight) => {
-              return (
-                <Card
-                  key={insight.id}
-                  data-grid={{
-                    x: insight.xCoords,
-                    y: insight.yCoords,
-                    w: insight.width,
-                    h: insight.height
-                  }}>
-                  <UserInsightCard
-                    insight={insight}
+        <div className="flex flex-col w-full h-full">
+          <div className="flex flex-row-reverse">
+            <Button variant={enableEdit ? 'secondary' : 'destructive'} size="icon">
+              {
+                enableEdit ? (
+                  <Unlock
+                    onClick={() => changeEnableState(false)}
+                    className="h-[1.5rem] w-[1.5rem] rotate-0 scale-100 transition-all"
                   />
-                </Card>
-              )
-            })
-          }
-        </ResponsiveGridLayout>
+                ) : (
+                  <Lock
+                    onClick={() => changeEnableState(true)}
+                    className="h-[1.5rem] w-[1.5rem] rotate-0 scale-100 transition-all"
+                  />
+                )
+              }
+            </Button>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="secondary" size="icon">
+                  <FolderPlus />
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Add Dashboard</DialogTitle>
+                </DialogHeader>
+                <div className="flex flex-col gap-4">
+                  <Input
+                    id="title"
+                    placeholder="Title"
+                    value={dashboardTitle}
+                    onChange={(event) => setDashboardTitle(event.target.value)} />
+                  <Input
+                    id="description"
+                    placeholder="Description"
+                    value={dashboardDescription}
+                    onChange={(event) => setDashboardDescription(event.target.value)} />
+                  <Button
+                    onClick={addDashboard}>
+                    Add
+                  </Button>
+                </div>
+                <DialogFooter>
+                  <Button type="submit">Save changes</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+            <Select
+              value={selectedDashboardId}
+              onValueChange={(value) => setSelectedDashboardId(value)}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Dashboard" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Dashboard</SelectLabel>
+                  {
+                    allDashboard?.map((dashboard) => {
+                      return (
+                        <SelectItem
+                          key={dashboard.id}
+                          value={dashboard.id}>
+                          {dashboard.title}
+                        </SelectItem>
+                      )
+                    })
+                  }
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            <p className="text-xl text-muted-foreground">
+              {user.organizationName}
+            </p>
+          </div>
+          <ResponsiveGridLayout
+            className="layout"
+            // cols={11}
+            rowHeight={30}
+            // width={1130}
+            isDraggable={enableEdit}
+            isResizable={enableEdit}
+            onLayoutChange={onLayoutChange}>
+            {
+              userInsights.map((insight) => {
+                return (
+                  <Card
+                    key={insight.id}
+                    data-grid={{
+                      x: insight.xCoords,
+                      y: insight.yCoords,
+                      w: insight.width,
+                      h: insight.height
+                    }}>
+                    <UserInsightCard
+                      insight={insight}
+                    />
+                  </Card>
+                )
+              })
+            }
+          </ResponsiveGridLayout>
+        </div>
       }
     </div>
   )

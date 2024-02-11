@@ -12,8 +12,7 @@ import {
 
 import { Bar } from 'react-chartjs-2';
 import moment from 'moment';
-import { ChartColors } from '../../types/ChartColors';
-import { BarChartData } from '../supportedChartsList/BarChartInput';
+import { BarChartData } from "@/components/supportedChartsList/BarChartInput"
 
 ChartJS.register(
     CategoryScale,

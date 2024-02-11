@@ -79,8 +79,8 @@ export default function AddInsightPage() {
   }
 
   useEffect(() => {
-    const authAxios = AuthAxios.getAuthAxios();
-    authAxios.get('3001/api/v1/integrations')
+    const authAxios = AuthAxios.getFetchDataAxios();
+    authAxios.get('/integrations')
       .then((res) => {
         console.log(`User Integrations: `, res.data)
         setUserIntegrations(res.data)
@@ -100,7 +100,7 @@ export default function AddInsightPage() {
 
   const saveInsight = () => {
 
-    const authAxios = AuthAxios.getAuthAxios();
+    const authAxios = AuthAxios.getFetchDataAxios();
 
     if (!selectedIntegration) {
       toast({ title: "No Integration Selected" });
@@ -128,7 +128,7 @@ export default function AddInsightPage() {
       insight: saveInsightRequest
     }
 
-    authAxios.post('3001/api/v1/insights', body)
+    authAxios.post('/insights', body)
       .then((res) => {
         console.log(`Insight Saved: `, res.data)
         toast({ title: "Insight Saved Successfully ✅🔒" });

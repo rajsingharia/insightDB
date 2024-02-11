@@ -1,8 +1,8 @@
 
 import React, { useEffect, useState } from 'react'
 import { format } from 'sql-formatter';
-import { Input } from '../ui/input';
-import { Button } from '../ui/button';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import {
     Tabs,
     TabsContent,
@@ -21,7 +21,7 @@ import {
 
 import { Card } from "@/components/ui/card"
 import { PlusCircleIcon } from 'lucide-react';
-import { useToast } from '../ui/use-toast';
+import { useToast } from '@/components/ui/use-toast';
 import { Textarea } from "@/components/ui/textarea"
 import { TrashIcon } from '@radix-ui/react-icons';
 

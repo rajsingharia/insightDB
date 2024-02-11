@@ -2,14 +2,7 @@
 
 import { ChartDataInput, FetchDataResponse } from '@/app/(root)/addInsight/page'
 import React, { useEffect, useState } from 'react'
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
-import { Button } from '../ui/button'
+import { Button } from '@/components/ui/button'
 import { getRandomNeonColor } from '@/utils/Helper'
 import {
     Table,
@@ -22,7 +15,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox"
 import { SwatchesPicker } from 'react-color'
 import { CheckedState } from '@radix-ui/react-checkbox'
-import { Input } from '../ui/input'
+import { Input } from '@/components/ui/input'
 import {
     DropdownMenu,
     DropdownMenuContent,

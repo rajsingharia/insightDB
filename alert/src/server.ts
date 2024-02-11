@@ -29,9 +29,6 @@ prisma.connect();
 // Routes
 app.use('/api/v1/alert', ValidateTokenMiddleware, Route.alertRouter)
 
-// app.use('/api/v1/charts', ValidateTokenMiddleware, Route.chartsRoute);
-// app.use('/api/v1/fetchSSEData', ValidateTokenMiddlewareFromSSE, Route.fetchDataRouteSSE);
-
 const cronService = new CronService()
 cronService.startAllCronJob()
 

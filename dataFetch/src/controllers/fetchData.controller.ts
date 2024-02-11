@@ -1,14 +1,15 @@
 import { Request, Response, NextFunction } from "express";
-import { UserService } from "../services/user.service";
 import createHttpError from "http-errors";
 import { fetchDataService } from "../services/fetchData.service";
 import FetchDataDTO from "../dto/response/fetchData.dto";
 import { InsightService } from "../services/insight.service";
+import { OrganizationService } from "../services/org.service";
 
 
 interface IGetAllDataRequest extends Request {
     body: {
         userId: string;
+        organizationId: string;
         rawQuery: string;
         integrationId: string;
     }
@@ -24,10 +25,10 @@ interface IGetAllDataSSERequest extends Request {
 export default class FetchDataController {
     public static getAllData = async (req: IGetAllDataRequest, res: Response, next: NextFunction) => {
         try {
-            const userId = req.body.userId;
+            const organizationId = req.body.organizationId;
             const integrationId = req.body.integrationId;
 
-            const integration = await UserService.getUserIntegrationById(userId, integrationId);
+            const integration = await OrganizationService.getOrganizationIntegrationById(organizationId, integrationId);
             if (!integration) throw createHttpError(404, "Integration not found");
 
             const rawQuery = req.body.rawQuery;
@@ -83,7 +84,7 @@ export default class FetchDataController {
             //TODO: If the user is connected to SSE, then send data to the user every refreshRate seconds
 
 
-            const userId = 'd51539c9-f561-48e7-9aff-66a76d285e07';
+            const organizationId = 'd51539c9-f561-48e7-9aff-66a76d285e07';
             const insightId = req.params.insightId;
 
             const insight = await InsightService.getInsightById(insightId);
@@ -92,7 +93,7 @@ export default class FetchDataController {
             const integrationId = insight.integrationId;
             const refreshRate = insight.refreshRate;
 
-            const integration = await UserService.getUserIntegrationById(userId, integrationId);
+            const integration = await OrganizationService.getOrganizationIntegrationById(organizationId, integrationId);
             if (!integration) throw createHttpError(404, "Integration not found");
 
             // const parameters = createParametersDTO(integration.type);

@@ -1,5 +1,5 @@
 
-import { TextAreaData } from '../supportedChartsList/TextInput';
+import { TextAreaData } from '@/components/supportedChartsList/TextInput';
 
 
 interface TimeBarGraphProps {

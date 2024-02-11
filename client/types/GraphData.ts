@@ -1,4 +1,4 @@
-import { ChartColors } from "./ChartColors";
+import { ChartColors } from "@/types/ChartColors";
 
 
 export type GraphData = {

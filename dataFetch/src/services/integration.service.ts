@@ -9,6 +9,17 @@ export class IntegrationService {
 
     private static prismaClient = prisma.getInstance();
 
+
+    public static async getIntegrationById(integrationId: string) {
+        const integration = await this.prismaClient.integration.findFirstOrThrow({
+            where: {
+                id: integrationId
+            }
+        });
+        if(!integration) throw createHttpError("Integration not found")
+        return integration;
+    }
+
     public static async createIntegration(integration: IntegrationDTO): Promise<string> {
         const updatedUser = await this.prismaClient.integration.create({
             data: {

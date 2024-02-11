@@ -1,8 +1,8 @@
 "use client"
 
 import { createContext, useState, useEffect, Dispatch, SetStateAction } from 'react';
-import { IUser } from '../interfaces/IUser';
-import AuthAxios from '../utils/AuthAxios';
+import { IUser } from '@/interfaces/IUser';
+import AuthAxios from '@/utils/AuthAxios';
 import Cookies from 'js-cookie';
 
 interface AuthContextProps {
@@ -36,7 +36,7 @@ const AuthProvider = ({ children }: React.PropsWithChildren<{ children: React.Re
   useEffect(() => {
     const isTokenValid = verifyToken();
     if (isTokenValid) {
-      authAxios.get("3000/api/v1/user")
+      authAxios.get("/user")
         .then((res) => {
           console.log("getting user data " + JSON.stringify(res.data));
           const user = res.data;

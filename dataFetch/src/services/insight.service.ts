@@ -1,16 +1,41 @@
 import { Insight } from "@prisma/client";
 import prisma from "../config/database.config";
 import { InsightDTO } from "../dto/request/insight.dto";
+import createHttpError from "http-errors";
 
 
 export class InsightService {
 
     private static prismaClient = prisma.getInstance();
 
-    public static async getInsights(userId: string): Promise<Insight[]> {
+    public static async getInsightsFromDashboardId(dashboardId: string): Promise<Insight[]> {
         const insights = await this.prismaClient.insight.findMany({   
             where: {
-                dashboardId: "TODO"
+                dashboardId: dashboardId
+            },
+            orderBy: {
+                createdAt: 'desc'
+            }
+        });
+        return insights;
+    }
+
+    public static async getInsightsFromDefaultDashboard(organizationId: string) {
+
+        const defaultDashboard = await this.prismaClient.organisation.findUniqueOrThrow({
+            where: {
+                id: organizationId
+            },
+            include: {
+                defaultDashboard: true
+            }
+        })
+
+        if(!defaultDashboard || !defaultDashboard.defaultDashboardId) throw createHttpError(404, "No Default Dashboard found for the Organization");
+
+        const insights = await this.prismaClient.insight.findMany({   
+            where: {
+                dashboardId: defaultDashboard.defaultDashboardId
             },
             orderBy: {
                 createdAt: 'desc'
@@ -38,7 +63,7 @@ export class InsightService {
     }
 
 
-    public static async addInsight(userId: string, insight: InsightDTO): Promise<string> {
+    public static async addInsight(dashboardId: string, insight: InsightDTO): Promise<string> {
 
 
         const newInsight = await this.prismaClient.insight.create({
@@ -49,7 +74,7 @@ export class InsightService {
                 graphData: insight.graphData!,
                 rawQuery: insight.rawQuery!,
                 refreshRate: insight.refreshRate!,
-                dashboardId: "TODO"
+                dashboardId: dashboardId
             }
         });
 

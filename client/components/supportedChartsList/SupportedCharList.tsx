@@ -2,21 +2,20 @@
 
 
 import React from 'react'
-import { ICharts } from '../../interfaces/ICharts'
-import { Card } from '../ui/card'
+import { ICharts } from "@/interfaces/ICharts"
+import { Card } from '@/components/ui/card'
 import { SupportedCharts } from '@/utils/Constants'
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
-import Image from 'next/image'
 import { ChartDataInput, FetchDataResponse } from '@/app/(root)/addInsight/page'
-import BarChartInput from './BarChartInput'
-import PieChartInput from './PieChartInput'
-import LineChartInput from './LineChartInput'
-import ScatterChartInput from './ScatterChartInput'
-import TextAreaInput from './TextInput'
+import BarChartInput from '@/components/supportedChartsList/BarChartInput'
+import PieChartInput from '@/components/supportedChartsList/PieChartInput'
+import LineChartInput from '@/components/supportedChartsList/LineChartInput'
+import ScatterChartInput from '@/components/supportedChartsList/ScatterChartInput'
+import TextAreaInput from '@/components/supportedChartsList/TextInput'
 
 interface SupportedCharListProps {
     selectedChart: ICharts,

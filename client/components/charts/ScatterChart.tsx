@@ -8,8 +8,7 @@ import {
     ChartData
 } from 'chart.js';
 import { Scatter } from 'react-chartjs-2';
-import { ChartColors } from '../../types/ChartColors';
-import { ScatterChartData } from '../supportedChartsList/scatterChartInput';
+import { ScatterChartData } from '@/components/supportedChartsList/ScatterChartInput';
 
 ChartJS.register(LinearScale,
     PointElement,

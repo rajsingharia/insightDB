@@ -17,11 +17,11 @@ export default function Settings() {
 
   const [userIntegrations, setUserIntegrations] = useState<userIntegrationResponse[]>([]);
 
-  const authAxios = AuthAxios.getAuthAxios();
+  const authAxios = AuthAxios.getFetchDataAxios();
 
   useEffect(() => {
 
-    authAxios.get('3001/api/v1/integrations')
+    authAxios.get('/integrations')
       .then((res) => {
         setUserIntegrations(res.data)
       })

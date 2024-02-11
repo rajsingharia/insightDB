@@ -20,28 +20,31 @@ enum Role {
 }
 
 model Organisation {
-  id           String        @id @default(uuid())
-  name         String        @unique
-  users        User[]
-  Alerts       Alerts[]
-  dashboards   Dashboard[]
-  integrations Integration[]
+  id                 String        @id @default(uuid())
+  name               String        @unique
+  users              User[]
+  Alerts             Alerts[]
+  dashboards         Dashboard[]   @relation(name: "OrganisationDashboards")
+  integrations       Integration[]
+  defaultDashboard   Dashboard?    @relation(name: "OrganisationDefaultDashboard", fields: [defaultDashboardId], references: [id])
+  defaultDashboardId String?
 }
 
 // Define your data model
 model User {
-  id             String         @id @default(uuid())
-  firstName      String
-  lastName       String
-  email          String         @unique
-  password       String
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
-  role           Role           @default(USER)
-  RefreshToken   RefreshToken[]
-  organisation   Organisation?  @relation(fields: [organisationId], references: [id])
-  organisationId String?
-  Permission     Permission[]
+  id                           String         @id @default(uuid())
+  firstName                    String
+  lastName                     String
+  email                        String         @unique
+  password                     String
+  createdAt                    DateTime       @default(now())
+  updatedAt                    DateTime       @updatedAt
+  role                         Role           @default(USER)
+  RefreshToken                 RefreshToken[]
+  organisation                 Organisation?  @relation(fields: [organisationId], references: [id])
+  organisationId               String?
+  Dashboard                    Dashboard?     @relation(fields: [writePermissionToDashboardId], references: [id])
+  writePermissionToDashboardId String?
 
   @@index([email])
 }
@@ -71,29 +74,15 @@ model Integration {
 }
 
 model Dashboard {
-  id           String        @id @default(uuid())
-  title        String
-  description  String?
-  Insight      Insight[]
-  organisation Organisation? @relation(fields: [orgId], references: [id])
-  orgId        String
-  permissions  Permission[]
-  createdAt    DateTime      @default(now())
-}
-
-enum AccessType {
-  READ
-  WRITE
-  BOTH
-}
-
-model Permission {
-  id         String     @id @default(uuid())
-  dashboard  Dashboard  @relation(fields: [dashId], references: [id])
-  dashId     String
-  userId     String
-  accessType AccessType @default(READ)
-  User       User       @relation(fields: [userId], references: [id])
+  id                   String         @id @default(uuid())
+  title                String
+  description          String?
+  Insight              Insight[]
+  organisation         Organisation?  @relation(name: "OrganisationDashboards", fields: [orgId], references: [id])
+  orgId                String
+  writePermissionUsers User[]
+  createdAt            DateTime       @default(now())
+  Organisation         Organisation[] @relation(name: "OrganisationDefaultDashboard")
 }
 
 model Insight {

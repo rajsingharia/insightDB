@@ -92,9 +92,9 @@ export default function AddInsightPageQuery() {
 
 
   useEffect(() => {
-    const authAxios = AuthAxios.getAuthAxios();
+    const authAxios = AuthAxios.getFetchDataAxios();
 
-    authAxios.get(`3001/api/v1/insights/${insightId}`)
+    authAxios.get(`/insights/${insightId}`)
       .then((res) => {
         console.log("Insights: ", res.data);
         const insight = res.data;
@@ -114,7 +114,7 @@ export default function AddInsightPageQuery() {
           rawQuery: insight.rawQuery
         }
 
-        authAxios.post('3001/api/v1/fetchData', body)
+        authAxios.post('/fetchData', body)
           .then((res) => {
             const fetchedData = res.data as FetchDataResponse;
             setInsightChartData(fetchedData);
@@ -124,7 +124,7 @@ export default function AddInsightPageQuery() {
             toast({ title: "Error fetching data : " + err.message })
           });
 
-        authAxios.get('3001/api/v1/integrations')
+        authAxios.get('/integrations')
           .then((res) => {
             console.log(`User Integrations: `, res.data)
             setUserIntegrations(res.data)
@@ -153,7 +153,7 @@ export default function AddInsightPageQuery() {
 
   const editInsight = () => {
 
-    const authAxios = AuthAxios.getAuthAxios();
+    const authAxios = AuthAxios.getFetchDataAxios();
 
     if (!selectedIntegration) {
       toast({ title: "No Integration Selected" });
@@ -181,7 +181,7 @@ export default function AddInsightPageQuery() {
       insight: saveInsightRequest
     }
 
-    authAxios.patch(`3001/api/v1/insights/${insightId}`, body)
+    authAxios.patch(`/insights/${insightId}`, body)
       .then((res) => {
         console.log(`Insight Saved: `, res.data)
         toast({ title: "Insight Updated Successfully ✅" });

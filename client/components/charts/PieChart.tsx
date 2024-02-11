@@ -6,7 +6,7 @@ import {
     ChartData
 } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
-import { PieChartData } from '../supportedChartsList/PieChartInput';
+import { PieChartData } from '@/components/supportedChartsList/PieChartInput';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 

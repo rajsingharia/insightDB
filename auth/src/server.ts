@@ -25,6 +25,7 @@ prisma.connect();
 
 // Routes
 app.use('/api/v1/auth', Route.authRouter);
+app.use('/api/v1/organization', Route.orgRouter);
 app.use('/api/v1/user', ValidateTokenMiddleware, Route.userRouter);
 
 // 404 handling

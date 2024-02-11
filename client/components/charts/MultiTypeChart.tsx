@@ -24,7 +24,7 @@ ChartJS.register(
 );
 
 import moment from 'moment';
-import { LineChartYAxisColumnData } from '../supportedChartsList/LineChartInput';
+import { LineChartYAxisColumnData } from '@/components/supportedChartsList/LineChartInput';
 
 
 interface LineChartProps {

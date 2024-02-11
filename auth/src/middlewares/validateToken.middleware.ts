@@ -10,7 +10,9 @@ export const ValidateTokenMiddleware = async(req: Request,  res: Response, next:
         const isValid = await JWT.validateToken(token);
         if(!isValid) throw createHttpError(401, "Invalid token");
         const userId = await JWT.getUserIdFromToken(token);
+        const organisationId = await JWT.getOrganizationIdFromToken(token);
         req.body.userId = userId;
+        req.body.organisationId = organisationId
         next();
     } catch (error) {
         next(error);

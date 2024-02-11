@@ -5,7 +5,7 @@ import { useTheme } from "next-themes"
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Card } from "@/components/ui/card"
-import { Button } from '../ui/button'
+import { Button } from '@/components/ui/button'
 import {
     AreaChart,
     BadgePlus,

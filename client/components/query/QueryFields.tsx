@@ -1,9 +1,9 @@
-import React, { ReactNode, useEffect, useState } from 'react'
-import AuthAxios from '../../utils/AuthAxios';
-import { ICharts } from '../../interfaces/ICharts';
+import React, { ReactNode } from 'react'
+import AuthAxios from "@/utils/AuthAxios"
+import { ICharts } from "@/interfaces/ICharts"
 import { FetchDataResponse } from '@/app/(root)/addInsight/page';
-import { SQLQueryInput } from './SQLQueryInput';
-import { MongoQueryInput } from './MongoQueryInput';
+import { SQLQueryInput } from '@/components/query/SQLQueryInput';
+import { MongoQueryInput } from '@/components/query/MongoQueryInput';
 
 
 export type QueryInfo = {
@@ -44,49 +44,23 @@ interface QueryFieldsProps {
     setRawQuery: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const getRawData = (event: React.FormEvent<HTMLFormElement>, queryInfo: QueryInfoResponse) => {
-    event.preventDefault();
-
-    const authAxios = AuthAxios.getAuthAxios();
-
-    const parameters: any = {};
-
-    queryInfo.queryInfo.forEach((queryInfo) => {
-
-        const type = queryInfo.parameterType;
-        const value = event.currentTarget[queryInfo.parameterName].value;
-
-        if (value !== '') {
-            if (type === 'string' || type === 'number') {
-                parameters[queryInfo.parameterName as string] = value;
-            } else if (type == 'string[]') {
-                parameters[queryInfo.parameterName as string] = value.split(',').map((val: string) => val.trim());
-            }
-        }
-    });
-
-    console.log(queryInfo)
-}
-
-
 
 export const QueryFields: React.FC<QueryFieldsProps> = ({
     integrationId,
     integrationType,
     setInsightData,
-    chartType,
     rawQuery,
     setRawQuery }) => {
 
     const getInsightData = () => {
-        const authAxios = AuthAxios.getAuthAxios();
+        const authAxios = AuthAxios.getFetchDataAxios();
 
         const body = {
             integrationId: integrationId,
             rawQuery: rawQuery
         }
 
-        authAxios.post('3001/api/v1/fetchData', body)
+        authAxios.post('/fetchData', body)
             .then((res) => {
                 console.log("Data: ", res.data.data);
                 const fetchedData = res.data as FetchDataResponse;

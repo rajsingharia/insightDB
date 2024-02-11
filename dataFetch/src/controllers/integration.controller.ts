@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { IntegrationService } from "../services/integration.service";
-import { UserService } from "../services/user.service";
+import { OrganizationService } from "../services/org.service";
 import createHttpError from "http-errors";
 import { IntegrationDTO } from "../dto/request/integration.dto";
 import { validate } from "class-validator";
@@ -9,6 +9,7 @@ import { validate } from "class-validator";
 interface IAddIntegrationRequest extends Request {
     body: {
         userId: string,
+        organizationId: string,
         integration: IntegrationDTO
     }
 }
@@ -19,8 +20,8 @@ export class IntegrationController {
 
     public static async getAllIntegration(req: Request, res: Response, next: NextFunction) {
         try {
-            const userId = req.body.userId;
-            const allIntegrations = await UserService.getAllUserIntegrations(userId);
+            const organizationId = req.body.organizationId;
+            const allIntegrations = await OrganizationService.getOrganizationIntegrations(organizationId);
             if (!allIntegrations) throw createHttpError(404, "User not found");
             res.status(200).json(allIntegrations);
         } catch (error) {
@@ -30,9 +31,9 @@ export class IntegrationController {
 
     public static async getIntegration(req: Request, res: Response, next: NextFunction) {
         try {
-            const userId = req.body.userId;
+            const organizationId = req.body.organizationId;
             const integrationId = req.params.id;
-            const integration = await UserService.getUserIntegrationById(userId, integrationId);
+            const integration = await OrganizationService.getOrganizationIntegrationById(organizationId, integrationId);
             if (!integration) throw createHttpError(404, "Integration not found");
             res.status(200).json(integration);
         } catch (error) {
@@ -42,7 +43,7 @@ export class IntegrationController {
 
     public static async checkConnection(req: IAddIntegrationRequest, res: Response, next: NextFunction): Promise<Response | void> {
         try {
-            const userId = req.body.userId;
+            const organizationId = req.body.organizationId;
             const integration = req.body.integration;
 
             const validationErrors = await validate(integration);
@@ -52,7 +53,7 @@ export class IntegrationController {
 
             const newIntegrationId = await IntegrationService.createIntegration(integration);
             if (!newIntegrationId) throw createHttpError(404, "Unable to create integration");
-            await UserService.addIntegration(userId, newIntegrationId);
+            await OrganizationService.addIntegration(organizationId, newIntegrationId);
             res.status(201).json({ integrationId: newIntegrationId });
         } catch (error) {
             next(error);
@@ -62,7 +63,7 @@ export class IntegrationController {
 
     public static async addIntegration(req: IAddIntegrationRequest, res: Response, next: NextFunction) {
         try {
-            const userId = req.body.userId;
+            const organizationId = req.body.organizationId;
             const integration = req.body.integration;
 
             const validationErrors = await validate(integration);
@@ -72,7 +73,7 @@ export class IntegrationController {
 
             const newIntegrationId = await IntegrationService.createIntegration(integration);
             if (!newIntegrationId) throw createHttpError(404, "Unable to create integration");
-            await UserService.addIntegration(userId, newIntegrationId);
+            await OrganizationService.addIntegration(organizationId, newIntegrationId);
             res.status(201).json({ integrationId: newIntegrationId });
         } catch (error) {
             next(error);
@@ -100,9 +101,10 @@ export class IntegrationController {
 
     public static async deleteIntegration(req: Request, res: Response, next: NextFunction) {
         try {
-            const userId = req.body.userId;
+            const organizationId = req.body.organizationId;
             const integrationId = req.params.id;
-            await UserService.removeIntegration(userId, integrationId);
+            
+            await OrganizationService.removeIntegration(organizationId, integrationId);
             await IntegrationService.deleteIntegrationById(integrationId);
             res.status(204).send();
         } catch (error) {

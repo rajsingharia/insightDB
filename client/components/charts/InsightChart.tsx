@@ -1,17 +1,17 @@
 import { ChartDataInput } from "@/app/(root)/addInsight/page";
-import { ICharts } from "../../interfaces/ICharts";
+import { ICharts } from "@/interfaces/ICharts"
 import { FetchDataResponse } from "@/app/(root)/addInsight/page";
-import { LineChart } from "./LineChart";
-import { PieChart } from "./PieChart";
-import { ScatterChart } from "./ScatterChart";
-import { BarGraph } from "./BarGraph";
-import { BarChartData } from "../supportedChartsList/BarChartInput";
-import { PieChartData } from "../supportedChartsList/PieChartInput";
-import { LineChartData } from "../supportedChartsList/LineChartInput";
-import { MultiTypeChart } from "./MultiTypeChart";
-import { ScatterChartData } from "../supportedChartsList/ScatterChartInput";
-import { TextAreaData } from "../supportedChartsList/TextInput";
-import { TextArea } from "./TextArea";
+import { LineChart } from "@/components/charts/LineChart";
+import { PieChart } from "@/components/charts/PieChart";
+import { ScatterChart } from "@/components/charts/ScatterChart";
+import { BarGraph } from "@/components/charts/BarGraph";
+import { BarChartData } from "@/components/supportedChartsList/BarChartInput";
+import { PieChartData } from "@/components/supportedChartsList/PieChartInput";
+import { LineChartData } from "@/components/supportedChartsList/LineChartInput";
+import { MultiTypeChart } from "@/components/charts/MultiTypeChart";
+import { ScatterChartData } from "@/components/supportedChartsList/ScatterChartInput";
+import { TextAreaData } from "@/components/supportedChartsList/TextInput";
+import { TextArea } from "@/components/charts/TextArea"
 
 type InsightChartProps = {
     insightData: FetchDataResponse;

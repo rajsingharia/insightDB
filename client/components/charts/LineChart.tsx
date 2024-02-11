@@ -24,7 +24,7 @@ ChartJS.register(
 );
 
 import moment from 'moment';
-import { LineChartData } from '../supportedChartsList/LineChartInput';
+import { LineChartData } from '@/components/supportedChartsList/LineChartInput';
 
 
 interface LineChartProps {

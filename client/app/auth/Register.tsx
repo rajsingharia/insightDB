@@ -4,13 +4,24 @@ import AuthAxios from '../../utils/AuthAxios'
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/components/ui/use-toast"
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Checkbox } from "@/components/ui/checkbox"
 
 
 interface registerUser {
   firstName: string,
   lastName: string,
   email: string,
-  password: string
+  organizationName: string,
+  password: string,
+  isAdmin: boolean
 }
 
 type RegisterProps = {
@@ -23,7 +34,9 @@ export const Register: React.FC<RegisterProps> = ({ setLoginOrRegister }) => {
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
+  const [organization, setOrganization] = useState('')
   const [password, setPassword] = useState('')
+  const [isAdmin, setIsAdmin] = useState<boolean>(false)
   const authAxios = AuthAxios.getAuthAxios();
   const { toast } = useToast()
 
@@ -34,7 +47,9 @@ export const Register: React.FC<RegisterProps> = ({ setLoginOrRegister }) => {
       firstName: firstName,
       lastName: lastName,
       email: email,
-      password: password
+      organizationName: organization,
+      password: password,
+      isAdmin: isAdmin
     }
 
     authAxios.post('/auth/register', body)
@@ -50,6 +65,23 @@ export const Register: React.FC<RegisterProps> = ({ setLoginOrRegister }) => {
 
   }
 
+  const createOrganization = () => {
+    const body = {
+      organizationName: organization,
+    }
+
+    authAxios.post('/auth/organization', body)
+      .then((response) => {
+        console.log(response);
+        toast({ title: "Organisation Created successfully" })
+      })
+      .catch((error) => {
+        console.log(error);
+        toast({ title: error.message })
+      });
+
+  }
+
 
   return (
     <div className='login-register-card-container'>
@@ -58,32 +90,83 @@ export const Register: React.FC<RegisterProps> = ({ setLoginOrRegister }) => {
         <div className='login-register-card-body'>
           <Input
             id="firstName"
-            placeholder ="First Name"
+            placeholder="First Name"
+            type='string'
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
           />
           <Input
             id="lastName"
             placeholder="Last Name"
+            type='string'
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
           />
           <Input
             id="email"
             placeholder="Email"
+            type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
           <Input
+            id="organization"
+            placeholder="Organization Name"
+            type="string"
+            value={organization}
+            onChange={(e) => setOrganization(e.target.value)}
+          />
+          <Input
             id="password"
             placeholder="Password"
+            type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              checked={isAdmin}
+              onCheckedChange={(value) => setIsAdmin(value === "indeterminate" ? false : true)}
+              id="isAdmin" />
+            <label
+              htmlFor="isAdmin"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+              is Admin
+            </label>
+          </div>
           <Button
+            className="mb-8"
             onClick={registerUser}>
             Register
           </Button>
+          <Dialog>
+            <DialogTrigger asChild>
+              <a href='#'>
+                <p className="text-sm text-muted-foreground text-center">
+                  Create Organization
+                </p>
+              </a>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Create Organization</DialogTitle>
+              </DialogHeader>
+              <div className="flex flex-col gap-4 py-4">
+                <Input
+                  id="name"
+                  value={organization}
+                  onChange={(e) => setOrganization(e.target.value)}
+                  placeholder="Organization Name" />
+              </div>
+              <DialogFooter>
+                <Button
+                  onClick={createOrganization}
+                  type="submit">
+                  Add
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
       <div>

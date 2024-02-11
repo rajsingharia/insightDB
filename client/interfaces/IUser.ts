@@ -32,5 +32,6 @@ export interface IUser {
     email: string,
     createdAt: string,
     updatedAt: string,
-    role: string
+    role: string,
+    organizationName: string
 }

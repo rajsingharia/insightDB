@@ -3,7 +3,9 @@ import { InsightController } from '../controllers/insight.controller';
 
 const insightRoute = express.Router();
 
-insightRoute.get('/', InsightController.getInsights);
+insightRoute.get('/default', InsightController.getInsightsFromDefaultDashboard);
+
+insightRoute.get('/dashboard/:id', InsightController.getInsights);
 
 insightRoute.get('/:id', InsightController.getInsightWithId);
 

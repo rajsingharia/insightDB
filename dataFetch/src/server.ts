@@ -29,6 +29,7 @@ prisma.connect();
 app.use('/api/v1/integrations', ValidateTokenMiddleware, Route.integrationRoute);
 app.use('/api/v1/fetchData', ValidateTokenMiddleware, Route.fetchDataRoute);
 app.use('/api/v1/insights', ValidateTokenMiddleware, Route.insightRoute);
+app.use('/api/v1/dashboard', ValidateTokenMiddleware, Route.dashboardRoute);
 
 
 // 404 handling

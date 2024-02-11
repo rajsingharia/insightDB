@@ -10,6 +10,7 @@ import createHttpError from "http-errors";
 import { RegisterDTO } from "../dto/request/register.dto";
 import { validate } from "class-validator";
 import { LoginDTO } from "../dto/request/login.dto";
+import { OrganizationService } from "../services/org.service";
 
 
 interface IRegisterRequest extends Request {
@@ -49,10 +50,14 @@ export class AuthController {
             const hashedPassword = await PasswordHash.hashPassword(registerDto.password);
             registerDto.password = hashedPassword;
 
-            //save user to db
-            const user = await UserService.saveUser(registerDto);
+            const organization = await OrganizationService.findOrganizationByName(registerDto.organizationName)
 
-            const response = Converter.UserEntityToUserDto(user);
+            //save user to db
+            const user = await UserService.saveUser(organization.id, registerDto);
+
+            if(!user) throw createHttpError.NotFound("User Not found")
+            
+            const response = Converter.UserEntityToUserDto(organization.name, user);
             res.status(200).send(response);
         } catch (error) {
             next(error);
@@ -73,14 +78,21 @@ export class AuthController {
             //check if user exists
             const user = await UserService.findUserByEmail(loginDto.email);
 
+            if(!user) throw createHttpError.NotFound("User Not found")
+
             //compare password
             await PasswordHash.comparePassword(user.password, loginDto.password);
 
             //generate token
             const { token, refreshToken } = await JWT.generateToken(user);
 
+            if(!user.organisationId) throw createHttpError.NotFound("Organisation not assigned to the user")
+
+            const organization = await OrganizationService.findOrganizationById(user.organisationId)
+
+
             //send response
-            const userResponse = Converter.UserEntityToUserDto(user);
+            const userResponse = Converter.UserEntityToUserDto(organization.name, user);
             const response: AuthenticationDTO = {
                 token: token,
                 refreshToken: refreshToken,
@@ -128,11 +140,17 @@ export class AuthController {
             const userId = await JWT.getUserIdFromToken(body.token);
             const user = await UserService.findUserById(userId);
 
+            if(!user) throw createHttpError.NotFound("User Not found")
+
             // generate a fresh pair of tokens( jwt token and refresh token )
             const { token, refreshToken } = await JWT.generateToken(user);
 
+            if(!user.organisationId) throw createHttpError.NotFound("Organisation not assigned to the user")
+
+            const organization = await OrganizationService.findOrganizationById(user.organisationId)
+
             //send response
-            const userResponse = Converter.UserEntityToUserDto(user);
+            const userResponse = Converter.UserEntityToUserDto(organization.name, user);
             const response: AuthenticationDTO = {
                 token: token,
                 refreshToken: refreshToken,

@@ -50,7 +50,7 @@ export default function AlertsPage() {
 
     const [alerts, setAlerts] = useState<AlertResponse[]>()
     const [alertTriggers, setAlertTriggers] = useState<alertTriggered[]>()
-    const axios = AuthAxios.getAuthAxios()
+    const axios = AuthAxios.getAlertAxios()
     // title!: string;
     // rawQuery!: string; 
     // destination!: AlertDestinations; 
@@ -68,7 +68,7 @@ export default function AlertsPage() {
 
 
     useEffect(() => {
-        axios.get('3002/api/v1/alert')
+        axios.get('/alert')
             .then((response) => {
                 setAlerts(response.data)
             })
@@ -80,7 +80,7 @@ export default function AlertsPage() {
                 setLoading(false)
             })
 
-        axios.get('3002/api/v1/alert/alertTriggered')
+        axios.get('/alert/alertTriggered')
             .then((response) => {
                 setAlertTriggers(response.data)
             })

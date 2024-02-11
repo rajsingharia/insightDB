@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import IUserInsights from '../../interfaces/IUserInsights';
+import IUserInsights from "@/interfaces/IUserInsights"
 
-import AuthAxios from '../../utils/AuthAxios';
-import { CircularProgress } from '../common/CircularProgress';
+import AuthAxios from '@/utils/AuthAxios';
+import { CircularProgress } from "@/components/common/CircularProgress";
 //Different for prod and dev environment
 //import { BASE_URL } from '../../utils/Constants';
-import AuthEventSource from '../../utils/AuthEventSource';
+import AuthEventSource from "@/utils/AuthEventSource"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -25,7 +25,7 @@ import {
 import { useRouter } from 'next/navigation';
 
 import { useToast } from "@/components/ui/use-toast"
-import { InsightChart } from '../charts/InsightChart';
+import { InsightChart } from "@/components/charts/InsightChart"
 type UserInsightCardProps = {
     insight: IUserInsights;
 }
@@ -48,7 +48,7 @@ export const UserInsightCard: React.FC<UserInsightCardProps> = ({ insight }) => 
     const chartDetails = SupportedCharts.find((chart) => chart.value === chartType)
     const [error, setError] = useState<string>('');
     const router = useRouter()
-    const authAxios = AuthAxios.getAuthAxios();
+    const authAxios = AuthAxios.getFetchDataAxios();
     const { toast } = useToast()
 
 
@@ -59,7 +59,7 @@ export const UserInsightCard: React.FC<UserInsightCardProps> = ({ insight }) => 
             rawQuery: insight.rawQuery
         }
 
-        authAxios.post('3001/api/v1/fetchData', body)
+        authAxios.post('/fetchData', body)
             .then((res) => {
                 console.log("Data: ", res.data.data);
                 setChartData(res.data);
@@ -81,14 +81,14 @@ export const UserInsightCard: React.FC<UserInsightCardProps> = ({ insight }) => 
 
     const startPolling = (refreshRate: number) => {
         setInterval(() => {
-            const authAxios = AuthAxios.getAuthAxios();
+            const authAxios = AuthAxios.getFetchDataAxios();
 
             const body = {
                 integrationId: insight.integrationId,
                 rawQuery: insight.rawQuery
             }
 
-            authAxios.post('3001/api/v1/fetchData', body)
+            authAxios.post('/fetchData', body)
                 .then((res) => {
                     console.log("Data: ", res.data.data);
                     setChartData(res.data);
@@ -130,7 +130,7 @@ export const UserInsightCard: React.FC<UserInsightCardProps> = ({ insight }) => 
 
     const duplicateInsight = () => {
         const insightId = insight.id
-        authAxios.post(`3001/api/v1/insights/duplicate/${insightId}`)
+        authAxios.post(`/insights/duplicate/${insightId}`)
             .then((res) => {
                 // router.refresh()
                 location.reload();
@@ -142,7 +142,7 @@ export const UserInsightCard: React.FC<UserInsightCardProps> = ({ insight }) => 
 
     const deleteInsight = () => {
         const insightId = insight.id
-        authAxios.delete(`3001/api/v1/insights/${insightId}`)
+        authAxios.delete(`/insights/${insightId}`)
             .then((res) => {
                 // router.refresh()
                 location.reload();

@@ -2,22 +2,35 @@ import { RegisterDTO } from "../dto/request/register.dto";
 import prisma from "../config/database.config";
 import createHttpError from "http-errors";
 import { UpdateUserDTO } from "../dto/request/updateUser.dto";
+import { Role } from "@prisma/client";
 
 
 export class UserService {
 
     private static prismaClient = prisma.getInstance();
 
-    public static saveUser = async (user: RegisterDTO) => {
+    public static saveUser = async (organizationId: string,user: RegisterDTO) => {
         const savedUser = await this.prismaClient.user.create({
             data: {
                 firstName: user.firstName,
                 lastName: user.lastName,
                 email: user.email,
-                password: user.password
+                password: user.password,
+                organisationId: organizationId,
+                role: (user.isAdmin) ? Role.ADMIN : Role.USER
             }
         });
         return savedUser;
+    }
+
+    public static findOrganizationFromUserId = async (id: string) => {
+        const user = await this.prismaClient.user.findUnique({
+            where: {
+                id: id
+            }
+        });
+        if (!user) throw createHttpError(404, "User not found");
+        return user.organisationId;
     }
 
     public static findUserById = async (id: string) => {
@@ -73,70 +86,5 @@ export class UserService {
             }
         });
         return existingUser ? true : false;
-    }
-
-    public static addIntegration = async (userId: string, integrationId: string) => {
-        const updatedUser = await this.prismaClient.user.update({
-            where: {
-                id: userId
-            },
-            data: {
-                organisationId: "TODO"
-            }
-        });
-        return updatedUser;
-    }
-
-    public static removeIntegration = async (userId: string, integrationId: string) => {
-        const updatedUser = await this.prismaClient.user.update({
-            where: {
-                id: userId
-            },
-            data: {
-                organisationId: "TODO"
-            }
-        });
-        return updatedUser;
-    }
-
-    public static getAllUserIntegrations = async (userId: string) => {
-        const user = await this.prismaClient.organisation.findUnique({
-            where: {
-                id: "TODO"
-            },
-            include: {
-                integrations: true
-            }
-        });
-        if (!user) throw createHttpError(404, "User not found");
-        return user.integrations;
-    }
-
-    public static getUserIntegrationById = async (userId: string, integrationId: string) => {
-        const user = await this.prismaClient.organisation.findUnique({
-            where: {
-                id: "TODO"
-            },
-            include: {
-                integrations: {
-                    where: {
-                        id: integrationId
-                    }
-                }
-            }
-        });
-        if (!user) throw createHttpError(404, "User not found");
-        return user.integrations[0];
-
-
-        // this.prismaClient.integration.findMany({
-        //     where: {
-        //         user: {
-        //             id: user.id
-
-        //         }
-        //     }
-        // })
-
     }
 }
