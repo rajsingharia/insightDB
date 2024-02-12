@@ -1,5 +1,3 @@
-import { CronJob } from 'cron';
-import { AlertService } from './alert.service';
 import { Kafka, Producer } from 'kafkajs'
 
 export class ProducerService {
@@ -10,12 +8,18 @@ export class ProducerService {
     constructor() {
         this.fafka = new Kafka({
             clientId: 'alert',
-            brokers: ['localhost:9092'] // Connect to your broker(s)
+            brokers: ['kafka:9092'] // Connect to your broker(s)
         });
         this.producer = this.fafka.producer({ allowAutoTopicCreation: false })
     }
 
-    public async sendMessage(message: any) {
+    public async connectKafkaProducer() {
+        console.log("Connecting Kafka Producer...")
+        await this.producer.connect()
+        console.log("Connected Kafka Producer")
+    }
+
+    public async sendMessage(message: unknown) {
         console.log(`Sending message for alert ${alert} on topic: alertTopic`);
         await this.producer.send({
             topic: 'alertTopic',
@@ -25,5 +29,5 @@ export class ProducerService {
         })
         console.log('Message sent');
     }
-    
+
 }

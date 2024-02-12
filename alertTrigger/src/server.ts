@@ -32,8 +32,14 @@ app.use('/api/v1/alert', ValidateTokenMiddleware, Route.alertRouter)
 // app.use('/api/v1/charts', ValidateTokenMiddleware, Route.chartsRoute);
 // app.use('/api/v1/fetchSSEData', ValidateTokenMiddlewareFromSSE, Route.fetchDataRouteSSE);
 
-const cronService = new ConsumerService()
-cronService.startConsuming()
+async function startCronService() {
+    const cronService = new ConsumerService()
+    await cronService.connectKafka()
+    await cronService.startConsuming()
+}
+
+startCronService()
+
 
 
 // 404 handling

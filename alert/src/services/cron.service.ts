@@ -1,6 +1,5 @@
 import { CronJob } from 'cron';
 import { AlertService } from './alert.service';
-import { Kafka, Producer } from 'kafkajs'
 import { ProducerService } from './producer.service';
 
 export class CronService {
@@ -11,6 +10,11 @@ export class CronService {
     constructor() {
         this.cronAlertMapping = new Map<string, CronJob>
         this.producer = new ProducerService()
+    }
+
+
+    public async connectKafkaProducer() {
+        await this.producer.connectKafkaProducer()
     }
 
     public async startAllCronJob() {

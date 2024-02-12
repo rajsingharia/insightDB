@@ -11,7 +11,8 @@ export class ConsumerService {
 
         this.fafka = new Kafka({
             clientId: 'alert',
-            brokers: ['localhost:9092'] // Connect to your broker(s)
+            brokers: ['kafka:9092'], // Connect to your broker(s),
+            connectionTimeout: 6000,
         });
 
 
@@ -25,6 +26,7 @@ export class ConsumerService {
 
 
     public async connectKafka() {
+        console.log('kafka connecting...')
         await this.consumer.connect()
         console.log('kafka connected')
         await this.consumer.subscribe({ 'topic': 'AlertTopic' })

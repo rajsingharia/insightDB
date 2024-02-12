@@ -29,8 +29,14 @@ prisma.connect();
 // Routes
 app.use('/api/v1/alert', ValidateTokenMiddleware, Route.alertRouter)
 
-const cronService = new CronService()
-cronService.startAllCronJob()
+
+async function startCronService() {
+    const cronService = new CronService()
+    await cronService.connectKafkaProducer()
+    await cronService.startAllCronJob()
+}
+
+startCronService()
 
 
 // 404 handling
