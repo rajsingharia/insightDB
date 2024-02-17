@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import IUserInsights from "@/interfaces/IUserInsights"
 
-import AuthAxios from '@/utils/AuthAxios';
+import fetchDataAxios from '@/utils/AuthAxios';
 import { CircularProgress } from "@/components/common/CircularProgress";
 //Different for prod and dev environment
 //import { BASE_URL } from '../../utils/Constants';
@@ -26,6 +26,7 @@ import { useRouter } from 'next/navigation';
 
 import { useToast } from "@/components/ui/use-toast"
 import { InsightChart } from "@/components/charts/InsightChart"
+import AuthAxios from '@/utils/AuthAxios';
 type UserInsightCardProps = {
     insight: IUserInsights;
 }
@@ -48,47 +49,60 @@ export const UserInsightCard: React.FC<UserInsightCardProps> = ({ insight }) => 
     const chartDetails = SupportedCharts.find((chart) => chart.value === chartType)
     const [error, setError] = useState<string>('');
     const router = useRouter()
-    const authAxios = AuthAxios.getFetchDataAxios();
+    const fetchDataAxios = AuthAxios.getFetchDataAxios();
+    const orgAxios = AuthAxios.getOrgAxios();
     const { toast } = useToast()
 
 
     useEffect(() => {
 
-        const body = {
-            integrationId: insight.integrationId,
-            rawQuery: insight.rawQuery
+        async function getData() {
+            const response = await orgAxios.get(`/integrations/${insight.integrationId}`)
+            if (response.status !== 200 || !response.data) {
+                console.log(response.statusText);
+                setError(response.statusText);
+            }
+            const integration = response.data
+
+            const body = {
+                integrationType: integration.type,
+                integrationCredentials: integration.credentials,
+                rawQuery: insight.rawQuery
+            }
+
+            fetchDataAxios.post('/fetchData', body)
+                .then((res) => {
+                    console.log("Data: ", res.data.data);
+                    setChartData(res.data);
+                })
+                .catch((err) => {
+                    console.log(err);
+                    setError(err.message);
+                });
+
+            const refreshRate = insight.refreshRate;
+
+            if (refreshRate > 0) {
+                // makeSSEConnection();
+                //startPolling(refreshRate * 1000)
+            }
+
         }
 
-        authAxios.post('/fetchData', body)
-            .then((res) => {
-                console.log("Data: ", res.data.data);
-                setChartData(res.data);
-            })
-            .catch((err) => {
-                console.log(err);
-                setError(err.message);
-            });
-
-        const refreshRate = insight.refreshRate;
-
-        if (refreshRate > 0) {
-            // makeSSEConnection();
-            //startPolling(refreshRate * 1000)
-        }
+        getData()
 
     }, [insight]);
 
 
     const startPolling = (refreshRate: number) => {
         setInterval(() => {
-            const authAxios = AuthAxios.getFetchDataAxios();
 
             const body = {
                 integrationId: insight.integrationId,
                 rawQuery: insight.rawQuery
             }
 
-            authAxios.post('/fetchData', body)
+            fetchDataAxios.post('/fetchData', body)
                 .then((res) => {
                     console.log("Data: ", res.data.data);
                     setChartData(res.data);
@@ -130,7 +144,7 @@ export const UserInsightCard: React.FC<UserInsightCardProps> = ({ insight }) => 
 
     const duplicateInsight = () => {
         const insightId = insight.id
-        authAxios.post(`/insights/duplicate/${insightId}`)
+        fetchDataAxios.post(`/insights/duplicate/${insightId}`)
             .then((res) => {
                 // router.refresh()
                 location.reload();
@@ -142,7 +156,7 @@ export const UserInsightCard: React.FC<UserInsightCardProps> = ({ insight }) => 
 
     const deleteInsight = () => {
         const insightId = insight.id
-        authAxios.delete(`/insights/${insightId}`)
+        fetchDataAxios.delete(`/insights/${insightId}`)
             .then((res) => {
                 // router.refresh()
                 location.reload();

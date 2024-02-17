@@ -52,33 +52,38 @@ export const QueryFields: React.FC<QueryFieldsProps> = ({
     rawQuery,
     setRawQuery }) => {
 
-    const getInsightData = () => {
-        const authAxios = AuthAxios.getFetchDataAxios();
+    const fetchDataAxios = AuthAxios.getFetchDataAxios();
+    const orgAxios = AuthAxios.getOrgAxios();
 
-        const body = {
-            integrationId: integrationId,
-            rawQuery: rawQuery
+    const getInsightData = () => {
+
+        async function getData() {
+            const response = await orgAxios.get(`/integrations/${integrationId}`)
+            if (response.status !== 200 || !response.data) {
+                console.log(response.statusText);
+                //setError(response.statusText);
+            }
+            const integration = response.data
+
+            const body = {
+                integrationType: integration.type,
+                integrationCredentials: integration.credentials,
+                rawQuery: rawQuery
+            }
+
+            fetchDataAxios.post('/fetchData', body)
+                .then((res) => {
+                    console.log("Data: ", res.data.data);
+                    setInsightData(res.data);
+                })
+                .catch((err) => {
+                    console.log(err);
+                    //setError(err.message);
+                });
+
         }
 
-        authAxios.post('/fetchData', body)
-            .then((res) => {
-                console.log("Data: ", res.data.data);
-                const fetchedData = res.data as FetchDataResponse;
-                setInsightData(fetchedData);
-                setRawQuery(rawQuery);
-            })
-            .catch((err) => {
-                console.log(err)
-            });
-
-        // TODO: This is a hacky way to refresh the data. Need to find a better way to do this.
-        // TODO: Better way to do this is to use SSE (Server Sent Events) to push the data to the client.
-        // const refreshRateInMs = refreshRate * 1000;
-        // if (refreshRateInMs > 0) {
-        //     setInterval(() => {
-        //         fetchInsightData();
-        //     }, refreshRateInMs);
-        // }
+        getData()
 
     }
 

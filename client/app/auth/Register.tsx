@@ -19,7 +19,7 @@ interface registerUser {
   firstName: string,
   lastName: string,
   email: string,
-  organizationName: string,
+  organizationId: string,
   password: string,
   isAdmin: boolean
 }
@@ -34,10 +34,11 @@ export const Register: React.FC<RegisterProps> = ({ setLoginOrRegister }) => {
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
-  const [organization, setOrganization] = useState('')
+  const [organizationName, setOrganizationName] = useState('')
+  const [organizationId, setOrganizationId] = useState('')
   const [password, setPassword] = useState('')
   const [isAdmin, setIsAdmin] = useState<boolean>(false)
-  const authAxios = AuthAxios.getAuthAxios();
+  const authAxios = AuthAxios.getOrgAxios();
   const { toast } = useToast()
 
   const registerUser = () => {
@@ -47,7 +48,7 @@ export const Register: React.FC<RegisterProps> = ({ setLoginOrRegister }) => {
       firstName: firstName,
       lastName: lastName,
       email: email,
-      organizationName: organization,
+      organizationId: organizationId,
       password: password,
       isAdmin: isAdmin
     }
@@ -67,13 +68,16 @@ export const Register: React.FC<RegisterProps> = ({ setLoginOrRegister }) => {
 
   const createOrganization = () => {
     const body = {
-      organizationName: organization,
+      organization: {
+        organizationName: organizationName,
+      }
     }
 
-    authAxios.post('/auth/organization', body)
+    authAxios.post('/organization', body)
       .then((response) => {
         console.log(response);
         toast({ title: "Organisation Created successfully" })
+        setOrganizationId(response.data.id)
       })
       .catch((error) => {
         console.log(error);
@@ -113,8 +117,8 @@ export const Register: React.FC<RegisterProps> = ({ setLoginOrRegister }) => {
             id="organization"
             placeholder="Organization Name"
             type="string"
-            value={organization}
-            onChange={(e) => setOrganization(e.target.value)}
+            value={organizationName}
+            onChange={(e) => setOrganizationName(e.target.value)}
           />
           <Input
             id="password"
@@ -123,7 +127,7 @@ export const Register: React.FC<RegisterProps> = ({ setLoginOrRegister }) => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <div className="flex items-center space-x-2">
+          <div className="flex items-end space-x-2">
             <Checkbox
               checked={isAdmin}
               onCheckedChange={(value) => setIsAdmin(value === "indeterminate" ? false : true)}
@@ -154,8 +158,8 @@ export const Register: React.FC<RegisterProps> = ({ setLoginOrRegister }) => {
               <div className="flex flex-col gap-4 py-4">
                 <Input
                   id="name"
-                  value={organization}
-                  onChange={(e) => setOrganization(e.target.value)}
+                  value={organizationId}
+                  onChange={(e) => setOrganizationId(e.target.value)}
                   placeholder="Organization Name" />
               </div>
               <DialogFooter>

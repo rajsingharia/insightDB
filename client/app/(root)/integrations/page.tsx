@@ -50,14 +50,14 @@ type IntegrationCreateBody = {
 export default function IntegrationsPage() {
 
   const [supportedIntegrations, setSupportedIntegrations] = useState<Integration[]>([])
-  
+
   const [clickedIntegration, setClickedIntegration] = useState<Integration | null>(null)
   const { toast } = useToast()
   const [loading, setLoading] = useState<boolean>(true)
 
   useEffect(() => {
-    const authAxios = AuthAxios.getFetchDataAxios();
-    authAxios.get('/supported')
+    const authAxios = AuthAxios.getOrgAxios();
+    authAxios.get('integrations/supported')
       .then((res: { data: Integration[] }) => {
         console.log(res.data)
         setSupportedIntegrations(res.data)
@@ -91,7 +91,7 @@ export default function IntegrationsPage() {
       credentials: credentials
     }
     console.log(body)
-    const authAxios = AuthAxios.getFetchDataAxios();
+    const authAxios = AuthAxios.getOrgAxios();
     authAxios.post('/integrations', { integration: body })
       .then((res) => {
         console.log(res.data)
@@ -106,7 +106,31 @@ export default function IntegrationsPage() {
   }
 
   const checkConnection = (event: React.MouseEvent<HTMLButtonElement>) => {
-    // Find a way to check connection and make a toast after that
+    event.preventDefault();
+
+    const requiredCredentials = clickedIntegration?.requiredCredentials;
+
+    let credentials: JSON | null = null;
+
+    credentials = requiredCredentials?.reduce((acc, credential) => {
+      const value = (document.getElementById(credential.name) as HTMLInputElement).value;
+      return { ...acc, [credential.name]: value }
+    }, {} as JSON) ?? null;
+
+
+    const body = {
+      integrationType: clickedIntegration?.type || '',
+      integrationCredentials: credentials
+    }
+
+    const authAxios = AuthAxios.getFetchDataAxios();
+    authAxios.post('/checkConnection', body)
+      .then((res) => {
+        toast({ title: "Connection successful ✅" });
+      })
+      .catch((err) => {
+        toast({ title: "Connection un-successful ❌: " + err.response.data });
+      });
   }
 
 

@@ -21,7 +21,7 @@ export const Login: React.FC<LoginProps> = ({ setLoginOrRegister }) => {
   const [password, setPassword] = useState('')
   const router = useRouter()
   const { login, setUser } = useContext(AuthContext);
-  const authAxios = AuthAxios.getAuthAxios();
+  const authAxios = AuthAxios.getOrgAxios();
   const { toast } = useToast()
 
   const loginUser = () => {

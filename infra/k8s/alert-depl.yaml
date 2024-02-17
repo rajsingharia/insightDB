@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alert-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alert
+  template:
+    metadata:
+      labels:
+        app: alert
+    spec:
+      containers:
+        - name: alert
+          image: insightDB/alert
+          env:
+          
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: alert-srv
+spec:
+  selector:
+    app: alert
+  ports:
+    - name: alert
+      protocol: TCP
+      port: 3000
+      targetPort: 3000

@@ -92,7 +92,7 @@ export default function AddInsightPageQuery() {
 
 
   useEffect(() => {
-    const authAxios = AuthAxios.getFetchDataAxios();
+    const authAxios = AuthAxios.getOrgAxios();
 
     authAxios.get(`/insights/${insightId}`)
       .then((res) => {
@@ -153,7 +153,7 @@ export default function AddInsightPageQuery() {
 
   const editInsight = () => {
 
-    const authAxios = AuthAxios.getFetchDataAxios();
+    const authAxios = AuthAxios.getOrgAxios();
 
     if (!selectedIntegration) {
       toast({ title: "No Integration Selected" });

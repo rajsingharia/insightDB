@@ -21,7 +21,7 @@ const AuthProvider = ({ children }: React.PropsWithChildren<{ children: React.Re
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const authAxios = AuthAxios.getAuthAxios();
+  const authAxios = AuthAxios.getOrgAxios();
   const [user, setUser] = useState<IUser>({} as IUser);
 
   const verifyToken = (): boolean => {

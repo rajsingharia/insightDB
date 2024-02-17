@@ -51,7 +51,7 @@ export default function Home() {
   const [dashboardDescription, setDashboardDescription] = useState<string>()
 
   const { toast } = useToast()
-  const fetchDataAxios = AuthAxios.getFetchDataAxios();
+  const fetchDataAxios = AuthAxios.getOrgAxios();
 
   useEffect(() => {
     fetchDataAxios.get('/insights/default')
@@ -65,7 +65,7 @@ export default function Home() {
       })
       .catch((err) => {
         console.log(err)
-        toast({ title: "Error fetching user Insight: " + err.message })
+        toast({ title: "Error fetching user Insight: " + err.response.data })
       })
       .finally(() => {
         setLoading(false);
@@ -143,8 +143,10 @@ export default function Home() {
   const addDashboard = () => {
 
     const body = {
-      title: dashboardTitle,
-      description: dashboardDescription
+      dashboard: {
+        title: dashboardTitle,
+        description: dashboardDescription
+      }
     }
 
     fetchDataAxios.post(`/dashboard`, body)
@@ -158,7 +160,86 @@ export default function Home() {
   }
 
   return (
-    <div className="w-full h-full">
+    <div className="flex flex-col w-full h-full">
+      {
+        <div className="flex flex-row-reverse mb-4 gap-2">
+          {
+            !loading && userInsights && userInsights.length > 0 &&
+            <Button variant={enableEdit ? 'secondary' : 'destructive'} size="icon">
+              {
+                enableEdit ? (
+                  <Unlock
+                    onClick={() => changeEnableState(false)}
+                    className="h-[1.5rem] w-[1.5rem] rotate-0 scale-100 transition-all"
+                  />
+                ) : (
+                  <Lock
+                    onClick={() => changeEnableState(true)}
+                    className="h-[1.5rem] w-[1.5rem] rotate-0 scale-100 transition-all"
+                  />
+                )
+              }
+            </Button>
+          }
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="secondary" size="icon">
+                <FolderPlus />
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Add Dashboard</DialogTitle>
+              </DialogHeader>
+              <div className="flex flex-col gap-4">
+                <Input
+                  id="title"
+                  placeholder="Title"
+                  value={dashboardTitle}
+                  onChange={(event) => setDashboardTitle(event.target.value)} />
+                <Input
+                  id="description"
+                  placeholder="Description"
+                  value={dashboardDescription}
+                  onChange={(event) => setDashboardDescription(event.target.value)} />
+                <Button
+                  onClick={addDashboard}>
+                  Add
+                </Button>
+              </div>
+              <DialogFooter>
+                <Button type="submit">Save changes</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+          <Select
+            value={selectedDashboardId}
+            onValueChange={(value) => setSelectedDashboardId(value)}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Dashboard" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Dashboard</SelectLabel>
+                {
+                  allDashboard?.map((dashboard) => {
+                    return (
+                      <SelectItem
+                        key={dashboard.id}
+                        value={dashboard.id}>
+                        {dashboard.title}
+                      </SelectItem>
+                    )
+                  })
+                }
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          <p className="text-xl text-muted-foreground">
+            {user.organizationName}
+          </p>
+        </div>
+      }
       {
         loading &&
         <div className="flex flex-col justify-center items-center w-full h-full ">
@@ -175,80 +256,6 @@ export default function Home() {
       {
         !loading && userInsights && userInsights.length > 0 &&
         <div className="flex flex-col w-full h-full">
-          <div className="flex flex-row-reverse">
-            <Button variant={enableEdit ? 'secondary' : 'destructive'} size="icon">
-              {
-                enableEdit ? (
-                  <Unlock
-                    onClick={() => changeEnableState(false)}
-                    className="h-[1.5rem] w-[1.5rem] rotate-0 scale-100 transition-all"
-                  />
-                ) : (
-                  <Lock
-                    onClick={() => changeEnableState(true)}
-                    className="h-[1.5rem] w-[1.5rem] rotate-0 scale-100 transition-all"
-                  />
-                )
-              }
-            </Button>
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button variant="secondary" size="icon">
-                  <FolderPlus />
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                  <DialogTitle>Add Dashboard</DialogTitle>
-                </DialogHeader>
-                <div className="flex flex-col gap-4">
-                  <Input
-                    id="title"
-                    placeholder="Title"
-                    value={dashboardTitle}
-                    onChange={(event) => setDashboardTitle(event.target.value)} />
-                  <Input
-                    id="description"
-                    placeholder="Description"
-                    value={dashboardDescription}
-                    onChange={(event) => setDashboardDescription(event.target.value)} />
-                  <Button
-                    onClick={addDashboard}>
-                    Add
-                  </Button>
-                </div>
-                <DialogFooter>
-                  <Button type="submit">Save changes</Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-            <Select
-              value={selectedDashboardId}
-              onValueChange={(value) => setSelectedDashboardId(value)}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Dashboard" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Dashboard</SelectLabel>
-                  {
-                    allDashboard?.map((dashboard) => {
-                      return (
-                        <SelectItem
-                          key={dashboard.id}
-                          value={dashboard.id}>
-                          {dashboard.title}
-                        </SelectItem>
-                      )
-                    })
-                  }
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-            <p className="text-xl text-muted-foreground">
-              {user.organizationName}
-            </p>
-          </div>
           <ResponsiveGridLayout
             className="layout"
             // cols={11}
@@ -258,7 +265,7 @@ export default function Home() {
             isResizable={enableEdit}
             onLayoutChange={onLayoutChange}>
             {
-              userInsights.map((insight) => {
+              userInsights?.map((insight) => {
                 return (
                   <Card
                     key={insight.id}

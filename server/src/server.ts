@@ -42,9 +42,7 @@ cronService.startAllCronJob()
 
 
 // 404 handling
-app.use((req: Request, res: Response, next: NextFunction) => {
-    next(createHttpError(404, "Endpoint not found"));
-});
+app.use();
 
 
 // Error handling

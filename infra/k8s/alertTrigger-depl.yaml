@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alertTrigger-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alertTrigger
+  template:
+    metadata:
+      labels:
+        app: alertTrigger
+    spec:
+      containers:
+        - name: alertTrigger
+          image: insightDB/alertTrigger
+          env:
+          
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: alertTrigger-srv
+spec:
+  selector:
+    app: alertTrigger
+  ports:
+    - name: alertTrigger
+      protocol: TCP
+      port: 3000
+      targetPort: 3000

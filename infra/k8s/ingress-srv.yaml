@@ -1,0 +1,47 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-service
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/use-regex: 'true'
+spec:
+  rules:
+    - host: insightDB.dev
+      http:
+        paths:
+          - path: /api/v1/fetchData/?(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: data-srv
+                port:
+                  number: 3000
+          - path: /api/v1/checkConnection/?(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: data-srv
+                port:
+                  number: 3000
+          - path: /api/v1/alert/?(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: alert-srv
+                port:
+                  number: 3000
+          - path: /api/v1/alertTrigger/?(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: alert-trigger-srv
+                port:
+                  number: 3000
+          - path: /?(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: client-srv
+                port:
+                  number: 3000

@@ -1,19 +1,19 @@
 "use client"
 import axios, { AxiosInstance } from "axios"
-import  { AUTH_BASE_URL, FETCH_DATA_BASE_URL, ALERT_BASE_URL } from "@/utils/Constants"
+import  { FETCH_DATA_BASE_URL, ALERT_BASE_URL, ORG_BASE_URL } from "@/utils/Constants"
 
 export default class AuthAxios{
-    private static authAxiosInstance: AxiosInstance | null = null;
+    private static orgAxiosInstance: AxiosInstance | null = null;
     private static fetchDataAxiosInstance: AxiosInstance | null = null;
     private static alertAxiosInstance: AxiosInstance | null = null;
 
-    public static getAuthAxios() { 
-        if(this.authAxiosInstance != null) return this.authAxiosInstance
-        this.authAxiosInstance = axios.create({
-            baseURL: AUTH_BASE_URL,
+    public static getOrgAxios() { 
+        if(this.orgAxiosInstance != null) return this.orgAxiosInstance
+        this.orgAxiosInstance = axios.create({
+            baseURL: ORG_BASE_URL,
             withCredentials: true,
         });
-        return this.authAxiosInstance
+        return this.orgAxiosInstance
     }
 
     public static getFetchDataAxios() { 

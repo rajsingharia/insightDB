@@ -79,7 +79,7 @@ export default function AddInsightPage() {
   }
 
   useEffect(() => {
-    const authAxios = AuthAxios.getFetchDataAxios();
+    const authAxios = AuthAxios.getOrgAxios();
     authAxios.get('/integrations')
       .then((res) => {
         console.log(`User Integrations: `, res.data)
@@ -100,7 +100,7 @@ export default function AddInsightPage() {
 
   const saveInsight = () => {
 
-    const authAxios = AuthAxios.getFetchDataAxios();
+    const authAxios = AuthAxios.getOrgAxios();
 
     if (!selectedIntegration) {
       toast({ title: "No Integration Selected" });
@@ -125,6 +125,7 @@ export default function AddInsightPage() {
     }
 
     const body = {
+      dashboardId: "8970c7d9-a0bc-4577-a3ff-53dc55096b0d",
       insight: saveInsightRequest
     }
 

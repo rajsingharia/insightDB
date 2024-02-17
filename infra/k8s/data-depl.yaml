@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: data-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: data
+  template:
+    metadata:
+      labels:
+        app: data
+    spec:
+      containers:
+        - name: data
+          image: insightDB/data
+          env:
+          
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: data-srv
+spec:
+  selector:
+    app: data
+  ports:
+    - name: data
+      protocol: TCP
+      port: 3000
+      targetPort: 3000

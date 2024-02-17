@@ -5,9 +5,10 @@ export enum LoginOrRegisterEnum {
     register
 }
 
-export const AUTH_BASE_URL = 'http://localhost:3000/api/v1';
 export const FETCH_DATA_BASE_URL = 'http://localhost:3001/api/v1';
 export const ALERT_BASE_URL = 'http://localhost:3002/api/v1';
+export const ALERT_TRIGGER_BASE_URL = 'http://localhost:3003/api/v1';
+export const ORG_BASE_URL = 'http://localhost:3004/api/v1';
 
 export const SupportedCharts: ICharts[] = [
     {

@@ -17,7 +17,7 @@ export default function Settings() {
 
   const [userIntegrations, setUserIntegrations] = useState<userIntegrationResponse[]>([]);
 
-  const authAxios = AuthAxios.getFetchDataAxios();
+  const authAxios = AuthAxios.getOrgAxios();
 
   useEffect(() => {
 

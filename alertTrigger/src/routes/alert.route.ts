@@ -3,16 +3,8 @@ import * as alertController from '../controllers/alert.controller';
 
 const alertRouter = express.Router();
 
-alertRouter.get('/', alertController.getAlerts);
+alertRouter.get('/', alertController.getAllAlertTriggers);
 
-alertRouter.post('/', alertController.addAlerts);
-
-alertRouter.put('/', alertController.updateAlert);
-
-alertRouter.delete('/', alertController.deleteAlert);
-
-alertRouter.get('/alertTriggered/', alertController.getAllAlertTriggers);
-
-alertRouter.get('/alertTriggered/:id', alertController.getAlertTriggers);
+alertRouter.get('/:id', alertController.getAlertTriggers);
 
 export default alertRouter;
