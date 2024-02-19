@@ -7,8 +7,10 @@ import { Axios } from "axios";
 import { RestApiParametersDTO } from "../dto/request/parameters/RestApi.parameters.dto";
 import { DataBaseType } from "../util/constants";
 import { Redis } from "ioredis";
+import {  FindOptions, WithId } from 'mongodb';
+import q2m from 'query-to-mongo';
 
-type Connection = pg.PoolClient | mongoose.Mongoose | Axios | Redis |undefined;
+type Connection = pg.PoolClient | mongoose.Mongoose | Axios | Redis | undefined;
 
 interface IGetAllData {
     fields?: string[];
@@ -57,6 +59,10 @@ export class fetchDataService {
             const response = await this.getAllDataMongoDB(pool as mongoose.Mongoose, rawQuery);
             return response;
         }
+        else if (type === DataBaseType.REDIS.valueOf()) {
+            const response = await this.getAllDataRedis(pool as Redis, rawQuery);
+            return response;
+        }
         // else if (type === DataBaseType.REST_API.valueOf()) {
         //     const response = await this.getAllDataRestApi(pool as Axios, parameters as RestApiParametersDTO);
         //     return response;
@@ -92,19 +98,14 @@ export class fetchDataService {
     private static async getAllDataMongoDB(mongoose: mongoose.Mongoose, query: string): Promise<IGetAllData> {
         //const mongoParams = parameters as MongoDBParametersDTO;
         //const collectionName = mongoParams.sourceName!;
-        console.log("mongoDB :: " + query)
-        const { collectionName, queryConditions } = JSON.parse(query);
-        const collectionConnection = mongoose.connection.db.collection(collectionName);
+        const { collection, rawQuery } = JSON.parse(query);
+        const queryResponse = q2m(rawQuery);
+
+        const collectionConnection = mongoose.connection.db.collection(collection);
         //const query = QueryBuilderService.buildMongoDBQuery(mongoParams);
         try {
-            const { project, filters, sort, limit } = queryConditions;
             const response = await collectionConnection
-                .aggregate([
-                    { $match: filters },
-                    { $project: project },
-                    { $sort: sort },
-                    { $limit: limit },
-                ])
+                .find(queryResponse.criteria, queryResponse.options as FindOptions<WithId<Document>>)
                 .toArray();
             return {
                 fields: undefined,
@@ -114,6 +115,31 @@ export class fetchDataService {
         } catch (error) {
             console.log(`Mongodb Error: ${error}`);
             throw createHttpError(500, "Internal Server Error");
+        }
+    }
+
+
+    private static async getAllDataRedis(redisClient: Redis, query: string): Promise<IGetAllData> {
+        try {
+            const { dataType, key } = JSON.parse(query);
+
+            if (dataType === 'HASH') {
+                const hashObj = await redisClient.hgetall(key);
+                const result: IGetAllData = {
+                    fields: Object.keys(hashObj),
+                    data: Object.values(hashObj).map((val) => { return JSON.parse(val) }),
+                    countOfFields: Object.keys(hashObj).length
+                }
+                return result;
+            } else if (dataType === 'SET') {
+                const arrSet = await redisClient.smembers(key);
+                return { fields: undefined, data: arrSet, countOfFields: arrSet.length };
+            } else {
+                throw new Error('Invalid Data Type');
+            }
+
+        } catch (error) {
+            throw createHttpError(500, "Internal Server error" + error);
         }
     }
 

@@ -20,7 +20,9 @@ interface ChartSettingsProps {
     insightTitle: string,
     setInsightTitle: React.Dispatch<React.SetStateAction<string>>,
     insightDescription: string,
-    setInsightDescription: React.Dispatch<React.SetStateAction<string>>
+    setInsightDescription: React.Dispatch<React.SetStateAction<string>>,
+    dashboards: {id: string, title: string}[],
+    handelDashboardChange: (id: string) => void
 }
 
 
@@ -33,6 +35,8 @@ export const ChartSettings: React.FC<ChartSettingsProps> = (
         setInsightTitle,
         insightDescription,
         setInsightDescription,
+        dashboards,
+        handelDashboardChange
     }) => {
 
 
@@ -88,6 +92,34 @@ export const ChartSettings: React.FC<ChartSettingsProps> = (
                     </SelectGroup>
                 </SelectContent>
             </Select>
+
+            <Select
+                onValueChange={(value: string) => {
+                    handelDashboardChange(value)
+                }}>
+                <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select Integration" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectGroup>
+                        <SelectLabel>Integrations</SelectLabel>
+                        {
+                            dashboards &&
+                            dashboards.map((dashboard: {id: string, title: string}) => {
+                                return (
+                                    <SelectItem
+                                        id={dashboard.id}
+                                        value={dashboard.id}
+                                        key={dashboard.id}>
+                                        {dashboard.title}
+                                    </SelectItem>
+                                )
+                            })
+                        }
+                    </SelectGroup>
+                </SelectContent>
+            </Select>
+
             <Input
                 placeholder="Chart Title"
                 value={insightTitle}

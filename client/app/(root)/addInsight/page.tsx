@@ -73,6 +73,8 @@ export default function AddInsightPage() {
   const [insightData, setInsightData] = useState<FetchDataResponse | undefined>(undefined);
   const [chartUIData, setChartUIData] = useState<ChartDataInput>()
   const [loading, setLoading] = useState<boolean>(true)
+  const [dashboards, setDashboards] = useState<{ id: string, title: string }[]>([])
+  const [selectedDashboard, setSelectedDashboard] = useState<{ id: string, title: string }>()
 
   const changeRefreshRate = (refreshRate: number) => {
     setRefreshRate(refreshRate);
@@ -92,11 +94,26 @@ export default function AddInsightPage() {
       .finally(() => {
         setLoading(false)
       })
+
+    const fetchDataAxios = AuthAxios.getFetchDataAxios()
+
+    fetchDataAxios.get('/dashboard/all')
+      .then((res) => {
+        setDashboards(res.data)
+      })
+      .catch((err) => {
+        toast({ title: "Error fetching user Insight: " + err.message })
+      })
+
   }, [toast]);
 
   const handelSelectedIntegrationChange = (selectedIntegration: userIntegrationResponse | null) => {
     if (selectedIntegration) setSelectedIntegration(selectedIntegration);
   };
+
+  const handelDashboardChange = (id: string) => {
+    setSelectedDashboard(dashboards.find(d => d.id === id));
+  }
 
   const saveInsight = () => {
 
@@ -222,6 +239,7 @@ export default function AddInsightPage() {
             <div className="flex flex-col justify-start items-center h-full w-full p-1">
               Settings
               {
+                dashboards && dashboards.length > 0 &&
                 <ChartSettings
                   selectedIntegration={selectedIntegration}
                   handelSelectedIntegrationChange={handelSelectedIntegrationChange}
@@ -230,6 +248,8 @@ export default function AddInsightPage() {
                   setInsightTitle={setInsightTitle}
                   insightDescription={insightDescription}
                   setInsightDescription={setInsightDescription}
+                  dashboards={dashboards}
+                  handelDashboardChange={handelDashboardChange}
                 />
               }
               <div className="w-full mt-4 pr-4 overflow-y-scroll rounded">

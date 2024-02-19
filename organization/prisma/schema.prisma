@@ -65,7 +65,7 @@ model Integration {
   id             String        @id @default(uuid())
   name           String
   type           String
-  credentials    Json // not all db doest support json type (postgres does)
+  credentials    Json          @unique // not all db doest support json type (postgres does)
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
   Insight        Insight[]
@@ -75,7 +75,7 @@ model Integration {
 
 model Dashboard {
   id                   String         @id @default(uuid())
-  title                String
+  title                String         @unique
   description          String?
   Insight              Insight[]
   organisation         Organisation?  @relation(name: "OrganisationDashboards", fields: [orgId], references: [id])
