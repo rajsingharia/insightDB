@@ -1,5 +1,5 @@
 import { IParameters } from "../../../interfaces/IParameters";
-import { DataBaseType } from "../../../util/constants";
+import { DataBaseType } from "insightdb-common"
 import { MongoDBParametersDTO } from "./Mongodb.parameters.dto";
 import { PostgresParametersDTO } from "./Postgres.parameters.dto";
 

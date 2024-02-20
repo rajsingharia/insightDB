@@ -1,4 +1,4 @@
-import { DataBaseType } from "../util/constants";
+import { DataBaseType } from "insightdb-common"
 import { DataSourceConfig } from "../config/dataSource.config";
 import { Pool } from "pg";
 import createHttpError from "http-errors";

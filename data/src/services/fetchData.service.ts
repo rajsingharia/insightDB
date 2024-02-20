@@ -5,7 +5,7 @@ import pg from "pg";
 import mongoose from "mongoose";
 import { Axios } from "axios";
 import { RestApiParametersDTO } from "../dto/request/parameters/RestApi.parameters.dto";
-import { DataBaseType } from "../util/constants";
+import { DataBaseType } from "insightdb-common"
 import { Redis } from "ioredis";
 import {  FindOptions, WithId } from 'mongodb';
 import q2m from 'query-to-mongo';

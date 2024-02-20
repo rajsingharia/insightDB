@@ -2,7 +2,7 @@ import { JsonValue } from "@prisma/client/runtime/library";
 import pg, { Pool } from "pg";
 import mongoose, { ConnectOptions } from "mongoose";
 import { Axios } from "axios";
-import { DataBaseType } from "../util/constants";
+import { DataBaseType } from "insightdb-common"
 import createHttpError from "http-errors";
 import { DataSourceConfig } from "../config/dataSource.config";
 import { Redis } from "ioredis";

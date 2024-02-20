@@ -1,7 +1,7 @@
 import createHttpError from "http-errors";
 import prisma from "../config/database.config";
 import { IntegrationDTO } from "../dto/request/integration.dto";
-import { ListOfSupportedIntegrations } from "../util/constants";
+import { ListOfSupportedIntegrations } from "insightdb-common"
 
 
 
