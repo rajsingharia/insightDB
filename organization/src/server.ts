@@ -1,9 +1,11 @@
-import express, { NextFunction, Request, Response } from "express";
+import express from "express";
 import prisma from "./config/database.config";
 import Route from "./routes";
-import ErrorHandlerRouter from "./util/errorHandling";
-import createHttpError from "http-errors";
-import { ValidateTokenMiddleware } from "./middlewares/validateToken.middleware";
+import {
+    ValidateTokenMiddleware,
+    ErrorHandlerRouter,
+    NotFoundRoute
+} from "insightdb-common"
 
 import morgan from "morgan";
 import cors from "cors";
@@ -37,10 +39,7 @@ app.use('/api/v1/insights', Route.insightRoute);
 
 
 // 404 handling
-app.use((req: Request, res: Response, next: NextFunction) => {
-    next(createHttpError(404, "Endpoint not found"));
-});
-
+app.use(NotFoundRoute);
 
 // Error handling
 app.use(ErrorHandlerRouter);
