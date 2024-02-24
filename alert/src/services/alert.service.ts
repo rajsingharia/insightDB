@@ -1,7 +1,6 @@
-import axios from "axios";
 import prisma from "../config/database.config";
 import { AlertDTO } from "../dto/request/alert.dto";
-import { Alerts } from "@prisma/client";
+import { AlertTriggerDTO } from "../dto/request/alertTrigger";
 
 export class AlertService {
 
@@ -33,6 +32,36 @@ export class AlertService {
         })
 
         return alert.id
+    }
+
+    public static addAlertTrigger = async (newTriggerAlert: AlertTriggerDTO) => {
+
+        const alert = await this.prismaClient.alerts.findFirst({
+            where: {
+                id: newTriggerAlert.alertId
+            }
+        })
+
+        if (!alert) throw new Error("Alert not found");
+
+        await this.prismaClient.alerts.update({
+            where: {
+                id: newTriggerAlert.alertId
+            },
+            data: {
+                repeatCount: alert.repeatCount - 1
+            }
+        })
+
+        const alertTrigger = await this.prismaClient.alertTriggered.create({
+            data: {
+                alertId: newTriggerAlert.alertId,
+                isSuccessful: newTriggerAlert.isSuccessful,
+                errorMessage: newTriggerAlert.errorMessage
+            }
+        })
+
+        return alertTrigger.id
     }
 
     public static changeAlertById = async (alertId:string, newAlert: AlertDTO) => {
@@ -75,66 +104,4 @@ export class AlertService {
         return alertTriggers
     }
 
-    public static makeAlert = async (alert: Alerts) => {
-
-
-        if (alert.destination == 'EMAIL') {
-            // Send an email
-        }
-        else if (alert.destination === 'SLACK') {
-
-            const configurationObj = JSON.parse(JSON.stringify(alert.configuration))
-
-            const alertId = alert.id
-            const messageFormat = configurationObj?.message
-            const webHookUrlLink = configurationObj?.webhook
-
-            if(!alertId || !messageFormat || !webHookUrlLink) {
-                throw new Error("Fields missing while making alert on :" + alert.destination);
-            }
-
-            const response = await axios.post(webHookUrlLink, { text: messageFormat })
-            console.log("Alert Cron Triggered For "  + alertId + ": " + response.status)
-
-            if (response.status == 200) {
-
-                const alert = await this.prismaClient.alerts.findFirst({
-                    where: {
-                        id: alertId
-                    }
-                })
-
-                if(!alert) throw new Error("Alert not found");
-                
-                await this.prismaClient.alerts.update({
-                    where: {
-                        id: alertId
-                    },
-                    data: {
-                        repeatCount: alert.repeatCount - 1
-                    }
-                })
-
-                await this.prismaClient.alertTriggered.create({
-                    data: {
-                        alertId: alertId,
-                        isSuccessful: true,
-                        errorMessage: ''
-                    }
-                })
-
-            } else {
-
-                await this.prismaClient.alertTriggered.create({
-                    data: {
-                        alertId: alertId,
-                        isSuccessful: false,
-                        errorMessage: response.data.toString()
-                    }
-                })
-
-            }
-
-        }
-    }
 }

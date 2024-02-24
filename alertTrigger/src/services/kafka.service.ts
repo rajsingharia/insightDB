@@ -1,11 +1,11 @@
-import { AlertService } from './alert.service';
-import { Kafka, Consumer, ConsumerConfig } from 'kafkajs';
-import { Alerts } from '@prisma/client';
+import { AlertTriggerService } from './alertTrigger.service';
+import { Kafka, Consumer, ConsumerConfig, Producer } from 'kafkajs';
 
-export class ConsumerService {
+export class KafkaService {
 
     private fafka: Kafka
     private consumer: Consumer
+    private producer: Producer
 
     constructor() {
 
@@ -15,6 +15,7 @@ export class ConsumerService {
             connectionTimeout: 6000,
         });
 
+        this.producer = this.fafka.producer({ allowAutoTopicCreation: true })
 
         const consumerConfig: ConsumerConfig = {
             groupId: 'alertGroup'
@@ -38,13 +39,13 @@ export class ConsumerService {
         this.consumer.run({
             eachMessage: async ({ topic, partition, message }) => {
                 try {
-                    if (message.value != null) {
-                        const alert: Alerts = JSON.parse(message.value.toString())
-
+                    if (message.value != null && topic === 'AlertTrigger') {
+                        const alert = JSON.parse(
+                            Buffer.from(message.value).toString('utf8')
+                        )
                         console.log(`Received message on ${topic}[${partition}]: ${message.value}`)
-                        await AlertService.makeAlert(alert);
-                        console.log(`Processed message: ${message.value}`)
-                        
+                        const response = await AlertTriggerService.makeAlert(alert);
+                        this.sendMessage(response)
                     }
                 } catch (error) {
                     console.log("Error processing kafka message", error);
@@ -53,5 +54,15 @@ export class ConsumerService {
         })
     }
 
+    private async sendMessage(message: unknown) {
+        console.log(`Sending message for alert ${alert} on topic: AlertResponse`);
+        await this.producer.send({
+            topic: 'AlertResponse',
+            messages: [{
+                value: JSON.stringify(message),
+            }]
+        })
+        console.log('Message sent');
+    }
 
 }

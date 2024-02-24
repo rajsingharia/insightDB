@@ -11,6 +11,7 @@ import morgan from "morgan";
 import cors from "cors";
 import { CronService } from "./services/cron.service";
 import cookieParser from "cookie-parser";
+import { KafkaService } from "./services/kafka.service";
 
 
 
@@ -33,9 +34,14 @@ app.use('/api/v1/alert', ValidateTokenMiddleware, Route.alertRouter)
 
 
 async function startCronService() {
-    const cronService = new CronService()
-    await cronService.connectKafkaProducer()
+    const kafka = new KafkaService()
+    kafka.connectKafkaProducer()
+
+    const cronService = new CronService(kafka)
     await cronService.startAllCronJob()
+
+    kafka.startConsuming()
+
 }
 
 startCronService()

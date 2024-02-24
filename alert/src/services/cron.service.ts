@@ -1,21 +1,17 @@
 import { CronJob } from 'cron';
 import { AlertService } from './alert.service';
-import { ProducerService } from './producer.service';
+import { KafkaService } from './kafka.service';
 
 export class CronService {
 
     private cronAlertMapping: Map<string, CronJob>
-    private producer: ProducerService
+    private kafka: KafkaService
 
-    constructor() {
+    constructor(kafka: KafkaService) {
         this.cronAlertMapping = new Map<string, CronJob>
-        this.producer = new ProducerService()
+        this.kafka = kafka
     }
 
-
-    public async connectKafkaProducer() {
-        await this.producer.connectKafkaProducer()
-    }
 
     public async startAllCronJob() {
         const alerts = await AlertService.getAllAlerts();
@@ -23,7 +19,7 @@ export class CronService {
             alerts.forEach((alert) => {
                 const alertJob = new CronJob(alert.cronExpression, async () => {
                     //AlertService.makeAlert(alert);
-                    await this.producer.sendMessage(alert)
+                    await this.kafka.sendMessage(alert)
                 });
                 this.cronAlertMapping.set(alert.id, alertJob)
             })
@@ -47,7 +43,7 @@ export class CronService {
         }
 
         const alertJob = new CronJob(alert.cronExpression, async () => {
-            await this.producer.sendMessage(alert)
+            await this.kafka.sendMessage(alert)
         });
         this.cronAlertMapping.set(alertId, alertJob)
         this.cronAlertMapping.get(alertId)?.start()
