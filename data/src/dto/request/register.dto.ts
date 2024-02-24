@@ -12,7 +12,7 @@ export class RegisterDTO {
     email!: string;
 
     @IsString()
-    organizationName!: string;
+    organisationName!: string;
 
     @IsBoolean()
     isAdmin!: boolean;

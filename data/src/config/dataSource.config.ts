@@ -5,7 +5,7 @@ import { RedisOptions } from "ioredis";
 export class DataSourceConfig {
     public static getPostgresConfig = async (credentials: JsonValue) => {
 
-        credentials = credentials as { username: string; host: string; database: string; password: string; port: number; ssl: string; ca?: string };
+        credentials = credentials as { username: string; host: string; database: string; password: string; port: number; ca?: string };
 
         const caBuffer = credentials.ca ? Buffer.from(credentials.ca as string) : undefined;
 
@@ -37,6 +37,23 @@ export class DataSourceConfig {
             password: credentials.password,
         } as RedisOptions
         return redisConfig;
+    }
+
+    public static getMySQLConfig = async (credentials: JsonValue) => {
+
+        credentials = credentials as { username: string; host: string; database: string; password: string; port: number; ca?: string };
+
+        const caBuffer = credentials.ca ? Buffer.from(credentials.ca as string) : undefined;
+
+        const connectionParams  = {
+            host: credentials.host?.toLocaleString(),
+            user: credentials.username?.toLocaleString(),
+            database: credentials.database?.toLocaleString(),
+            password: credentials.password?.toLocaleString(),
+            port: credentials.port as number,
+            ca: caBuffer,
+        };
+        return connectionParams ;
     }
 
     public static getAxiosConfig = async (credentials: JsonValue) => {

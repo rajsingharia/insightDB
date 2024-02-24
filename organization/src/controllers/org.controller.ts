@@ -1,80 +1,80 @@
 import { NextFunction, Request, Response } from "express";
-import { OrganizationService } from "../services/org.service";
+import { organisationService } from "../services/org.service";
 import createHttpError from "http-errors";
 import { validate } from "class-validator";
-import { OrganizationDTO } from "../dto/request/org.dto";
+import { organisationDTO } from "../dto/request/org.dto";
 
 
 
-interface getOrganizationRequest extends Request {
+interface getorganisationRequest extends Request {
     body: {
         id: string
     }
 }
 
-interface createOrganizationRequest extends Request {
+interface createorganisationRequest extends Request {
     body: {
-        organization: OrganizationDTO
+        organisation: organisationDTO
     }
 }
 
-interface UpdateOrganizationRequest extends Request {
+interface UpdateorganisationRequest extends Request {
     body: {
         id: string
-        organization: OrganizationDTO
+        organisation: organisationDTO
     }
 }
 
 
-export const getOrganization = async (req: getOrganizationRequest, res: Response, next: NextFunction) => {
+export const getorganisation = async (req: getorganisationRequest, res: Response, next: NextFunction) => {
     try {
-        const organizationId = req.body.id;
-        if(!organizationId) throw createHttpError(401, "Organization id is required");
+        const organisationId = req.body.id;
+        if(!organisationId) throw createHttpError(401, "organisation id is required");
 
-        const organization = await OrganizationService.findOrganizationById(organizationId);
-        if(!organization) throw createHttpError(404, "Organization not found");
+        const organisation = await organisationService.findorganisationById(organisationId);
+        if(!organisation) throw createHttpError(404, "organisation not found");
 
-        res.status(200).send(organization);
+        res.status(200).send(organisation);
     } catch (error) {
         next(error);
     }
 }
 
 
-export const createOrganization = async (req: createOrganizationRequest, res: Response, next: NextFunction) => {
+export const createorganisation = async (req: createorganisationRequest, res: Response, next: NextFunction) => {
     try {
-        const organization = req.body.organization;
-        if(!organization) throw createHttpError(401, "Organization is required");
+        const organisation = req.body.organisation;
+        if(!organisation) throw createHttpError(401, "organisation is required");
 
-        const organizationCreated = await OrganizationService.createOrganization(organization);
-        res.status(200).send(organizationCreated);
+        const organisationCreated = await organisationService.createorganisation(organisation);
+        res.status(200).send(organisationCreated);
     } catch (error) {
         next(error);
     }
 }
 
-export const updateOrganization = async (req: UpdateOrganizationRequest, res: Response, next: NextFunction) => {
+export const updateorganisation = async (req: UpdateorganisationRequest, res: Response, next: NextFunction) => {
     try {
         const id = req.body.id;
-        const organization = req.body.organization;
+        const organisation = req.body.organisation;
 
-        const validationErrors = await validate(organization);
+        const validationErrors = await validate(organisation);
         if (validationErrors.length > 0) {
             throw createHttpError(400, `Validation error: ${validationErrors}`);
         }
 
-        const updatedOrganization = await OrganizationService.updateOrganization(id, organization);
-        res.status(200).send(updatedOrganization);
+        const updatedorganisation = await organisationService.updateorganisation(id, organisation);
+        res.status(200).send(updatedorganisation);
     } catch (error) {
         next(error);
     }
 }
 
-export const deleteOrganization = async (req: Request, res: Response, next: NextFunction) => {
+export const deleteorganisation = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const id = req.params.id;
-        const organization = await OrganizationService.deleteOrganizationById(id);
-        res.status(200).send(organization);
+        const organisation = await organisationService.deleteorganisationById(id);
+        res.status(200).send(organisation);
     } catch (error) {
         next(error);
     }

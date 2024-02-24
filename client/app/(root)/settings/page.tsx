@@ -1,7 +1,7 @@
 
 "use client"
 import React, { useEffect, useState } from 'react'
-import AuthAxios from '@/utils/AuthAxios';
+import CustomAxios from '@/utils/CustomAxios';
 
 type userIntegrationResponse = {
   id: string;
@@ -17,11 +17,11 @@ export default function Settings() {
 
   const [userIntegrations, setUserIntegrations] = useState<userIntegrationResponse[]>([]);
 
-  const authAxios = AuthAxios.getOrgAxios();
+  const customAxios = CustomAxios.getOrgAxios();
 
   useEffect(() => {
 
-    authAxios.get('/integrations')
+    customAxios.get('/integrations')
       .then((res) => {
         setUserIntegrations(res.data)
       })

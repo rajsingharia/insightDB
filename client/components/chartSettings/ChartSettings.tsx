@@ -15,13 +15,13 @@ import { useToast } from '@/components/ui/use-toast'
 
 interface ChartSettingsProps {
     selectedIntegration: userIntegrationResponse | undefined,
-    handelSelectedIntegrationChange: (selectedIntegration: userIntegrationResponse | null) => void,
+    handelSelectedIntegrationChange: (id: string) => void,
     userIntegrations: userIntegrationResponse[],
     insightTitle: string,
     setInsightTitle: React.Dispatch<React.SetStateAction<string>>,
     insightDescription: string,
     setInsightDescription: React.Dispatch<React.SetStateAction<string>>,
-    dashboards: {id: string, title: string}[],
+    dashboards: { id: string, title: string }[],
     handelDashboardChange: (id: string) => void
 }
 
@@ -65,10 +65,8 @@ export const ChartSettings: React.FC<ChartSettingsProps> = (
     return (
         <div className="flex flex-col justify-start items-start w-full mt-2 gap-3">
             <Select
-                value={JSON.stringify(selectedIntegration)}
                 onValueChange={(value: string) => {
-                    console.log(value)
-                    handelSelectedIntegrationChange(JSON.parse(value) as userIntegrationResponse)
+                    handelSelectedIntegrationChange(value)
                 }}>
                 <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select Integration" />
@@ -81,9 +79,9 @@ export const ChartSettings: React.FC<ChartSettingsProps> = (
                             userIntegrations.map((integration: any) => {
                                 return (
                                     <SelectItem
-                                        id={integration?.id}
-                                        value={JSON.stringify(integration)}
-                                        key={integration?.id}>
+                                        id={integration.id}
+                                        value={integration.id}
+                                        key={integration.id}>
                                         {integration?.name}
                                     </SelectItem>
                                 )
@@ -94,9 +92,7 @@ export const ChartSettings: React.FC<ChartSettingsProps> = (
             </Select>
 
             <Select
-                onValueChange={(value: string) => {
-                    handelDashboardChange(value)
-                }}>
+                onValueChange={(value: string) => { handelDashboardChange(value) }}>
                 <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select Integration" />
                 </SelectTrigger>
@@ -105,7 +101,7 @@ export const ChartSettings: React.FC<ChartSettingsProps> = (
                         <SelectLabel>Integrations</SelectLabel>
                         {
                             dashboards &&
-                            dashboards.map((dashboard: {id: string, title: string}) => {
+                            dashboards.map((dashboard: { id: string, title: string }) => {
                                 return (
                                     <SelectItem
                                         id={dashboard.id}

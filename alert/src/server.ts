@@ -12,7 +12,7 @@ import cors from "cors";
 import { CronService } from "./services/cron.service";
 import cookieParser from "cookie-parser";
 import { KafkaService } from "./services/kafka.service";
-
+import 'dotenv/config'
 
 
 const app = express();
@@ -35,13 +35,10 @@ app.use('/api/v1/alert', ValidateTokenMiddleware, Route.alertRouter)
 
 async function startCronService() {
     const kafka = new KafkaService()
-    kafka.connectKafkaProducer()
-
+    await kafka.connectKafka()
     const cronService = new CronService(kafka)
     await cronService.startAllCronJob()
-
     kafka.startConsuming()
-
 }
 
 startCronService()

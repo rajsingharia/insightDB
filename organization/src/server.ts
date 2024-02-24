@@ -10,7 +10,7 @@ import {
 import morgan from "morgan";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-
+import 'dotenv/config'
 
 
 const app = express();
@@ -26,24 +26,20 @@ app.use(morgan('dev'));
 
 prisma.connect();
 
-app.use('/api/v1/auth', Route.authRouter);
-app.use('/api/v1/organization', Route.orgRouter);
-
-app.use(ValidateTokenMiddleware)
 // Routes
+app.use('/api/v1/auth', Route.authRouter);
+app.use('/api/v1/organisation', Route.orgRouter);
+app.use(ValidateTokenMiddleware)
 app.use('/api/v1/user', Route.userRoute);
-
 app.use('/api/v1/dashboard', Route.dashboardRoute);
 app.use('/api/v1/integrations', Route.integrationRoute);
 app.use('/api/v1/insights', Route.insightRoute);
-
 
 // 404 handling
 app.use(NotFoundRoute);
 
 // Error handling
 app.use(ErrorHandlerRouter);
-
 
 const PORT: number = parseInt(process.env.PORT!) || 3001;
 app.listen(PORT!, () => {

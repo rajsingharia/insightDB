@@ -6,6 +6,7 @@ import mongoose, { ConnectOptions } from "mongoose";
 import { Axios } from "axios";
 import { JsonValue } from "@prisma/client/runtime/library";
 import { Redis } from "ioredis";
+import * as mysql from "mysql2/promise"
 
 export class CheckConnectionService {
 
@@ -14,11 +15,14 @@ export class CheckConnectionService {
         console.log(type)
 
         if (type === DataBaseType.POSTGRES_QL.valueOf()) {
-
-            const getPostgresConfig = await DataSourceConfig.getPostgresConfig(credentials);
-            const pool = new Pool(getPostgresConfig);
-            await pool.connect();
-
+            try {
+                const getPostgresConfig = await DataSourceConfig.getPostgresConfig(credentials);
+                const pool = new Pool(getPostgresConfig);
+                await pool.connect();
+            } catch (error) {
+                console.log("Error while connecting to Postgres : " + error)
+                throw createHttpError("Error while connecting to Postgres : " + error)
+            }
         }
         else if (type === DataBaseType.MONGO_DB.valueOf()) {
             const getMongoDBConfig = await DataSourceConfig.getMongoDBConfig(credentials);
@@ -44,6 +48,16 @@ export class CheckConnectionService {
             } catch (error) {
                 console.log("Error while connecting to redis : " + error)
                 throw createHttpError("Error while connecting to redis : " + error)
+            }
+        }
+        else if (type === DataBaseType.MY_SQL.valueOf()) {
+            try {
+                const getMySQLConfig = await DataSourceConfig.getMySQLConfig(credentials);
+                const connection = await mysql.createConnection(getMySQLConfig);
+                await connection.connect()
+            } catch (error) {
+                console.log("Error while connecting to MySQL : " + error)
+                throw createHttpError("Error while connecting to MySQL : " + error)
             }
         }
         else if (type === DataBaseType.REST_API.valueOf()) {

@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button'
 import React, { useEffect, useState } from 'react'
 import { ScrollArea } from "@/components/ui/scroll-area"
-import AuthAxios from '@/utils/AuthAxios'
+import CustomAxios from '@/utils/CustomAxios'
 import { Card } from '@/components/ui/card'
 import {
     Dialog,
@@ -50,7 +50,7 @@ export default function AlertsPage() {
 
     const [alerts, setAlerts] = useState<AlertResponse[]>()
     const [alertTriggers, setAlertTriggers] = useState<alertTriggered[]>()
-    const axios = AuthAxios.getAlertAxios()
+    const axios = CustomAxios.getAlertAxios()
     // title!: string;
     // rawQuery!: string; 
     // destination!: AlertDestinations; 

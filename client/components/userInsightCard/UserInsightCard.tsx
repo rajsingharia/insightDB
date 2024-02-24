@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import IUserInsights from "@/interfaces/IUserInsights"
 
-import fetchDataAxios from '@/utils/AuthAxios';
+import fetchDataAxios from '@/utils/CustomAxios';
 import { CircularProgress } from "@/components/common/CircularProgress";
 //Different for prod and dev environment
 //import { BASE_URL } from '../../utils/Constants';
@@ -26,7 +26,7 @@ import { useRouter } from 'next/navigation';
 
 import { useToast } from "@/components/ui/use-toast"
 import { InsightChart } from "@/components/charts/InsightChart"
-import AuthAxios from '@/utils/AuthAxios';
+import CustomAxios from '@/utils/CustomAxios';
 type UserInsightCardProps = {
     insight: IUserInsights;
 }
@@ -49,8 +49,8 @@ export const UserInsightCard: React.FC<UserInsightCardProps> = ({ insight }) => 
     const chartDetails = SupportedCharts.find((chart) => chart.value === chartType)
     const [error, setError] = useState<string>('');
     const router = useRouter()
-    const fetchDataAxios = AuthAxios.getFetchDataAxios();
-    const orgAxios = AuthAxios.getOrgAxios();
+    const fetchDataAxios = CustomAxios.getFetchDataAxios();
+    const orgAxios = CustomAxios.getOrgAxios();
     const { toast } = useToast()
 
 

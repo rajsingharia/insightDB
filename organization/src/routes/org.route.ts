@@ -1,14 +1,13 @@
 import express from 'express';
 import * as orgController from '../controllers/org.controller';
-import { ValidateTokenMiddleware } from '../middlewares/validateToken.middleware';
+import { ValidateTokenMiddleware } from 'insightdb-common';
 
 const orgRouter = express.Router();
 
-orgRouter.post('/', orgController.createOrganization);
-
+orgRouter.post('/', orgController.createorganisation);
 orgRouter.use(ValidateTokenMiddleware)
-orgRouter.get('/', orgController.getOrganization);
-orgRouter.put('/', orgController.updateOrganization);
-orgRouter.delete('/:id', orgController.deleteOrganization);
+orgRouter.get('/', orgController.getorganisation);
+orgRouter.put('/', orgController.updateorganisation);
+orgRouter.delete('/:id', orgController.deleteorganisation);
 
 export default orgRouter;

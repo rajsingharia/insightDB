@@ -7,23 +7,33 @@ export class DashboardService {
 
     private static prismaClient = prisma.getInstance();
 
-    public static getAllDashboardsFromOrganization = async (organizationId: string) => {
-        const organization = await this.prismaClient.organisation.findUniqueOrThrow({
+    public static getDefaultDashboardIdFromorganisation = async (organisationId: string) => {
+        const organisation = await this.prismaClient.organisation.findUniqueOrThrow({
             where: {
-                id: organizationId
+                id: organisationId
+            }
+        });
+        if (!organisation.defaultDashboardId) throw new createHttpError.NotFound("No Default dashboard found for the given organisation ID");
+        return organisation.defaultDashboardId;
+    }
+
+    public static getAllDashboardsFromorganisation = async (organisationId: string) => {
+        const organisation = await this.prismaClient.organisation.findUniqueOrThrow({
+            where: {
+                id: organisationId
             },
             include: {
                 dashboards: true
             }
         });
-        if (!organization?.dashboards) throw new createHttpError.NotFound("No dashboards found for the given Organization ID");
-        return organization.dashboards;
+        if (!organisation?.dashboards) throw new createHttpError.NotFound("No dashboards found for the given organisation ID");
+        return organisation.dashboards;
     }
 
-    public static createDashboard = async (organizationId: string, dashBoard: DashboardDTO) => {
+    public static createDashboard = async (organisationId: string, dashBoard: DashboardDTO) => {
 
 
-        const allDashboards = await this.getAllDashboardsFromOrganization(organizationId)
+        const allDashboards = await this.getAllDashboardsFromorganisation(organisationId)
 
         let isDefaultDashboard = false
         if (!allDashboards || allDashboards.length == 0) isDefaultDashboard = true
@@ -32,15 +42,15 @@ export class DashboardService {
             data: {
                 title: dashBoard.title,
                 description: dashBoard.description,
-                orgId: organizationId
+                orgId: organisationId
             }
         });
 
         if (!dashboardCreated) throw createHttpError("Unable to create dashboard")
 
-        let organization = await this.prismaClient.organisation.update({
+        let organisation = await this.prismaClient.organisation.update({
             where: {
-                id: organizationId
+                id: organisationId
             },
             data: {
                 dashboards: {
@@ -50,34 +60,34 @@ export class DashboardService {
         })
 
         if (isDefaultDashboard) {
-            organization = await this.makeDashboardDefault(organizationId, dashboardCreated.id);
+            organisation = await this.makeDashboardDefault(organisationId, dashboardCreated.id);
         }
 
-        return organization;
+        return organisation;
     }
 
-    public static makeDashboardDefault = async (organizationId: string, dashboardId: string) => {
-        const organization = await this.prismaClient.organisation.update({
+    public static makeDashboardDefault = async (organisationId: string, dashboardId: string) => {
+        const organisation = await this.prismaClient.organisation.update({
             where: {
-                id: organizationId
+                id: organisationId
             },
             data: {
                 defaultDashboardId: dashboardId
             }
         });
-        return organization;
+        return organisation;
     }
 
-    public static removeDashboardFromOrganisation = async (dashboardId: string, organizationId: string) => {
-        const organization = await this.prismaClient.organisation.update({
+    public static removeDashboardFromOrganisation = async (dashboardId: string, organisationId: string) => {
+        const organisation = await this.prismaClient.organisation.update({
             where: {
-                id: organizationId
+                id: organisationId
             },
             data: {
                 defaultDashboardId: dashboardId
             }
         });
-        return organization;
+        return organisation;
     }
 
     public static addUserForWritePermission = async (userId: string, dashboardId: string) => {

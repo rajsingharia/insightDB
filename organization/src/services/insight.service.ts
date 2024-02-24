@@ -20,18 +20,18 @@ export class InsightService {
         return insights;
     }
 
-    public static async getInsightsFromDefaultDashboard(organizationId: string) {
+    public static async getInsightsFromDefaultDashboard(organisationId: string) {
 
         const defaultDashboard = await this.prismaClient.organisation.findUniqueOrThrow({
             where: {
-                id: organizationId
+                id: organisationId
             },
             include: {
                 defaultDashboard: true
             }
         })
 
-        if(!defaultDashboard || !defaultDashboard.defaultDashboardId) throw createHttpError(404, "No Default Dashboard found for the Organization");
+        if(!defaultDashboard || !defaultDashboard.defaultDashboardId) throw createHttpError(404, "No Default Dashboard found for the organisation");
 
         const insights = await this.prismaClient.insight.findMany({   
             where: {
@@ -64,7 +64,6 @@ export class InsightService {
 
 
     public static async addInsight(dashboardId: string, insight: InsightDTO): Promise<string> {
-
 
         const newInsight = await this.prismaClient.insight.create({
             data: {

@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react'
-import AuthAxios from "@/utils/AuthAxios"
+import CustomAxios from "@/utils/CustomAxios"
 import { ICharts } from "@/interfaces/ICharts"
 import { FetchDataResponse } from '@/app/(root)/addInsight/page';
 import { SQLQueryInput } from '@/components/query/SQLQueryInput';
@@ -52,8 +52,8 @@ export const QueryFields: React.FC<QueryFieldsProps> = ({
     rawQuery,
     setRawQuery }) => {
 
-    const fetchDataAxios = AuthAxios.getFetchDataAxios();
-    const orgAxios = AuthAxios.getOrgAxios();
+    const fetchDataAxios = CustomAxios.getFetchDataAxios();
+    const orgAxios = CustomAxios.getOrgAxios();
 
     const getInsightData = () => {
 

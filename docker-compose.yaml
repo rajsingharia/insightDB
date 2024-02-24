@@ -2,62 +2,12 @@ version: '3'
 
 services:
 
-  postgres:
-    image: postgres:12.2
-    restart: always
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=test
-    ports:
-      - 5432:5432
-    volumes:
-      - data:/var/lib/postgresql/data
-
-  pgadmin:
-    image: dpage/pgadmin4
-    restart: always
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=admin@email.com
-      - PGADMIN_DEFAULT_PASSWORD=admin
-      - PGADMIN_LISTEN_PORT=5050
-    ports:
-      - 5050:5050
-    volumes:
-      - pgadmin-data:/var/lib/pgadmin
-    
-
-  # zookeeper:
-  #   image: confluentinc/cp-zookeeper:latest
-  #   environment:
-  #     ZOOKEEPER_CLIENT_PORT: 2181
-  #     ZOOKEEPER_TICK_TIME: 2000
-  #   ports:
-  #     - 22181:2181
-
-  # kafka:
-  #   image: confluentinc/cp-kafka:latest
-  #   ports:
-  #     - 9092:9092
-  #     - 29092:29092
-  #   depends_on:
-  #     - zookeeper
-  #   environment:
-  #     KAFKA_BROKER_ID: 1
-  #     KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
-  #     KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
-  #     KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-  #     KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-  #     KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-
-  data-fetch:
+  data:
     build:
       context: ./data
       dockerfile: Dockerfile
     ports:
       - "3001:3001"
-    depends_on:
-      - postgres
 
   alert:
     build:
@@ -65,9 +15,6 @@ services:
       dockerfile: Dockerfile
     ports:
       - "3002:3002"
-    depends_on:
-      - postgres
-      # - kafka
 
   alert-trigger:
     build:
@@ -75,9 +22,6 @@ services:
       dockerfile: Dockerfile
     ports:
       - "3003:3003"
-    depends_on:
-      - postgres
-      # - kafka
   
   organization:
     build:
@@ -85,8 +29,6 @@ services:
       dockerfile: Dockerfile
     ports:
       - "3004:3004"
-    depends_on:
-      - postgres
 
   client:
     build:

@@ -6,11 +6,10 @@ import {
     NotFoundRoute
 } from "insightdb-common"
 import prisma from "./config/database.config";
-
-
 import morgan from "morgan";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import 'dotenv/config'
 
 const app = express();
 
@@ -25,19 +24,16 @@ app.use(morgan('dev'));
 
 prisma.connect();
 
-app.use(ValidateTokenMiddleware)
-
 // Routes
+app.use(ValidateTokenMiddleware)
 app.use('/api/v1/fetchData', Route.fetchDataRoute);
 app.use('/api/v1/checkConnection', Route.checkConnectionRoute);
-
 
 // 404 handling
 app.use(NotFoundRoute);
 
 // Error handling
 app.use(ErrorHandlerRouter);
-
 
 const PORT: number = parseInt(process.env.PORT!) || 3001;
 app.listen(PORT!, () => {

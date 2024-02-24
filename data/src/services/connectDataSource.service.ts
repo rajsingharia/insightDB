@@ -6,8 +6,9 @@ import { DataBaseType } from "insightdb-common"
 import createHttpError from "http-errors";
 import { DataSourceConfig } from "../config/dataSource.config";
 import { Redis } from "ioredis";
+import * as mysql from "mysql2/promise"
 
-type Connection = pg.PoolClient | mongoose.Mongoose | Axios | Redis |undefined;
+type Connection = pg.PoolClient | mongoose.Mongoose | Axios | Redis | mysql.Connection | undefined;
 
 export class connectDataSourceService {
 
@@ -55,9 +56,21 @@ export class connectDataSourceService {
                 console.log("Error while connecting to mongoDB : " + error)
                 throw createHttpError("Error while connecting to mongoDB : " + error)
             }
-
         }
+        else if (type === DataBaseType.MY_SQL.valueOf()) {
 
+            const getMySQLConfig = await DataSourceConfig.getMySQLConfig(credentials);
+
+    
+            const connection = await mysql.createConnection(getMySQLConfig);
+            await connection.connect()
+            if (credentials == null) {
+                throw createHttpError(500, 'No credentials provided');
+            }
+
+            this.allConnections.set(credentials, connection);
+            return this.allConnections.get(credentials);
+        }
         else if (type === DataBaseType.REDIS.valueOf()) {
             const redisConfig = await DataSourceConfig.getRedisConfig(credentials);
             try {

@@ -2,7 +2,7 @@
 "use client"
 
 import { useEffect, useState } from "react";
-import AuthAxios from "@/utils/AuthAxios";
+import CustomAxios from "@/utils/CustomAxios";
 import { SupportedCharList } from "@/components/supportedChartsList/SupportedCharList";
 import { InsightChart } from "@/components/charts/InsightChart";
 import { QueryFields } from "@/components/query/QueryFields";
@@ -83,7 +83,8 @@ export default function AddInsightPageQuery() {
   const [insightChartData, setInsightChartData] = useState<FetchDataResponse | undefined>(undefined);
   const [chartUIData, setChartUIData] = useState<ChartDataInput>()
   const [loading, setLoading] = useState<boolean>(true)
-
+  const [selectedDashboard, setSelectedDashboard] = useState<{ id: string, title: string }>()
+  const [dashboards, setDashboards] = useState<{ id: string, title: string }[]>([])
 
   const changeRefreshRate = (refreshRate: number) => {
     setRefreshRate(refreshRate);
@@ -92,9 +93,10 @@ export default function AddInsightPageQuery() {
 
 
   useEffect(() => {
-    const authAxios = AuthAxios.getOrgAxios();
+    const customAxios = CustomAxios.getOrgAxios();
+    const customDataAxios = CustomAxios.getFetchDataAxios()
 
-    authAxios.get(`/insights/${insightId}`)
+    customAxios.get(`/insights/${insightId}`)
       .then((res) => {
         console.log("Insights: ", res.data);
         const insight = res.data;
@@ -114,7 +116,7 @@ export default function AddInsightPageQuery() {
           rawQuery: insight.rawQuery
         }
 
-        authAxios.post('/fetchData', body)
+        customAxios.post('/fetchData', body)
           .then((res) => {
             const fetchedData = res.data as FetchDataResponse;
             setInsightChartData(fetchedData);
@@ -124,7 +126,7 @@ export default function AddInsightPageQuery() {
             toast({ title: "Error fetching data : " + err.message })
           });
 
-        authAxios.get('/integrations')
+        customAxios.get('/integrations')
           .then((res) => {
             console.log(`User Integrations: `, res.data)
             setUserIntegrations(res.data)
@@ -135,6 +137,14 @@ export default function AddInsightPageQuery() {
             console.log(err);
             toast({ title: "Error Fetching Integrations" })
           });
+
+        customDataAxios.get('/dashboard/all')
+          .then((res) => {
+            setDashboards(res.data)
+          })
+          .catch((err) => {
+            toast({ title: "Error fetching user Insight: " + err.message })
+          })
 
       })
       .catch((err) => {
@@ -147,13 +157,16 @@ export default function AddInsightPageQuery() {
 
   }, [toast, insightId])
 
-  const handelSelectedIntegrationChange = (selectedIntegration: userIntegrationResponse | null) => {
-    if (selectedIntegration) setSelectedIntegration(selectedIntegration);
+  const handelSelectedIntegrationChange = (id: string) => {
+    const selectedIntegration = userIntegrations.find(i => i.id === id)
+    if (!selectedIntegration) return;
+    setSelectedIntegration(selectedIntegration);
   };
+
 
   const editInsight = () => {
 
-    const authAxios = AuthAxios.getOrgAxios();
+    const customAxios = CustomAxios.getOrgAxios();
 
     if (!selectedIntegration) {
       toast({ title: "No Integration Selected" });
@@ -181,7 +194,7 @@ export default function AddInsightPageQuery() {
       insight: saveInsightRequest
     }
 
-    authAxios.patch(`/insights/${insightId}`, body)
+    customAxios.patch(`/insights/${insightId}`, body)
       .then((res) => {
         console.log(`Insight Saved: `, res.data)
         toast({ title: "Insight Updated Successfully ✅" });
@@ -190,6 +203,10 @@ export default function AddInsightPageQuery() {
       .catch((err) => {
         console.log(err)
       });
+  }
+
+  const handelDashboardChange = (id: string) => {
+    setSelectedDashboard(dashboards.find(d => d.id === id));
   }
 
 
@@ -283,6 +300,8 @@ export default function AddInsightPageQuery() {
                   setInsightTitle={setInsightTitle}
                   insightDescription={insightDescription}
                   setInsightDescription={setInsightDescription}
+                  dashboards={dashboards}
+                  handelDashboardChange={handelDashboardChange}
                 />
               }
               <div className="w-full mt-4 pr-4 overflow-y-scroll rounded">

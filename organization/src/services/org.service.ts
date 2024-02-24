@@ -1,54 +1,54 @@
 import prisma from "../config/database.config";
 import createHttpError from "http-errors";
-import { OrganizationDTO } from "../dto/request/org.dto";
+import { organisationDTO } from "../dto/request/org.dto";
 
 
-export class OrganizationService {
+export class organisationService {
 
     private static prismaClient = prisma.getInstance();
 
-    public static createOrganization = async (organization: OrganizationDTO) => {
+    public static createorganisation = async (organisation: organisationDTO) => {
         const savedUser = await this.prismaClient.organisation.create({
             data: {
-                name: organization.organizationName
+                name: organisation.organisationName
             }
         });
         return savedUser;
     }
 
-    public static findOrganizationById = async (id: string) => {
+    public static findorganisationById = async (id: string) => {
         const user = await this.prismaClient.organisation.findUnique({
             where: {
                 id: id
             }
         });
-        if (!user) throw createHttpError(404, "Organization not found");
+        if (!user) throw createHttpError(404, "organisation not found");
         return user;
     }
 
-    public static findOrganizationByName = async (name: string) => {
+    public static findorganisationByName = async (name: string) => {
         const user = await this.prismaClient.organisation.findUnique({
             where: {
                 name: name
             }
         });
-        if (!user) throw createHttpError(404, "Organization not found");
+        if (!user) throw createHttpError(404, "organisation not found");
         return user;
     }
 
-    public static updateOrganization = async (id: string, organisation: OrganizationDTO) => {
+    public static updateorganisation = async (id: string, organisation: organisationDTO) => {
         const updatedUser = await this.prismaClient.organisation.update({
             where: {
                 id: id
             },
             data: {
-                name: organisation.organizationName
+                name: organisation.organisationName
             }
         });
         return updatedUser;
     }
 
-    public static deleteOrganizationById = async (id: string) => {
+    public static deleteorganisationById = async (id: string) => {
         const deletedUser = await this.prismaClient.organisation.delete({
             where: {
                 id: id
@@ -58,35 +58,35 @@ export class OrganizationService {
     }
 
 
-    public static alreadyExists = async (organizationName: string) => {
+    public static alreadyExists = async (organisationName: string) => {
         const existingUser = await this.prismaClient.organisation.findUnique({
             where: {
-                name: organizationName
+                name: organisationName
             }
         });
         return existingUser ? true : false;
     }
 
-    public static addIntegration = async (organizationId: string, integrationId: string) => {
+    public static addIntegration = async (organisationId: string, integrationId: string) => {
         try {
-            const organization = await this.prismaClient.organisation.findUnique({
-                where: { id: organizationId },
-                include: { integrations: true }, // Include existing integrations for the organization
+            const organisation = await this.prismaClient.organisation.findUnique({
+                where: { id: organisationId },
+                include: { integrations: true }, // Include existing integrations for the organisation
             });
 
-            if (!organization) {
-                throw new Error(`Organization with id ${organizationId} not found`);
+            if (!organisation) {
+                throw new Error(`organisation with id ${organisationId} not found`);
             }
 
-            const existingIntegration = organization.integrations.find((integration) => integration.id === integrationId);
+            const existingIntegration = organisation.integrations.find((integration) => integration.id === integrationId);
 
             if (existingIntegration) {
-                console.log(`Integration with id ${integrationId} already associated with the organization`);
+                console.log(`Integration with id ${integrationId} already associated with the organisation`);
                 return;
             }
 
             await this.prismaClient.organisation.update({
-                where: { id: organizationId },
+                where: { id: organisationId },
                 data: {
                     integrations: {
                         connect: { id: integrationId },
@@ -95,30 +95,30 @@ export class OrganizationService {
             });
 
         } catch (error) {
-            console.error('Error adding integration to organization:', error);
+            console.error('Error adding integration to organisation:', error);
         }
     }
 
-    public static removeIntegration = async (organizationId: string, integrationId: string) => {
+    public static removeIntegration = async (organisationId: string, integrationId: string) => {
         try {
-            const organization = await this.prismaClient.organisation.findUnique({
-                where: { id: organizationId },
-                include: { integrations: true }, // Include existing integrations for the organization
+            const organisation = await this.prismaClient.organisation.findUnique({
+                where: { id: organisationId },
+                include: { integrations: true }, // Include existing integrations for the organisation
             });
 
-            if (!organization) {
-                throw new Error(`Organization with id ${organizationId} not found`);
+            if (!organisation) {
+                throw new Error(`organisation with id ${organisationId} not found`);
             }
 
-            const existingIntegration = organization.integrations.find((integration) => integration.id === integrationId);
+            const existingIntegration = organisation.integrations.find((integration) => integration.id === integrationId);
 
             if (!existingIntegration) {
-                console.log(`Integration with id ${integrationId} is not associated with the organization`);
+                console.log(`Integration with id ${integrationId} is not associated with the organisation`);
                 return;
             }
 
             await this.prismaClient.organisation.update({
-                where: { id: organizationId },
+                where: { id: organisationId },
                 data: {
                     integrations: {
                         disconnect: { id: integrationId },
@@ -127,27 +127,27 @@ export class OrganizationService {
             });
 
         } catch (error) {
-            console.error('Error removing integration from organization:', error);
+            console.error('Error removing integration from organisation:', error);
         }
     }
 
-    public static getOrganizationIntegrations = async (organizationId: string) => {
-        const organization = await this.prismaClient.organisation.findUnique({
+    public static getorganisationIntegrations = async (organisationId: string) => {
+        const organisation = await this.prismaClient.organisation.findUnique({
             where: {
-                id: organizationId
+                id: organisationId
             },
             include: {
                 integrations: true
             }
         });
-        if (!organization) throw createHttpError(404, "Organization not found");
-        return organization.integrations;
+        if (!organisation) throw createHttpError(404, "organisation not found");
+        return organisation.integrations;
     }
 
-    public static getOrganizationIntegrationById = async (organizationId: string, integrationId: string) => {
-        const organization = await this.prismaClient.organisation.findUnique({
+    public static getorganisationIntegrationById = async (organisationId: string, integrationId: string) => {
+        const organisation = await this.prismaClient.organisation.findUnique({
             where: {
-                id: organizationId
+                id: organisationId
             },
             include: {
                 integrations: {
@@ -157,8 +157,8 @@ export class OrganizationService {
                 }
             }
         });
-        if (!organization) throw createHttpError(404, "Organization not found");
-        return organization.integrations[0];
+        if (!organisation) throw createHttpError(404, "organisation not found");
+        return organisation.integrations[0];
 
 
         // this.prismaClient.integration.findMany({

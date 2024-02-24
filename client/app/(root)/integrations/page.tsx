@@ -2,7 +2,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import AuthAxios from "@/utils/AuthAxios";
+import CustomAxios from "@/utils/CustomAxios";
 import { ChevronsRight } from "lucide-react";
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -56,8 +56,8 @@ export default function IntegrationsPage() {
   const [loading, setLoading] = useState<boolean>(true)
 
   useEffect(() => {
-    const authAxios = AuthAxios.getOrgAxios();
-    authAxios.get('integrations/supported')
+    const customAxios = CustomAxios.getOrgAxios();
+    customAxios.get('integrations/supported')
       .then((res: { data: Integration[] }) => {
         console.log(res.data)
         setSupportedIntegrations(res.data)
@@ -91,8 +91,8 @@ export default function IntegrationsPage() {
       credentials: credentials
     }
     console.log(body)
-    const authAxios = AuthAxios.getOrgAxios();
-    authAxios.post('/integrations', { integration: body })
+    const customAxios = CustomAxios.getOrgAxios();
+    customAxios.post('/integrations', { integration: body })
       .then((res) => {
         console.log(res.data)
         toast({ title: "Integration added : " })
@@ -123,8 +123,8 @@ export default function IntegrationsPage() {
       integrationCredentials: credentials
     }
 
-    const authAxios = AuthAxios.getFetchDataAxios();
-    authAxios.post('/checkConnection', body)
+    const customAxios = CustomAxios.getFetchDataAxios();
+    customAxios.post('/checkConnection', body)
       .then((res) => {
         toast({ title: "Connection successful ✅" });
       })

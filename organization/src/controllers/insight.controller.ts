@@ -56,10 +56,10 @@ export class InsightController {
 
     public static getInsightsFromDefaultDashboard = async(req: Request, res: Response, next: NextFunction) => {
         try {
-            const organizationId = req.body.organizationId;
-            if(!organizationId) throw createHttpError("OrganizationId Id Required")
+            const organisationId = req.body.organisationId;
+            if(!organisationId) throw createHttpError("organisationId Id Required")
 
-            const data = await InsightService.getInsightsFromDefaultDashboard(organizationId);
+            const data = await InsightService.getInsightsFromDefaultDashboard(organisationId);
             if (!data) throw createHttpError(404, "Unable to get insights");
             res.status(200).json(data);
         } catch (error) {
@@ -71,7 +71,7 @@ export class InsightController {
     public static getInsights = async(req: Request, res: Response, next: NextFunction) => {
         try {
             const dashboardId = req.params.id;
-            if(!dashboardId) throw createHttpError("OrganizationId Id Required")
+            if(!dashboardId) throw createHttpError("organisationId Id Required")
 
             const data = await InsightService.getInsightsFromDashboardId(dashboardId);
             if (!data) throw createHttpError(404, "Unable to get insights");

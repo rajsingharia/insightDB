@@ -2,7 +2,7 @@
 
 import { createContext, useState, useEffect, Dispatch, SetStateAction } from 'react';
 import { IUser } from '@/interfaces/IUser';
-import AuthAxios from '@/utils/AuthAxios';
+import CustomAxios from '@/utils/CustomAxios';
 import Cookies from 'js-cookie';
 
 interface AuthContextProps {
@@ -21,7 +21,7 @@ const AuthProvider = ({ children }: React.PropsWithChildren<{ children: React.Re
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const authAxios = AuthAxios.getOrgAxios();
+  const customAxios = CustomAxios.getOrgAxios();
   const [user, setUser] = useState<IUser>({} as IUser);
 
   const verifyToken = (): boolean => {
@@ -36,7 +36,7 @@ const AuthProvider = ({ children }: React.PropsWithChildren<{ children: React.Re
   useEffect(() => {
     const isTokenValid = verifyToken();
     if (isTokenValid) {
-      authAxios.get("/user")
+      customAxios.get("/user")
         .then((res) => {
           console.log("getting user data " + JSON.stringify(res.data));
           const user = res.data;

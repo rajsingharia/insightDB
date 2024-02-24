@@ -17,7 +17,8 @@ export class JWT {
 
         const payload = {
             id: user.id,
-            email: user.email
+            email: user.email,
+            organisationId: user.organisationId
         }
 
         const jwtid = uuidv4();
@@ -61,6 +62,15 @@ export class JWT {
         try {
             const decoded = await this.decodeToken(token) as jsonwebtoken.JwtPayload;
             return decoded["id"] as string;
+        } catch (error) {
+            throw createHttpError(401, "Invalid token");
+        }
+    }
+
+    public static async getorganisationIdFromToken(token: string): Promise<string> {
+        try {
+            const decoded = await this.decodeToken(token) as jsonwebtoken.JwtPayload;
+            return decoded["organisationId"] as string;
         } catch (error) {
             throw createHttpError(401, "Invalid token");
         }

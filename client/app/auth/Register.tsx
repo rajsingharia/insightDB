@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { LoginOrRegisterEnum } from '../../utils/Constants'
-import AuthAxios from '../../utils/AuthAxios'
+import CustomAxios from '../../utils/CustomAxios'
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/components/ui/use-toast"
@@ -38,7 +38,7 @@ export const Register: React.FC<RegisterProps> = ({ setLoginOrRegister }) => {
   const [organizationId, setOrganizationId] = useState('')
   const [password, setPassword] = useState('')
   const [isAdmin, setIsAdmin] = useState<boolean>(false)
-  const authAxios = AuthAxios.getOrgAxios();
+  const customAxios = CustomAxios.getOrgAxios();
   const { toast } = useToast()
 
   const registerUser = () => {
@@ -53,7 +53,7 @@ export const Register: React.FC<RegisterProps> = ({ setLoginOrRegister }) => {
       isAdmin: isAdmin
     }
 
-    authAxios.post('/auth/register', body)
+    customAxios.post('/auth/register', body)
       .then((response) => {
         console.log(response);
         setLoginOrRegister(LoginOrRegisterEnum.login)
@@ -73,7 +73,7 @@ export const Register: React.FC<RegisterProps> = ({ setLoginOrRegister }) => {
       }
     }
 
-    authAxios.post('/organization', body)
+    customAxios.post('/organization', body)
       .then((response) => {
         console.log(response);
         toast({ title: "Organisation Created successfully" })

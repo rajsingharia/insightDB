@@ -1,5 +1,7 @@
 import { AlertTriggerService } from './alertTrigger.service';
 import { Kafka, Consumer, ConsumerConfig, Producer } from 'kafkajs';
+import fs from 'fs'
+import path from 'path'
 
 export class KafkaService {
 
@@ -10,15 +12,21 @@ export class KafkaService {
     constructor() {
 
         this.fafka = new Kafka({
-            clientId: 'alert',
-            brokers: ['kafka:9092'], // Connect to your broker(s),
-            connectionTimeout: 6000,
+            brokers: [process.env.BROKER!], // Connect to your broker(s)
+            ssl: {
+                ca: [fs.readFileSync(path.resolve('./ca.pem'), 'utf-8')],
+            },
+            sasl: {
+                username: process.env.KAFKA_USERNAME!,
+                password: process.env.KAFKA_PASSWORD!,
+                mechanism: 'plain',
+            }
         });
 
         this.producer = this.fafka.producer({ allowAutoTopicCreation: true })
 
         const consumerConfig: ConsumerConfig = {
-            groupId: 'alertGroup'
+            groupId: 'alertTriggerGroup'
         }
 
         this.consumer = this.fafka.consumer(consumerConfig)
@@ -29,17 +37,20 @@ export class KafkaService {
     public async connectKafka() {
         console.log('kafka connecting...')
         await this.consumer.connect()
-        console.log('kafka connected')
-        await this.consumer.subscribe({ 'topic': 'AlertTopic' })
-        console.log('subscribed to topic')
-    }
 
+        console.log('kafka consumer connected!!!')
+        await this.consumer.subscribe({ 'topic': 'AlertTrigger' })
+        console.log('subscribed to topic')
+
+        await this.producer.connect()
+        console.log('kafka producer connected!!!')
+    }
 
     public async startConsuming() {
         this.consumer.run({
             eachMessage: async ({ topic, partition, message }) => {
                 try {
-                    if (message.value != null && topic === 'AlertTrigger') {
+                    if (message.value != null) {
                         const alert = JSON.parse(
                             Buffer.from(message.value).toString('utf8')
                         )

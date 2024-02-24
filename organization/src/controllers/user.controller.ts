@@ -6,7 +6,7 @@ import { Converter } from "../util/converters";
 import { UserDTO } from "../dto/response/user.dto";
 import createHttpError from "http-errors";
 import { validate } from "class-validator";
-import { OrganizationService } from "../services/org.service";
+import { organisationService } from "../services/org.service";
 
 
 interface UpdateUserRequest extends Request {
@@ -18,17 +18,18 @@ export const getUser = async (req: Request, res: Response, next: NextFunction) =
     try {
         //console.log(req.body);
         const userId = req.body.userId;
-        if (!userId) throw createHttpError(401, "User id is required");
+        const organisationId = req.body.organisationId;
+        if (!userId) throw createHttpError(401, "organisation id required");
 
         const user = await UserService.findUserById(userId);
 
         if (!user) throw createHttpError(404, "User not found");
-        if (!user.organisationId) throw createHttpError.NotFound("Organisation not assigned to the user")
+        
+        const organisation = await organisationService.findorganisationById(organisationId)
 
-        const organization = await OrganizationService.findOrganizationById(user.organisationId)
+        if(!organisation) throw createHttpError.NotFound("Organisation not assigned to the user")
 
-
-        const response: UserDTO = Converter.UserEntityToUserDto(organization.name, user);
+        const response: UserDTO = Converter.UserEntityToUserDto(organisation.name, user);
         res.status(200).send(response);
     } catch (error) {
         next(error);
@@ -56,9 +57,9 @@ export const updateUser = async (req: UpdateUserRequest, res: Response, next: Ne
         if(!user) throw createHttpError.NotFound("User Not found")
         if (!user.organisationId) throw createHttpError.NotFound("Organisation not assigned to the user")
 
-        const organization = await OrganizationService.findOrganizationById(user.organisationId)
+        const organisation = await organisationService.findorganisationById(user.organisationId)
 
-        const response: UserDTO = Converter.UserEntityToUserDto(organization.name, user);
+        const response: UserDTO = Converter.UserEntityToUserDto(organisation.name, user);
         res.status(200).send(response);
     } catch (error) {
         next(error);
@@ -73,9 +74,9 @@ export const deleteUser = async (req: Request, res: Response, next: NextFunction
         if(!user) throw createHttpError.NotFound("User Not found")
         if (!user.organisationId) throw createHttpError.NotFound("Organisation not assigned to the user")
 
-        const organization = await OrganizationService.findOrganizationById(user.organisationId)
+        const organisation = await organisationService.findorganisationById(user.organisationId)
 
-        const response: UserDTO = Converter.UserEntityToUserDto(organization.name, user);
+        const response: UserDTO = Converter.UserEntityToUserDto(organisation.name, user);
         res.status(200).send(response);
     } catch (error) {
         next(error);

@@ -10,21 +10,21 @@ export class UserService {
 
     private static prismaClient = prisma.getInstance();
 
-    public static saveUser = async (organizationId: string,user: RegisterDTO) => {
+    public static saveUser = async (organisationId: string,user: RegisterDTO) => {
         const savedUser = await this.prismaClient.user.create({
             data: {
                 firstName: user.firstName,
                 lastName: user.lastName,
                 email: user.email,
                 password: user.password,
-                organisationId: organizationId,
+                organisationId: organisationId,
                 role: (user.isAdmin) ? Role.ADMIN : Role.USER
             }
         });
         return savedUser;
     }
 
-    public static findOrganizationFromUserId = async (id: string) => {
+    public static findorganisationFromUserId = async (id: string) => {
         const user = await this.prismaClient.user.findUnique({
             where: {
                 id: id

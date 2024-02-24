@@ -2,7 +2,7 @@
 
 import { useState, useContext } from 'react'
 import { AuthContext } from '../../context/AuthContext'
-import AuthAxios from '../../utils/AuthAxios'
+import CustomAxios from '../../utils/CustomAxios'
 import { LoginOrRegisterEnum } from '../../utils/Constants'
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -21,7 +21,7 @@ export const Login: React.FC<LoginProps> = ({ setLoginOrRegister }) => {
   const [password, setPassword] = useState('')
   const router = useRouter()
   const { login, setUser } = useContext(AuthContext);
-  const authAxios = AuthAxios.getOrgAxios();
+  const customAxios = CustomAxios.getOrgAxios();
   const { toast } = useToast()
 
   const loginUser = () => {
@@ -30,7 +30,7 @@ export const Login: React.FC<LoginProps> = ({ setLoginOrRegister }) => {
       email: email,
       password: password
     }
-    authAxios.post('/auth/login', body)
+    customAxios.post('/auth/login', body)
       .then((response) => {
         //console.log(response);
         login(response.data.token);

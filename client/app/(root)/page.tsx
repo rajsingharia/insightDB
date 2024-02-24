@@ -1,7 +1,7 @@
 "use client"
 import { useContext, useEffect, useState } from "react"
 import { AuthContext } from "../../context/AuthContext"
-import AuthAxios from "../../utils/AuthAxios";
+import CustomAxios from "../../utils/CustomAxios";
 import IUserInsights from "../../interfaces/IUserInsights";
 import { UserInsightCard } from "@/components/userInsightCard/UserInsightCard";
 import { CircularProgress } from '@/components/common/CircularProgress';
@@ -51,9 +51,10 @@ export default function Home() {
   const [dashboardDescription, setDashboardDescription] = useState<string>()
 
   const { toast } = useToast()
-  const fetchDataAxios = AuthAxios.getOrgAxios();
+  const fetchDataAxios = CustomAxios.getOrgAxios();
 
   useEffect(() => {
+
     fetchDataAxios.get('/insights/default')
       .then((res) => {
         console.log("Insights: ", res.data);
@@ -74,7 +75,20 @@ export default function Home() {
 
     fetchDataAxios.get('/dashboard/all')
       .then((res) => {
-        setAllDashboard(res.data)
+      
+        fetchDataAxios.get('/dashboard/default')
+          .then((res) => {
+            if (selectedDashboardId == null  && res.data != null) {
+              setSelectedDashboardId(res.data)
+            }
+          })
+          .catch((err) => {
+            console.log(err)
+            toast({ title: "Error fetching user Insight: " + err.response.data })
+          }).finally(() => {
+            setAllDashboard(res.data)
+          })
+
       })
       .catch((err) => {
         toast({ title: "Error fetching user Insight: " + err.message })
@@ -153,6 +167,7 @@ export default function Home() {
       .then((res) => {
         const dashboardAdded = res.data;
         setSelectedDashboardId(dashboardAdded.id);
+        toast({ title: "Dashboard Added" })
       })
       .catch((err) => {
         toast({ title: "Error adding dashboard: " + err.message })
@@ -207,9 +222,6 @@ export default function Home() {
                   Add
                 </Button>
               </div>
-              <DialogFooter>
-                <Button type="submit">Save changes</Button>
-              </DialogFooter>
             </DialogContent>
           </Dialog>
           <Select

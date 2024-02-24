@@ -10,6 +10,7 @@ import createHttpError from "http-errors";
 import { RegisterDTO } from "../dto/request/register.dto";
 import { validate } from "class-validator";
 import { LoginDTO } from "../dto/request/login.dto";
+import { organisationService } from "../services/org.service";
 
 
 interface IRegisterRequest extends Request {
@@ -50,11 +51,11 @@ export class AuthController {
             registerDto.password = hashedPassword;
 
             //save user to db
-            const user = await UserService.saveUser(registerDto.organizationId, registerDto);
+            const user = await UserService.saveUser(registerDto.organisationId, registerDto);
 
             if(!user) throw createHttpError.NotFound("User Not found")
             
-            const response = Converter.UserEntityToUserDto(registerDto.organizationId, user);
+            const response = Converter.UserEntityToUserDto(registerDto.organisationId, user);
 
             res.status(200).send(response);
         } catch (error) {
@@ -86,9 +87,12 @@ export class AuthController {
 
             if(!user.organisationId) throw createHttpError.NotFound("Organisation not assigned to the user")
 
+            const organisation = await organisationService.findorganisationById(user.organisationId)
+
+            if(!organisation) throw createHttpError.NotFound("Organisation not found")
 
             //send response
-            const userResponse = Converter.UserEntityToUserDto(user.organisationId, user);
+            const userResponse = Converter.UserEntityToUserDto(organisation.name, user);
             const response: AuthenticationDTO = {
                 token: token,
                 refreshToken: refreshToken,

@@ -1,6 +1,6 @@
 import { IsString } from "class-validator";
 
-export class OrganizationDTO {
+export class organisationDTO {
     @IsString()
-    organizationName!: string;
+    organisationName!: string;
 } 

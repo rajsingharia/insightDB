@@ -5,5 +5,5 @@ export interface UserDTO {
     email: string;
     createdAt: Date;
     updatedAt: Date;
-    organizationName: string;
+    organisationName: string;
 }

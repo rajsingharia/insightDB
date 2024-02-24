@@ -2,7 +2,7 @@
 "use client"
 
 import { useEffect, useState } from "react";
-import AuthAxios from "@/utils/AuthAxios";
+import CustomAxios from "@/utils/CustomAxios";
 import { SupportedCharList } from "@/components/supportedChartsList/SupportedCharList";
 import { InsightChart } from "@/components/charts/InsightChart";
 import { QueryFields } from "@/components/query/QueryFields";
@@ -81,8 +81,8 @@ export default function AddInsightPage() {
   }
 
   useEffect(() => {
-    const authAxios = AuthAxios.getOrgAxios();
-    authAxios.get('/integrations')
+    const customOrgAxios = CustomAxios.getOrgAxios();
+    customOrgAxios.get('/integrations')
       .then((res) => {
         console.log(`User Integrations: `, res.data)
         setUserIntegrations(res.data)
@@ -95,9 +95,9 @@ export default function AddInsightPage() {
         setLoading(false)
       })
 
-    const fetchDataAxios = AuthAxios.getFetchDataAxios()
+    const customDataAxios = CustomAxios.getOrgAxios()
 
-    fetchDataAxios.get('/dashboard/all')
+    customDataAxios.get('/dashboard/all')
       .then((res) => {
         setDashboards(res.data)
       })
@@ -107,8 +107,10 @@ export default function AddInsightPage() {
 
   }, [toast]);
 
-  const handelSelectedIntegrationChange = (selectedIntegration: userIntegrationResponse | null) => {
-    if (selectedIntegration) setSelectedIntegration(selectedIntegration);
+  const handelSelectedIntegrationChange = (id: string) => {
+    const selectedIntegration = userIntegrations.find(i => i.id === id)
+    if (!selectedIntegration) return;
+    setSelectedIntegration(selectedIntegration);
   };
 
   const handelDashboardChange = (id: string) => {
@@ -117,7 +119,7 @@ export default function AddInsightPage() {
 
   const saveInsight = () => {
 
-    const authAxios = AuthAxios.getOrgAxios();
+    const customAxios = CustomAxios.getOrgAxios();
 
     if (!selectedIntegration) {
       toast({ title: "No Integration Selected" });
@@ -131,6 +133,10 @@ export default function AddInsightPage() {
       toast({ title: "No Query" });
       return;
     }
+    else  if (!selectedDashboard?.id) {
+      toast({ title: 'Please select a dashboard'});
+      return;
+    }
 
     const saveInsightRequest: saveInsightRequest = {
       title: insightTitle,
@@ -142,11 +148,11 @@ export default function AddInsightPage() {
     }
 
     const body = {
-      dashboardId: "8970c7d9-a0bc-4577-a3ff-53dc55096b0d",
+      dashboardId: selectedDashboard?.id,
       insight: saveInsightRequest
     }
 
-    authAxios.post('/insights', body)
+    customAxios.post('/insights', body)
       .then((res) => {
         console.log(`Insight Saved: `, res.data)
         toast({ title: "Insight Saved Successfully ✅🔒" });

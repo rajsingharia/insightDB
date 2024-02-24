@@ -7,10 +7,11 @@ import { Axios } from "axios";
 import { RestApiParametersDTO } from "../dto/request/parameters/RestApi.parameters.dto";
 import { DataBaseType } from "insightdb-common"
 import { Redis } from "ioredis";
-import {  FindOptions, WithId } from 'mongodb';
+import { FindOptions, WithId } from 'mongodb';
 import q2m from 'query-to-mongo';
+import * as mysql from "mysql2/promise"
 
-type Connection = pg.PoolClient | mongoose.Mongoose | Axios | Redis | undefined;
+export type Connection = pg.PoolClient | mongoose.Mongoose | Axios | Redis | mysql.Connection | undefined;
 
 interface IGetAllData {
     fields?: string[];
@@ -57,6 +58,10 @@ export class fetchDataService {
         }
         else if (type === DataBaseType.MONGO_DB.valueOf()) {
             const response = await this.getAllDataMongoDB(pool as mongoose.Mongoose, rawQuery);
+            return response;
+        }
+        if (type === DataBaseType.MY_SQL.valueOf()) {
+            const response = await this.getAllDataMySQL(pool as mysql.Connection, rawQuery);
             return response;
         }
         else if (type === DataBaseType.REDIS.valueOf()) {
@@ -123,6 +128,24 @@ export class fetchDataService {
         try {
             const { dataType, key } = JSON.parse(query);
 
+            if (dataType === 'STRING') {
+                const redisString = await redisClient.get(key);
+                const result: IGetAllData = {
+                    fields: key,
+                    data: [redisString],
+                    countOfFields: 1
+                }
+                return result;
+            }
+            if (dataType === 'LIST') {
+                const hashObj = await redisClient.hgetall(key);
+                const result: IGetAllData = {
+                    fields: Object.keys(hashObj),
+                    data: Object.values(hashObj).map((val) => { return JSON.parse(val) }),
+                    countOfFields: Object.keys(hashObj).length
+                }
+                return result;
+            }
             if (dataType === 'HASH') {
                 const hashObj = await redisClient.hgetall(key);
                 const result: IGetAllData = {
@@ -141,6 +164,27 @@ export class fetchDataService {
         } catch (error) {
             throw createHttpError(500, "Internal Server error" + error);
         }
+    }
+
+    private static async getAllDataMySQL(connection: mysql.Connection, query: string): Promise<IGetAllData> {
+
+        //const query = QueryBuilderService.buildPostgresQuery(parameters);
+
+        try {
+            const [rows, fields] = await connection.query(query);
+            const fieldNames = fields.map(field => field.name);
+            const typedRows: mysql.RowDataPacket[] = rows as mysql.RowDataPacket[];
+
+            return {
+                fields: fieldNames,
+                data: typedRows,
+                countOfFields: fieldNames.length,
+            };
+        } catch (error) {
+            console.log(`Postgres Error: ${error}`);
+            throw createHttpError(500, "Internal Server Error");
+        }
+
     }
 
     private static async getAllDataRestApi(pool: Axios, parameters: RestApiParametersDTO): Promise<IGetAllData> {
