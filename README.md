@@ -36,3 +36,11 @@ Before running the application, make sure you have the following installed:
 
 Feel free to reach out to rajsingharia.1234@gmail.com for any questions or feedback. 
 Happy visualizing!
+
+
+
+
+https://github.com/rajsingharia/insightDB/assets/67454147/98362c5b-52c1-4ff5-8796-a50f5163c563
+
+
+
