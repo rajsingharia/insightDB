@@ -37,6 +37,9 @@ Before running the application, make sure you have the following installed:
 Feel free to reach out to rajsingharia.1234@gmail.com for any questions or feedback. 
 Happy visualizing!
 
+### ToDo
+- Explore different alerts
+- Adding table support
 
 ### Video Sample
 
