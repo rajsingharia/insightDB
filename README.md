@@ -38,9 +38,6 @@ Feel free to reach out to rajsingharia.1234@gmail.com for any questions or feedb
 Happy visualizing!
 
 
+### Video Sample
 
-
-https://github.com/rajsingharia/insightDB/assets/67454147/98362c5b-52c1-4ff5-8796-a50f5163c563
-
-
-
+https://github.com/rajsingharia/insightDB/assets/67454147/4465e1d3-066e-43a5-b0a5-a3260aca40f8
