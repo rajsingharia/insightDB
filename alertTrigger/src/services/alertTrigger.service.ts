@@ -1,20 +1,24 @@
 import axios from "axios";
 import { Alerts } from "../types/alert.type";
 import { createTransport } from 'nodemailer'
+import { AlertTriggerResponse } from "../types/alertTriggerResponse.type";
 
 export class AlertTriggerService {
-    public static makeAlert = async (alert: Alerts) => {
+    public static makeAlert = async (alert: Alerts): Promise<AlertTriggerResponse | undefined> => {
 
         const configurationObj = JSON.parse(JSON.stringify(alert.configuration))
         const alertId = alert.id
 
         if (alert.destination == 'EMAIL') {
+
+            const message = configurationObj?.message
+            const email = configurationObj?.email
             // Send an email
             const transporter = createTransport({
                 host: "smtp:relay.sendinblue.com",
                 port: 587,
                 auth: {
-                    user: "test@test.com",
+                    user: email,
                     pass: process.env.SMTP_PASSWORD
                 }
             })
@@ -22,9 +26,9 @@ export class AlertTriggerService {
             try {
                 await transporter.sendMail({
                     from: "noreply.alert@insightdb.com",
-                    to: "test@gmail.com",
+                    to: email,
                     subject: "text",
-                    html: ""
+                    html: message
                 })
 
                 return {
@@ -33,11 +37,11 @@ export class AlertTriggerService {
                     errorMessage: ''
                 }
 
-            } catch (err: any) {
+            } catch (err: unknown) {
                 return {
                     alertId: alertId,
                     isSuccessful: false,
-                    errorMessage: err.message.toString()
+                    errorMessage: err as string
                 }
             }
         }

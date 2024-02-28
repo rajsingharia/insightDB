@@ -10,6 +10,8 @@ import morgan from "morgan";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import 'dotenv/config'
+import { KafkaService } from "./services/kafka.service";
+import { FetchDataConsumer } from "./events/consumers/FetchDataConsumer";
 
 const app = express();
 
@@ -23,6 +25,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 
 prisma.connect();
+
+
+new KafkaService()
+new FetchDataConsumer("FetchDataConsumer", KafkaService.getInstance()).listen()
 
 // Routes
 app.use(ValidateTokenMiddleware)

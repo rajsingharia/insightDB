@@ -1,13 +1,11 @@
-import { Consumer, ConsumerConfig, Kafka, Producer } from 'kafkajs'
-import { AlertService } from './alert.service';
+import { Kafka } from 'kafkajs'
 import fs from 'fs'
 import path from 'path'
 
 export class KafkaService {
 
+    private static instance: KafkaService;
     private fafka: Kafka
-    private producer: Producer
-    private consumer: Consumer
 
     constructor() {
         this.fafka = new Kafka({
@@ -21,53 +19,14 @@ export class KafkaService {
                 mechanism: 'plain',
             }
         });
-        this.producer = this.fafka.producer({ allowAutoTopicCreation: true })
-        const consumerConfig: ConsumerConfig = {
-            groupId: 'alertGroup'
+    }
+
+    static getInstance(): Kafka {
+        if (!KafkaService.instance) {
+            KafkaService.instance = new KafkaService();
         }
 
-        this.consumer = this.fafka.consumer(consumerConfig)
-    }
-
-    public async connectKafka() {
-        console.log('kafka connecting...')
-        await this.consumer.connect()
-
-        console.log('kafka consumer connected!!!')
-        await this.consumer.subscribe({ 'topic': 'AlertTrigger' })
-        console.log('subscribed to topic')
-        
-        await this.producer.connect()
-        console.log('kafka producer connected!!!')
-    }
-
-    public startConsuming() {
-        this.consumer.run({
-            eachMessage: async ({ topic, partition, message }) => {
-                try {
-                    if (message.value != null) {
-                        const alertData = JSON.parse(
-                            Buffer.from(message.value).toString('utf8')
-                        )
-                        console.log(`Received message on ${topic}[${partition}]: ${message.value}`)
-                        await AlertService.addAlertTrigger(alertData)
-                    }
-                } catch (error) {
-                    console.log("Error processing kafka message", error);
-                }
-            }
-        })
-    }
-
-    public async sendMessage(message: unknown) {
-        console.log(`Sending message for alert ${alert} on topic: alertTrigger`);
-        await this.producer.send({
-            topic: 'alertTrigger',
-            messages: [{
-                value: JSON.stringify(message),
-            }]
-        })
-        console.log('Message sent');
+        return KafkaService.instance.fafka;
     }
 
 }

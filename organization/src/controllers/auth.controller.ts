@@ -10,28 +10,16 @@ import createHttpError from "http-errors";
 import { RegisterDTO } from "../dto/request/register.dto";
 import { validate } from "class-validator";
 import { LoginDTO } from "../dto/request/login.dto";
-import { organisationService } from "../services/org.service";
+import { OrganisationService } from "../services/org.service";
 
-
-interface IRegisterRequest extends Request {
-    body: RegisterDTO | undefined;
-}
-
-interface ILoginRequest extends Request {
-    body: LoginDTO | undefined;
-}
-
-interface IRefreshTokenRequest extends Request {
-    body: RefreshTokenDto | undefined;
-}
 
 
 export class AuthController {
 
-    public static register = async (req: IRegisterRequest, res: Response, next: NextFunction) => {
+    public static register = async (req: Request, res: Response, next: NextFunction) => {
         try {
             
-            const registerDto = req.body;
+            const registerDto: RegisterDTO = req.body;
 
             if(!registerDto) throw createHttpError(400, "Body is required");
 
@@ -63,9 +51,9 @@ export class AuthController {
         }
     }
 
-    public static login = async (req: ILoginRequest, res: Response, next: NextFunction) => {
+    public static login = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const loginDto = req.body;
+            const loginDto: LoginDTO = req.body;
 
             if (!loginDto) throw createHttpError(400, "Body is required");
 
@@ -87,7 +75,7 @@ export class AuthController {
 
             if(!user.organisationId) throw createHttpError.NotFound("Organisation not assigned to the user")
 
-            const organisation = await organisationService.findorganisationById(user.organisationId)
+            const organisation = await OrganisationService.findOrganisationById(user.organisationId)
 
             if(!organisation) throw createHttpError.NotFound("Organisation not found")
 
@@ -107,22 +95,21 @@ export class AuthController {
         }
     }
 
-    public static refreshToken = async (req: IRefreshTokenRequest, res: Response, next: NextFunction) => {
+    public static refreshToken = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const body = req.body;
+            const body: RefreshTokenDto = req.body;
 
             //data validation
             if (!body) throw createHttpError(400, "Body is required");
-
 
             //check if jwt token is valid
             const isTokenValid = await JWT.validateToken(body.token);
             if (!isTokenValid) throw new Error("Invalid token");
 
-            const jwtid = await JWT.getJwtIdFromToken(body.token);
+            const jwtId = await JWT.getJwtIdFromToken(body.token);
 
             // check if the refresh token exists and is linked to the jwt token
-            const isRefreshTokenExistsAndHasJwtId = await RefreshTokenService.isRefreshTokenExistsAndHasJwtId(body.refreshToken, jwtid);
+            const isRefreshTokenExistsAndHasJwtId = await RefreshTokenService.isRefreshTokenExistsAndHasJwtId(body.refreshToken, jwtId);
             if (!isRefreshTokenExistsAndHasJwtId) throw new Error("Invalid refresh token");
 
             // check if the jwt token is expired

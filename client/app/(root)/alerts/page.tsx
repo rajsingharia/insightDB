@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button'
 import React, { useEffect, useState } from 'react'
 import { ScrollArea } from "@/components/ui/scroll-area"
 import CustomAxios from '@/utils/CustomAxios'
-import { Card } from '@/components/ui/card'
 import {
     Dialog,
     DialogContent,
@@ -25,6 +24,16 @@ import {
 import { Input } from '@/components/ui/input'
 import { useToast } from "@/components/ui/use-toast"
 import { CircularProgress } from '@/components/common/CircularProgress'
+import { Card, CardContent } from "@/components/ui/card"
+import {
+    Carousel,
+    CarouselContent,
+    CarouselItem,
+    CarouselNext,
+    CarouselPrevious,
+} from "@/components/ui/carousel"
+import { AlertCreationSectionOne } from '@/components/alert/AlertCreationSectionOne'
+import { AlertCreationSectionTwo } from '@/components/alert/AlertCreationSectionTwo'
 
 
 type AlertResponse = {
@@ -50,60 +59,60 @@ export default function AlertsPage() {
 
     const [alerts, setAlerts] = useState<AlertResponse[]>()
     const [alertTriggers, setAlertTriggers] = useState<alertTriggered[]>()
-    const axios = CustomAxios.getAlertAxios()
-    // title!: string;
-    // rawQuery!: string; 
-    // destination!: AlertDestinations; 
-    // configuration!: JsonValue; 
-    // cronExpression!: string; 
-    // repeatCount: number = 0; 
+
+    // model Alerts {
+    //     title              String
+    //     rawQuery           String
+    //     destination        AlertDestinations
+    //     integrationId        String
+    //     configuration      Json //{ row, condition, value }
+    //     cronExpression     String
+    //     repeatCount        Int               @default(1)
+    //   }
+
+    //Section One
     const [title, setTitle] = useState<string>()
+    const [integrationId, setIntegrationId] = useState<string>()
     const [rawQuery, setRawQuery] = useState<string>()
+
+    //Section Two
     const [destination, setDestination] = useState<string>()
-    const [config, setConfig] = useState<string>()
+    const [row, setRow] = useState<string>()
+    const [condition, setCondition] = useState<string>()
+    const [value, setValue] = useState<string>()
     const [cronExp, setCronExp] = useState<string>()
+    const [otherConfig, setOtherConfig] = useState<string>()
     const [repeatCount, setRepeatCount] = useState<number>()
+
+
     const { toast } = useToast()
     const [loading, setLoading] = useState<boolean>(true)
 
-
-    useEffect(() => {
-        axios.get('/alert')
-            .then((response) => {
-                setAlerts(response.data)
-            })
-            .catch((error) => {
-                console.log("error")
-                toast({ title: "Error fetching alerts : " + error.message })
-            })
-            .finally(() => {
-                setLoading(false)
-            })
-
-        axios.get('/alert/alertTriggered')
-            .then((response) => {
-                setAlertTriggers(response.data)
-            })
-            .catch((error) => {
-                console.log("error")
-                toast({ title: "Error fetching alertTriggers : " + error.message })
-            })
-    }, [])
-
     const createNewAlert = () => {
+
+        const alertAxios = CustomAxios.getAlertAxios()
+        const otherConfigJSON = JSON.parse(otherConfig!!)
+
+        const config = {
+            row: row,
+            condition: condition,
+            value: value,
+            ...otherConfigJSON
+        }
 
         const body = {
             alert: {
                 title: title,
+                integrationId: integrationId,
                 rawQuery: rawQuery,
                 destination: destination,
-                configuration: JSON.parse(JSON.stringify(config)),
+                configuration: config,
                 cronExpression: cronExp,
                 repeatCount: repeatCount
             }
         }
 
-        axios.post('/alert', body)
+        alertAxios.post('/alert', body)
             .then((response) => {
                 location.reload();
             })
@@ -111,6 +120,63 @@ export default function AlertsPage() {
                 toast({ title: "Error creating alert : " + error.message })
             })
     }
+
+    const carouselContentArray = [
+
+        <AlertCreationSectionOne
+            key={1}
+            title={title}
+            setTitle={setTitle}
+            rawQuery={rawQuery}
+            setRawQuery={setRawQuery}
+            integrationId={integrationId}
+            setIntegrationId={setIntegrationId} />,
+
+        <AlertCreationSectionTwo
+            key={2}
+            destination={destination}
+            setDestination={setDestination}
+            row={row}
+            setRow={setRow}
+            condition={condition}
+            setCondition={setCondition}
+            value={value}
+            setValue={setValue}
+            otherConfig={otherConfig}
+            setOtherConfig={setOtherConfig}
+            cronExp={cronExp}
+            setCronExp={setCronExp}
+            repeatCount={repeatCount}
+            setRepeatCount={setRepeatCount}
+            createNewAlert={createNewAlert} />
+
+    ]
+
+
+    useEffect(() => {
+        (
+            async () => {
+                const alertAxios = CustomAxios.getAlertAxios()
+                setLoading(true)
+                try {
+                    const alertResponse = await alertAxios.get('/alert')
+                    setAlerts(alertResponse.data)
+
+                    const alertTriggersResponse = await alertAxios.get('/alert/alertTriggered')
+                    setAlertTriggers(alertTriggersResponse.data)
+
+                } catch (error: unknown) {
+                    toast({ title: "Error : " + error })
+                } finally {
+                    setLoading(false)
+                }
+
+            }
+        )();
+
+    }, [toast])
+
+
 
     return (
         <>
@@ -130,39 +196,24 @@ export default function AlertsPage() {
                                     <PlusCircle className='mr-2 h-4 w-4' />Add Alert
                                 </Button>
                             </DialogTrigger>
-                            <DialogContent>
+                            <DialogContent className="w-[1000px]">
                                 <DialogHeader>
                                     <DialogTitle>Add Alert</DialogTitle>
                                 </DialogHeader>
-                                <div className='flex flex-col gap-2'>
-                                    <Input
-                                        placeholder='Title'
-                                        value={title}
-                                        onChange={(e) => setTitle(e.target.value)} />
-                                    <Input
-                                        placeholder='Raw Query'
-                                        value={rawQuery}
-                                        onChange={(e) => setRawQuery(e.target.value)} />
-                                    <Input
-                                        placeholder='Destination'
-                                        value={destination}
-                                        onChange={(e) => setDestination(e.target.value)} />
-                                    <Input
-                                        placeholder='Config'
-                                        value={config}
-                                        onChange={(e) => setConfig(e.target.value)} />
-                                    <Input
-                                        placeholder='Cron string'
-                                        value={cronExp}
-                                        onChange={(e) => setCronExp(e.target.value)} />
-                                    <Input
-                                        placeholder='Repeat'
-                                        type='number'
-                                        value={repeatCount}
-                                        onChange={(e) => setRepeatCount(Number(e.target.value))} />
-                                    <Button onClick={createNewAlert}>
-                                        Save
-                                    </Button>
+                                <div className="w-full h-full">
+                                    <Carousel className="w-full">
+                                        <CarouselContent>
+                                            {carouselContentArray.map((child, index) => (
+                                                <CarouselItem key={index}>
+                                                    {
+                                                        child
+                                                    }
+                                                </CarouselItem>
+                                            ))}
+                                        </CarouselContent>
+                                        <CarouselPrevious />
+                                        <CarouselNext />
+                                    </Carousel>
                                 </div>
                             </DialogContent>
                         </Dialog>

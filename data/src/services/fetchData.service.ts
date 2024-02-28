@@ -49,7 +49,7 @@ export class fetchDataService {
     public static getAllDataFromRawQuery = async (type: string, credentials: JsonValue, rawQuery: string): Promise<IGetAllData | undefined> => {
 
         const pool: Connection = await connectDataSourceService.connectDataSource(type, credentials);
-        if (!pool) throw createHttpError(500, "Internal Server Error");
+        if (!pool) throw createHttpError(500, "Internal Server Error pool empty");
         //console.log(typeof pool);
 
         if (type === DataBaseType.POSTGRES_QL.valueOf()) {

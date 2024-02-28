@@ -50,6 +50,7 @@ type IntegrationCreateBody = {
 export default function IntegrationsPage() {
 
   const [supportedIntegrations, setSupportedIntegrations] = useState<Integration[]>([])
+  const [name, setName] = useState<string>()
 
   const [clickedIntegration, setClickedIntegration] = useState<Integration | null>(null)
   const { toast } = useToast()
@@ -86,7 +87,7 @@ export default function IntegrationsPage() {
 
 
     const body: IntegrationCreateBody = {
-      name: clickedIntegration?.name || '',
+      name: name || '',
       type: clickedIntegration?.type || '',
       credentials: credentials
     }
@@ -173,6 +174,11 @@ export default function IntegrationsPage() {
                   <h4 className="text-center decoration-2 font-mono text-2xl">
                     Add Credentials for {clickedIntegration?.name}
                   </h4>
+                  <Input
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Name"
+                  />
                   <div className="flex flex-col justify-center w-full p-10">
                     {
                       clickedIntegration?.requiredCredentials.map((credential) => (
@@ -182,7 +188,8 @@ export default function IntegrationsPage() {
                           </div>
                           <Input
                             id={credential.name}
-                            placeholder={credential.name}
+                            placeholder={credential.name + credential.required ? "Required*" : "Optional"}
+                            type={credential.type}
                           />
                         </div>
                       ))

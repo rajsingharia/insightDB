@@ -12,6 +12,8 @@ import { MultiTypeChart } from "@/components/charts/MultiTypeChart";
 import { ScatterChartData } from "@/components/supportedChartsList/ScatterChartInput";
 import { TextAreaData } from "@/components/supportedChartsList/TextInput";
 import { TextArea } from "@/components/charts/TextArea"
+import { TableViewData } from "../supportedChartsList/tableViewInput";
+import { TableView } from "./TableView";
 
 type InsightChartProps = {
     insightData: FetchDataResponse;
@@ -78,7 +80,16 @@ export const InsightChart: React.FC<InsightChartProps> = ({
         return (
             <TextArea
                 chartData={chartData}
-                textAreaUiData={textUiData}/>
+                textAreaUiData={textUiData} />
+        )
+    }
+
+    else if (chartDetail.value === 'table') {
+        const tableViewData = chartUIData as TableViewData
+        return (
+            <TableView
+                tableData={chartData}
+                tableViewData={tableViewData} />
         )
     }
 

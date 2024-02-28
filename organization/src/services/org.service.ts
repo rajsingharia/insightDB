@@ -3,11 +3,11 @@ import createHttpError from "http-errors";
 import { organisationDTO } from "../dto/request/org.dto";
 
 
-export class organisationService {
+export class OrganisationService {
 
     private static prismaClient = prisma.getInstance();
 
-    public static createorganisation = async (organisation: organisationDTO) => {
+    public static createOrganisation = async (organisation: organisationDTO) => {
         const savedUser = await this.prismaClient.organisation.create({
             data: {
                 name: organisation.organisationName
@@ -16,17 +16,17 @@ export class organisationService {
         return savedUser;
     }
 
-    public static findorganisationById = async (id: string) => {
-        const user = await this.prismaClient.organisation.findUnique({
+    public static findOrganisationById = async (id: string) => {
+        const organisation = await this.prismaClient.organisation.findUnique({
             where: {
                 id: id
             }
         });
-        if (!user) throw createHttpError(404, "organisation not found");
-        return user;
+        if (!organisation) throw createHttpError(404, "organisation not found");
+        return organisation;
     }
 
-    public static findorganisationByName = async (name: string) => {
+    public static findOrganisationByName = async (name: string) => {
         const user = await this.prismaClient.organisation.findUnique({
             where: {
                 name: name
@@ -36,7 +36,7 @@ export class organisationService {
         return user;
     }
 
-    public static updateorganisation = async (id: string, organisation: organisationDTO) => {
+    public static updateOrganisation = async (id: string, organisation: organisationDTO) => {
         const updatedUser = await this.prismaClient.organisation.update({
             where: {
                 id: id
@@ -48,7 +48,7 @@ export class organisationService {
         return updatedUser;
     }
 
-    public static deleteorganisationById = async (id: string) => {
+    public static deleteOrganisationById = async (id: string) => {
         const deletedUser = await this.prismaClient.organisation.delete({
             where: {
                 id: id
@@ -131,7 +131,7 @@ export class organisationService {
         }
     }
 
-    public static getorganisationIntegrations = async (organisationId: string) => {
+    public static getOrganisationIntegrations = async (organisationId: string) => {
         const organisation = await this.prismaClient.organisation.findUnique({
             where: {
                 id: organisationId
@@ -144,7 +144,7 @@ export class organisationService {
         return organisation.integrations;
     }
 
-    public static getorganisationIntegrationById = async (organisationId: string, integrationId: string) => {
+    public static getOrganisationIntegrationById = async (organisationId: string, integrationId: string) => {
         const organisation = await this.prismaClient.organisation.findUnique({
             where: {
                 id: organisationId

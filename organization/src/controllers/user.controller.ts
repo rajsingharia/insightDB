@@ -6,7 +6,7 @@ import { Converter } from "../util/converters";
 import { UserDTO } from "../dto/response/user.dto";
 import createHttpError from "http-errors";
 import { validate } from "class-validator";
-import { organisationService } from "../services/org.service";
+import { OrganisationService } from "../services/org.service";
 
 
 interface UpdateUserRequest extends Request {
@@ -25,7 +25,7 @@ export const getUser = async (req: Request, res: Response, next: NextFunction) =
 
         if (!user) throw createHttpError(404, "User not found");
         
-        const organisation = await organisationService.findorganisationById(organisationId)
+        const organisation = await OrganisationService.findOrganisationById(organisationId)
 
         if(!organisation) throw createHttpError.NotFound("Organisation not assigned to the user")
 
@@ -57,7 +57,7 @@ export const updateUser = async (req: UpdateUserRequest, res: Response, next: Ne
         if(!user) throw createHttpError.NotFound("User Not found")
         if (!user.organisationId) throw createHttpError.NotFound("Organisation not assigned to the user")
 
-        const organisation = await organisationService.findorganisationById(user.organisationId)
+        const organisation = await OrganisationService.findOrganisationById(user.organisationId)
 
         const response: UserDTO = Converter.UserEntityToUserDto(organisation.name, user);
         res.status(200).send(response);
@@ -74,7 +74,7 @@ export const deleteUser = async (req: Request, res: Response, next: NextFunction
         if(!user) throw createHttpError.NotFound("User Not found")
         if (!user.organisationId) throw createHttpError.NotFound("Organisation not assigned to the user")
 
-        const organisation = await organisationService.findorganisationById(user.organisationId)
+        const organisation = await OrganisationService.findOrganisationById(user.organisationId)
 
         const response: UserDTO = Converter.UserEntityToUserDto(organisation.name, user);
         res.status(200).send(response);

@@ -19,7 +19,7 @@ interface registerUser {
   firstName: string,
   lastName: string,
   email: string,
-  organizationId: string,
+  organisationId: string,
   password: string,
   isAdmin: boolean
 }
@@ -34,8 +34,8 @@ export const Register: React.FC<RegisterProps> = ({ setLoginOrRegister }) => {
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
-  const [organizationName, setOrganizationName] = useState('')
-  const [organizationId, setOrganizationId] = useState('')
+  const [organisationName, setOrganisationName] = useState('')
+  const [organisationId, setOrganisationId] = useState('')
   const [password, setPassword] = useState('')
   const [isAdmin, setIsAdmin] = useState<boolean>(false)
   const customAxios = CustomAxios.getOrgAxios();
@@ -48,7 +48,7 @@ export const Register: React.FC<RegisterProps> = ({ setLoginOrRegister }) => {
       firstName: firstName,
       lastName: lastName,
       email: email,
-      organizationId: organizationId,
+      organisationId: organisationId,
       password: password,
       isAdmin: isAdmin
     }
@@ -66,18 +66,18 @@ export const Register: React.FC<RegisterProps> = ({ setLoginOrRegister }) => {
 
   }
 
-  const createOrganization = () => {
+  const createorganisation = () => {
     const body = {
-      organization: {
-        organizationName: organizationName,
+      organisation: {
+        organisationName: organisationName,
       }
     }
 
-    customAxios.post('/organization', body)
+    customAxios.post('/organisation', body)
       .then((response) => {
         console.log(response);
         toast({ title: "Organisation Created successfully" })
-        setOrganizationId(response.data.id)
+        setOrganisationId(response.data.id)
       })
       .catch((error) => {
         console.log(error);
@@ -114,11 +114,11 @@ export const Register: React.FC<RegisterProps> = ({ setLoginOrRegister }) => {
             onChange={(e) => setEmail(e.target.value)}
           />
           <Input
-            id="organization"
-            placeholder="Organization Name"
+            id="organisation"
+            placeholder="organisation Name"
             type="string"
-            value={organizationName}
-            onChange={(e) => setOrganizationName(e.target.value)}
+            value={organisationName}
+            onChange={(e) => setOrganisationName(e.target.value)}
           />
           <Input
             id="password"
@@ -147,24 +147,24 @@ export const Register: React.FC<RegisterProps> = ({ setLoginOrRegister }) => {
             <DialogTrigger asChild>
               <a href='#'>
                 <p className="text-sm text-muted-foreground text-center">
-                  Create Organization
+                  Create organisation
                 </p>
               </a>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
-                <DialogTitle>Create Organization</DialogTitle>
+                <DialogTitle>Create organisation</DialogTitle>
               </DialogHeader>
               <div className="flex flex-col gap-4 py-4">
                 <Input
                   id="name"
-                  value={organizationId}
-                  onChange={(e) => setOrganizationId(e.target.value)}
-                  placeholder="Organization Name" />
+                  value={organisationId}
+                  onChange={(e) => setOrganisationId(e.target.value)}
+                  placeholder="organisation Name" />
               </div>
               <DialogFooter>
                 <Button
-                  onClick={createOrganization}
+                  onClick={createorganisation}
                   type="submit">
                   Add
                 </Button>

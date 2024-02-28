@@ -4,10 +4,10 @@ import { ValidateTokenMiddleware } from 'insightdb-common';
 
 const orgRouter = express.Router();
 
-orgRouter.post('/', orgController.createorganisation);
+orgRouter.post('/', orgController.createOrganisation);
 orgRouter.use(ValidateTokenMiddleware)
-orgRouter.get('/', orgController.getorganisation);
-orgRouter.put('/', orgController.updateorganisation);
-orgRouter.delete('/:id', orgController.deleteorganisation);
+orgRouter.get('/', orgController.getOrganisation);
+orgRouter.put('/', orgController.updateOrganisation);
+orgRouter.delete('/:id', orgController.deleteOrganisation);
 
 export default orgRouter;

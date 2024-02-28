@@ -1,10 +1,6 @@
+import { AlertTriggerConsumer } from "./events/consumers/AlertTriggerConsumer";
 import { KafkaService } from "./services/kafka.service";
 import 'dotenv/config'
 
-async function startKafkaService() {
-    const cronService = new KafkaService()
-    await cronService.connectKafka()
-    await cronService.startConsuming()
-}
-
-startKafkaService()
+new KafkaService()
+new AlertTriggerConsumer("AlertTriggerConsumer", KafkaService.getInstance()).listen()

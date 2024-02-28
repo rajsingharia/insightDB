@@ -46,5 +46,11 @@ export const SupportedCharts: ICharts[] = [
         icon: 'https://cdn-icons-png.flaticon.com/128/7358/7358747.png',
         name: 'Text Area',
         value: 'text'
+    },
+    {
+        id: 7,
+        icon: 'https://cdn-icons-png.flaticon.com/128/7358/7358747.png',
+        name: 'Table View',
+        value: 'table'
     }
 ]

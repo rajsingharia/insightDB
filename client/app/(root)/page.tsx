@@ -55,66 +55,60 @@ export default function Home() {
 
   useEffect(() => {
 
-    fetchDataAxios.get('/insights/default')
-      .then((res) => {
-        console.log("Insights: ", res.data);
-        const insights = res.data;
-        //for testing adding same insight 2 times
-        // insights.push(insights[0]);
-        // insights.push(insights[1]);
+    const fetchData = async () => {
+      setLoading(true)
+      try {
+        const userInsightResponse = await fetchDataAxios.get('/insights/default')
+        const insights = userInsightResponse.data;
+        console.log("User Insights :: " + JSON.stringify(insights))
         setUserInsights(insights);
-      })
-      .catch((err) => {
-        console.log(err)
-        toast({ title: "Error fetching user Insight: " + err.response.data })
-      })
-      .finally(() => {
-        setLoading(false);
-      });
 
+        const allDashboardResponse = await fetchDataAxios.get('/dashboard/all');
+        setAllDashboard(allDashboardResponse.data);
 
-    fetchDataAxios.get('/dashboard/all')
-      .then((res) => {
-      
-        fetchDataAxios.get('/dashboard/default')
-          .then((res) => {
-            if (selectedDashboardId == null  && res.data != null) {
-              setSelectedDashboardId(res.data)
-            }
-          })
-          .catch((err) => {
-            console.log(err)
-            toast({ title: "Error fetching user Insight: " + err.response.data })
-          }).finally(() => {
-            setAllDashboard(res.data)
-          })
+        const defaultDashboardResponse = await fetchDataAxios.get('/dashboard/default');
+        if (defaultDashboardResponse.data !== null) {
+          setSelectedDashboardId(defaultDashboardResponse.data);
+        }
 
-      })
-      .catch((err) => {
-        toast({ title: "Error fetching user Insight: " + err.message })
-      })
+      } catch (error: any) {
+        console.error(error);
+        if (error.response) {
+          toast({ title: "Error : " + error.response.data });
+        } else {
+          toast({ title: "Error : " + error.message });
+        }
+      } finally {
+        setLoading(false)
+      }
+    };
 
+    fetchData()
   }, [])
 
 
   useEffect(() => {
     if (selectedDashboardId) {
-
-      setLoading(true)
-      fetchDataAxios.get(`/insights/dashboard/${selectedDashboardId}`)
-        .then((res) => {
-          console.log("Insights: ", res.data);
-          const insights = res.data;
+      const fetchData = async () => {
+        setLoading(true)
+        try {
+          const userInsightResponse = await fetchDataAxios.get(`/insights/dashboard/${selectedDashboardId}`)
+          const insights = userInsightResponse.data;
           setUserInsights(insights);
-
-        })
-        .catch((err) => {
-          console.log(err)
-          toast({ title: "Error fetching user Insight: " + err.message })
-        })
-        .finally(() => {
-          setLoading(false);
-        });
+  
+        } catch (error: any) {
+          console.error(error);
+          if (error.response) {
+            toast({ title: "Error fetching user Insight: " + error.response.data });
+          } else {
+            toast({ title: "Error fetching user Insight: " + error.message });
+          }
+        } finally {
+          setLoading(false)
+        }
+      };
+  
+      fetchData()
 
     }
   }, [selectedDashboardId])
@@ -177,7 +171,7 @@ export default function Home() {
   return (
     <div className="flex flex-col w-full h-full">
       {
-        <div className="flex flex-row-reverse mb-4 gap-2">
+        <div className="flex flex-row-reverse mb-4 gap-2 items-center">
           {
             !loading && userInsights && userInsights.length > 0 &&
             <Button variant={enableEdit ? 'secondary' : 'destructive'} size="icon">
@@ -247,8 +241,8 @@ export default function Home() {
               </SelectGroup>
             </SelectContent>
           </Select>
-          <p className="text-xl text-muted-foreground">
-            {user.organizationName}
+          <p className="text-s text-muted-foreground grow">
+            {user.organisationName}
           </p>
         </div>
       }

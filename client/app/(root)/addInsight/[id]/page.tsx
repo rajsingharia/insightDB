@@ -93,13 +93,15 @@ export default function AddInsightPageQuery() {
 
 
   useEffect(() => {
-    const customAxios = CustomAxios.getOrgAxios();
+    const customOrgAxios = CustomAxios.getOrgAxios();
     const customDataAxios = CustomAxios.getFetchDataAxios()
 
-    customAxios.get(`/insights/${insightId}`)
-      .then((res) => {
-        console.log("Insights: ", res.data);
-        const insight = res.data;
+    const fetchData = async () => {
+      setLoading(true)
+      try {
+        const insightsResponse = await customOrgAxios.get(`/insights/${insightId}`)
+        if (!insightsResponse || !insightsResponse.data) throw new Error("Failed to get Insight")
+        const insight = insightsResponse.data
         setRawQuery(insight.rawQuery)
         setRefreshRate(insight.refreshRate)
         setChartUIData(insight.graphData)
@@ -110,50 +112,34 @@ export default function AddInsightPageQuery() {
         setInsightTitle(insight.title)
         setInsightDescription(insight.description)
 
+        const userIntegrationsResponse = await customOrgAxios.get('/integrations')
+        setUserIntegrations(userIntegrationsResponse.data)
+        const selectedIntegration = userIntegrationsResponse.data.find((integration: any) => integration.id == insight.integrationId)
+        setSelectedIntegration(selectedIntegration)
 
         const body = {
-          integrationId: insight.integrationId,
+          integrationType: selectedIntegration.type,
+          integrationCredentials: selectedIntegration.credentials,
           rawQuery: insight.rawQuery
         }
 
-        customAxios.post('/fetchData', body)
-          .then((res) => {
-            const fetchedData = res.data as FetchDataResponse;
-            setInsightChartData(fetchedData);
-          })
-          .catch((err) => {
-            console.log(err);
-            toast({ title: "Error fetching data : " + err.message })
-          });
+        const chartInsightDataResponse = await customDataAxios.post('/fetchData', body)
+        const fetchedData = chartInsightDataResponse.data as FetchDataResponse;
+        setInsightChartData(fetchedData);
 
-        customAxios.get('/integrations')
-          .then((res) => {
-            console.log(`User Integrations: `, res.data)
-            setUserIntegrations(res.data)
-            const selectedIntegration = res.data.find((integration: any) => integration.id == insight.integrationId)
-            setSelectedIntegration(selectedIntegration)
-          })
-          .catch((err) => {
-            console.log(err);
-            toast({ title: "Error Fetching Integrations" })
-          });
 
-        customDataAxios.get('/dashboard/all')
-          .then((res) => {
-            setDashboards(res.data)
-          })
-          .catch((err) => {
-            toast({ title: "Error fetching user Insight: " + err.message })
-          })
 
-      })
-      .catch((err) => {
-        console.log(err)
-        toast({ title: "Error fetching user Insight: " + err.message })
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+        const dashboardsResponse = await customOrgAxios.get('/dashboard/all')
+        setDashboards(dashboardsResponse.data)
+
+      } catch (error) {
+        toast({ title: "Error : " + error })
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchData()
 
   }, [toast, insightId])
 
@@ -166,7 +152,7 @@ export default function AddInsightPageQuery() {
 
   const editInsight = () => {
 
-    const customAxios = CustomAxios.getOrgAxios();
+    const customOrgAxios = CustomAxios.getOrgAxios();
 
     if (!selectedIntegration) {
       toast({ title: "No Integration Selected" });
@@ -194,7 +180,7 @@ export default function AddInsightPageQuery() {
       insight: saveInsightRequest
     }
 
-    customAxios.patch(`/insights/${insightId}`, body)
+    customOrgAxios.patch(`/insights/${insightId}`, body)
       .then((res) => {
         console.log(`Insight Saved: `, res.data)
         toast({ title: "Insight Updated Successfully ✅" });

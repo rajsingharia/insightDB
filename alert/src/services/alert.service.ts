@@ -27,7 +27,12 @@ export class AlertService {
                 destination: newAlert.destination,
                 configuration: newAlert.configuration!,
                 cronExpression: newAlert.cronExpression,
-                repeatCount: newAlert.repeatCount
+                repeatCount: newAlert.repeatCount,
+                integration: {
+                    connect: {
+                        id: newAlert.integrationId
+                    }
+                }
             }
         })
 
@@ -102,6 +107,18 @@ export class AlertService {
             }
         })
         return alertTriggers
+    }
+
+    public static getIntegrationFromAlert = async (alertId: string) => {
+        const alert = await this.prismaClient.alerts.findFirst({
+            where: {
+                id: alertId
+            },
+            include: {
+                integration: true
+            }
+        })
+        return alert?.integration;
     }
 
 }

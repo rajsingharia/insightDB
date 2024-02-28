@@ -1,6 +1,8 @@
 import { CronJob } from 'cron';
 import { AlertService } from './alert.service';
 import { KafkaService } from './kafka.service';
+import { Alerts } from '@prisma/client';
+import { FetchDataProducer } from '../events/producers/FetchDataProducer';
 
 export class CronService {
 
@@ -15,11 +17,12 @@ export class CronService {
 
     public async startAllCronJob() {
         const alerts = await AlertService.getAllAlerts();
-        if (alerts && alerts.length > 0) {
-            alerts.forEach((alert) => {
+        if (alerts.length > 0) {
+            alerts.forEach((alert: Alerts) => {
                 const alertJob = new CronJob(alert.cronExpression, async () => {
-                    //AlertService.makeAlert(alert);
-                    await this.kafka.sendMessage(alert)
+                    console.log("Sending alert for data fetching...")
+                    await new FetchDataProducer(KafkaService.getInstance()).publish({ alert });
+                    console.log("Successfully send alert data for fetching")
                 });
                 this.cronAlertMapping.set(alert.id, alertJob)
             })
@@ -30,6 +33,7 @@ export class CronService {
             })
         }
     }
+
 
     public async startNewCronJon(alertId: string) {
         if (this.cronAlertMapping.get(alertId)) {
@@ -43,7 +47,7 @@ export class CronService {
         }
 
         const alertJob = new CronJob(alert.cronExpression, async () => {
-            await this.kafka.sendMessage(alert)
+            new FetchDataProducer(KafkaService.getInstance()).publish({ alert });
         });
         this.cronAlertMapping.set(alertId, alertJob)
         this.cronAlertMapping.get(alertId)?.start()

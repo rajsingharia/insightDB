@@ -63,7 +63,8 @@ export default function AddInsightPage() {
   const { toast } = useToast()
 
   const [userIntegrations, setUserIntegrations] = useState<userIntegrationResponse[]>([]);
-  const [selectedIntegration, setSelectedIntegration] = useState<userIntegrationResponse | undefined>(undefined);
+  const [selectedIntegration, setSelectedIntegration] = useState<userIntegrationResponse>();
+  const [selectedInt, setSelectedInt] = useState<userIntegrationResponse | undefined>(undefined);
   const [selectedChart, setSelectedChart] = useState<ICharts>({} as ICharts);
   // const [selectedChartColors, setSelectedChartColors] = useState<ChartColors | undefined>(undefined);
   const [refreshRate, setRefreshRate] = useState<number>(0);
@@ -81,35 +82,34 @@ export default function AddInsightPage() {
   }
 
   useEffect(() => {
-    const customOrgAxios = CustomAxios.getOrgAxios();
-    customOrgAxios.get('/integrations')
-      .then((res) => {
-        console.log(`User Integrations: `, res.data)
-        setUserIntegrations(res.data)
-      })
-      .catch((err) => {
-        console.log(err);
-        toast({ title: "Error Fetching Integrations" })
-      })
-      .finally(() => {
+
+    const fetchData = async () => {
+      const customOrgAxios = CustomAxios.getOrgAxios();
+      const customDataAxios = CustomAxios.getOrgAxios()
+      try {
+        //setLoading(true)
+        const userIntegrationsResponse = await customOrgAxios.get('/integrations')
+        setUserIntegrations(userIntegrationsResponse.data)
+
+        const allDashboardResponse = await customDataAxios.get('/dashboard/all')
+        setDashboards(allDashboardResponse.data)
+
+      } catch (error) {
+        console.log(error);
+        toast({ title: "Error : " + error })
+
+      } finally {
         setLoading(false)
-      })
+      }
+    }
 
-    const customDataAxios = CustomAxios.getOrgAxios()
-
-    customDataAxios.get('/dashboard/all')
-      .then((res) => {
-        setDashboards(res.data)
-      })
-      .catch((err) => {
-        toast({ title: "Error fetching user Insight: " + err.message })
-      })
+    fetchData()
 
   }, [toast]);
 
   const handelSelectedIntegrationChange = (id: string) => {
     const selectedIntegration = userIntegrations.find(i => i.id === id)
-    if (!selectedIntegration) return;
+    console.log("selectedIntegration :: " + JSON.stringify(selectedIntegration))
     setSelectedIntegration(selectedIntegration);
   };
 
@@ -133,8 +133,8 @@ export default function AddInsightPage() {
       toast({ title: "No Query" });
       return;
     }
-    else  if (!selectedDashboard?.id) {
-      toast({ title: 'Please select a dashboard'});
+    else if (!selectedDashboard?.id) {
+      toast({ title: 'Please select a dashboard' });
       return;
     }
 
@@ -181,7 +181,7 @@ export default function AddInsightPage() {
             <ResizablePanelGroup
               direction="vertical"
               className="gap-2">
-              <ResizablePanel defaultSize={40} className="flex justify-center items-center w-full p-1 rounded-lg relative">
+              <ResizablePanel defaultSize={40} className="flex justify-center items-center w-full p-1 rounded-lg relative flex-col">
                 {
                   // TODO: Explore lazy loading of chart component
                   insightData && insightData.countOfFields > 0 && chartUIData &&
@@ -226,10 +226,10 @@ export default function AddInsightPage() {
               <ResizableHandle withHandle />
               <ResizablePanel defaultSize={60} className="w-full p-1 rounded-lg">
                 {
-                  selectedIntegration &&
+                  selectedDashboard && selectedIntegration &&
                   <QueryFields
                     integrationId={selectedIntegration.id}
-                    integrationType={selectedIntegration.type}
+                    integrationType={selectedIntegration?.type}
                     setInsightData={setInsightData}
                     chartType={selectedChart}
                     rawQuery={rawQuery}
@@ -247,7 +247,6 @@ export default function AddInsightPage() {
               {
                 dashboards && dashboards.length > 0 &&
                 <ChartSettings
-                  selectedIntegration={selectedIntegration}
                   handelSelectedIntegrationChange={handelSelectedIntegrationChange}
                   userIntegrations={userIntegrations}
                   insightTitle={insightTitle}

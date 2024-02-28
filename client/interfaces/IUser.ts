@@ -33,5 +33,5 @@ export interface IUser {
     createdAt: string,
     updatedAt: string,
     role: string,
-    organizationName: string
+    organisationName: string
 }

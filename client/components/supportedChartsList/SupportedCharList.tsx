@@ -16,6 +16,7 @@ import PieChartInput from '@/components/supportedChartsList/PieChartInput'
 import LineChartInput from '@/components/supportedChartsList/LineChartInput'
 import ScatterChartInput from '@/components/supportedChartsList/ScatterChartInput'
 import TextAreaInput from '@/components/supportedChartsList/TextInput'
+import TableViewInput from '@/components/supportedChartsList/tableViewInput'
 
 interface SupportedCharListProps {
     selectedChart: ICharts,
@@ -63,6 +64,13 @@ export const SupportedCharList: React.FC<SupportedCharListProps> = ({
         else if (chartType === 'text') {
             return (
                 <TextAreaInput
+                    setChartUIData={setChartUIData}
+                    insightData={insightData} />
+            )
+        }
+        else if (chartType === 'table') {
+            return (
+                <TableViewInput
                     setChartUIData={setChartUIData}
                     insightData={insightData} />
             )

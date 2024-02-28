@@ -13,31 +13,19 @@ type Connection = pg.PoolClient | mongoose.Mongoose | Axios | Redis | mysql.Conn
 export class connectDataSourceService {
 
     private static allConnections: Map<JsonValue, Connection> = new Map<JsonValue, Connection>();
-
-
-    //TODO: should not be a singleton
-    //TODO: should be able to connect to multiple datasources
-    //TODO: find a caching solution for the connections
-
-
+    private static postgresConnectionPoolMap: Map<string, Pool> = new Map<string, Pool>();
 
     public static connectDataSource = async (type: string, credentials: JsonValue): Promise<Connection | undefined> => {
 
+        const connectionKey = JSON.stringify(credentials);
 
-        if (this.allConnections.has(credentials)) return this.allConnections.get(credentials);
+        if (this.allConnections.has(connectionKey)) return this.allConnections.get(connectionKey);
 
         if (type === DataBaseType.POSTGRES_QL.valueOf()) {
-
-            const getPostgresConfig = await DataSourceConfig.getPostgresConfig(credentials);
-            const pool = new Pool(getPostgresConfig);
-            const connection = await pool.connect();
-
-            if (credentials == null) {
-                throw createHttpError(500, 'No credentials provided');
-            }
-
-            this.allConnections.set(credentials, connection);
-            return this.allConnections.get(credentials);
+            const client = await this.connectPostgres(credentials);
+            if(!client) throw createHttpError("Postgres Client is not defined");
+            this.allConnections.set(connectionKey, client);
+            return this.allConnections.get(connectionKey);
         }
         else if (type === DataBaseType.MONGO_DB.valueOf()) {
             const getMongoDBConfig = await DataSourceConfig.getMongoDBConfig(credentials);
@@ -61,7 +49,6 @@ export class connectDataSourceService {
 
             const getMySQLConfig = await DataSourceConfig.getMySQLConfig(credentials);
 
-    
             const connection = await mysql.createConnection(getMySQLConfig);
             await connection.connect()
             if (credentials == null) {
@@ -90,4 +77,23 @@ export class connectDataSourceService {
             return this.allConnections.get(credentials);
         }
     }
+
+    private static async connectPostgres(credentials: JsonValue): Promise<Connection> {
+        const connectionKey = JSON.stringify(credentials);
+
+        if (!this.postgresConnectionPoolMap.has(connectionKey)) {
+            const postgresConfig = await DataSourceConfig.getPostgresConfig(credentials);
+            const pool = new Pool(postgresConfig);
+            this.postgresConnectionPoolMap.set(connectionKey, pool);
+        }
+        const pool = this.postgresConnectionPoolMap.get(connectionKey);
+        if (!pool) {
+            throw new Error('Failed to create PostgreSQL connection pool');
+        }
+        const client = await pool.connect();
+        // Set expiration time for the connection in Redis (lets say 10 minutes)
+        return client;
+    }
+
+
 }

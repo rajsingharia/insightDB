@@ -7,6 +7,9 @@ export class AlertDTO {
     title!: string;
 
     @IsString()
+    integrationId!: string;
+
+    @IsString()
     rawQuery!: string; 
 
     @IsString()

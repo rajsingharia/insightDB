@@ -71,6 +71,7 @@ model Integration {
   Insight        Insight[]
   Organisation   Organisation? @relation(fields: [organisationId], references: [id])
   organisationId String?
+  Alerts         Alerts[]
 }
 
 model Dashboard {
@@ -111,17 +112,19 @@ enum AlertDestinations {
 }
 
 model Alerts {
-  id             String            @id @default(uuid())
-  userId         String
-  title          String
-  rawQuery       String
-  destination    AlertDestinations
-  configuration  Json
-  cronExpression String
-  repeatCount    Int               @default(1)
-  AlertTriggered AlertTriggered[]
-  Organisation   Organisation?     @relation(fields: [organisationId], references: [id])
-  organisationId String?
+  id                 String            @id @default(uuid())
+  userId             String
+  title              String
+  rawQuery           String
+  destination        AlertDestinations
+  integration        Integration?      @relation(fields: [integrationAlertId], references: [id])
+  integrationAlertId String
+  configuration      Json //{ row, condition, value }
+  cronExpression     String
+  repeatCount        Int               @default(1)
+  AlertTriggered     AlertTriggered[]
+  Organisation       Organisation?     @relation(fields: [organisationId], references: [id])
+  organisationId     String?
 }
 
 model AlertTriggered {

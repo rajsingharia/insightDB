@@ -14,7 +14,6 @@ import { Input } from "@/components/ui/input"
 import { useToast } from '@/components/ui/use-toast'
 
 interface ChartSettingsProps {
-    selectedIntegration: userIntegrationResponse | undefined,
     handelSelectedIntegrationChange: (id: string) => void,
     userIntegrations: userIntegrationResponse[],
     insightTitle: string,
@@ -28,7 +27,6 @@ interface ChartSettingsProps {
 
 export const ChartSettings: React.FC<ChartSettingsProps> = (
     {
-        selectedIntegration,
         handelSelectedIntegrationChange,
         userIntegrations,
         insightTitle,
@@ -64,25 +62,23 @@ export const ChartSettings: React.FC<ChartSettingsProps> = (
 
     return (
         <div className="flex flex-col justify-start items-start w-full mt-2 gap-3">
+
             <Select
                 onValueChange={(value: string) => {
-                    handelSelectedIntegrationChange(value)
+                    handelDashboardChange(value)
                 }}>
                 <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select Integration" />
+                    <SelectValue placeholder="Select Dashboard" />
                 </SelectTrigger>
                 <SelectContent>
                     <SelectGroup>
-                        <SelectLabel>Integrations</SelectLabel>
                         {
-                            userIntegrations &&
-                            userIntegrations.map((integration: any) => {
+                            dashboards.map((dashboard) => {
                                 return (
                                     <SelectItem
-                                        id={integration.id}
-                                        value={integration.id}
-                                        key={integration.id}>
-                                        {integration?.name}
+                                        value={dashboard.id}
+                                        key={dashboard.id}>
+                                        {dashboard.title}
                                     </SelectItem>
                                 )
                             })
@@ -92,25 +88,22 @@ export const ChartSettings: React.FC<ChartSettingsProps> = (
             </Select>
 
             <Select
-                onValueChange={(value: string) => { handelDashboardChange(value) }}>
+                onValueChange={(value: string) => {
+                    handelSelectedIntegrationChange(value)
+                }}>
                 <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select Integration" />
                 </SelectTrigger>
                 <SelectContent>
                     <SelectGroup>
-                        <SelectLabel>Integrations</SelectLabel>
                         {
-                            dashboards &&
-                            dashboards.map((dashboard: { id: string, title: string }) => {
-                                return (
-                                    <SelectItem
-                                        id={dashboard.id}
-                                        value={dashboard.id}
-                                        key={dashboard.id}>
-                                        {dashboard.title}
-                                    </SelectItem>
-                                )
-                            })
+                            userIntegrations.map((integration) => (
+                                <SelectItem
+                                    key={integration.id}
+                                    value={integration.id}>
+                                    {integration.name}
+                                </SelectItem>
+                            ))
                         }
                     </SelectGroup>
                 </SelectContent>
@@ -126,29 +119,6 @@ export const ChartSettings: React.FC<ChartSettingsProps> = (
                 value={insightDescription}
                 onChange={(event) => setInsightDescription(event.target.value)}
             />
-            {/* {
-                fields && selectedChartColors &&
-                <div className="flex flex-col justify-start items-center w-full gap-3">
-                    {
-                        fields.map((field, index) => {
-                            return (
-                                <div
-                                    key={field}
-                                    className="flex flex-row justify-start items-center gap-2">
-                                    <div
-                                        className="w-4 h-4 rounded-full"
-                                        onClick={() => handelColorChange(index)}
-                                        style={{
-                                            backgroundColor: selectedChartColors?.backgroundColor.pop(),
-                                            border: `2px solid ${selectedChartColors?.borderColor.pop()}`
-                                        }} />
-                                    <p>{field}</p>
-                                </div>
-                            )
-                        })
-                    }
-                </div>
-            } */}
         </div>
     )
 }

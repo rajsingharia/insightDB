@@ -13,6 +13,8 @@ import { CronService } from "./services/cron.service";
 import cookieParser from "cookie-parser";
 import { KafkaService } from "./services/kafka.service";
 import 'dotenv/config'
+import { FetchDataConsumer } from "./events/consumers/FetchDataConsumer";
+import { AlertTriggerConsumer } from "./events/consumers/AlertTriggerConsumer";
 
 
 const app = express();
@@ -33,12 +35,13 @@ prisma.connect();
 app.use('/api/v1/alert', ValidateTokenMiddleware, Route.alertRouter)
 
 
+const kafka = new KafkaService()
+new FetchDataConsumer("FetchDataConsumer", KafkaService.getInstance()).listen()
+new AlertTriggerConsumer("AlertTriggerConsumer", KafkaService.getInstance()).listen()
+
 async function startCronService() {
-    const kafka = new KafkaService()
-    await kafka.connectKafka()
     const cronService = new CronService(kafka)
     await cronService.startAllCronJob()
-    kafka.startConsuming()
 }
 
 startCronService()

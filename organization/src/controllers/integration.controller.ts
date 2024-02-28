@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { IntegrationService } from "../services/integration.service";
-import { organisationService } from "../services/org.service";
+import { OrganisationService } from "../services/org.service";
 import createHttpError from "http-errors";
 import { IntegrationDTO } from "../dto/request/integration.dto";
 import { validate } from "class-validator";
@@ -21,7 +21,7 @@ export class IntegrationController {
     public static async getAllIntegration(req: Request, res: Response, next: NextFunction) {
         try {
             const organisationId = req.body.organisationId;
-            const allIntegrations = await organisationService.getorganisationIntegrations(organisationId);
+            const allIntegrations = await OrganisationService.getOrganisationIntegrations(organisationId);
             if (!allIntegrations) throw createHttpError(404, "User not found");
             res.status(200).json(allIntegrations);
         } catch (error) {
@@ -33,7 +33,7 @@ export class IntegrationController {
         try {
             const organisationId = req.body.organisationId;
             const integrationId = req.params.id;
-            const integration = await organisationService.getorganisationIntegrationById(organisationId, integrationId);
+            const integration = await OrganisationService.getOrganisationIntegrationById(organisationId, integrationId);
             if (!integration) throw createHttpError(404, "Integration not found");
             res.status(200).json(integration);
         } catch (error) {
@@ -53,7 +53,7 @@ export class IntegrationController {
 
             const newIntegrationId = await IntegrationService.createIntegration(integration);
             if (!newIntegrationId) throw createHttpError(404, "Unable to create integration");
-            await organisationService.addIntegration(organisationId, newIntegrationId);
+            await OrganisationService.addIntegration(organisationId, newIntegrationId);
             res.status(201).json({ integrationId: newIntegrationId });
         } catch (error) {
             next(error);
@@ -73,7 +73,7 @@ export class IntegrationController {
 
             const newIntegrationId = await IntegrationService.createIntegration(integration);
             if (!newIntegrationId) throw createHttpError(404, "Unable to create integration");
-            await organisationService.addIntegration(organisationId, newIntegrationId);
+            await OrganisationService.addIntegration(organisationId, newIntegrationId);
             res.status(201).json({ integrationId: newIntegrationId });
         } catch (error) {
             next(error);
@@ -104,7 +104,7 @@ export class IntegrationController {
             const organisationId = req.body.organisationId;
             const integrationId = req.params.id;
             
-            await organisationService.removeIntegration(organisationId, integrationId);
+            await OrganisationService.removeIntegration(organisationId, integrationId);
             await IntegrationService.deleteIntegrationById(integrationId);
             res.status(204).send();
         } catch (error) {
