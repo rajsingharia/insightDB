@@ -36,3 +36,11 @@ Before running the application, make sure you have the following installed:
 
 Feel free to reach out to rajsingharia.1234@gmail.com for any questions or feedback. 
 Happy visualizing!
+
+### ToDo
+- Explore different alerts
+- Adding table support
+
+### Video Sample
+
+https://github.com/rajsingharia/insightDB/assets/67454147/4465e1d3-066e-43a5-b0a5-a3260aca40f8
