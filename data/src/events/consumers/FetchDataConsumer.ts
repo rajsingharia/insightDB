@@ -21,21 +21,25 @@ interface FetchDataEventConsumer {
 export class FetchDataConsumer extends BaseConsumer<FetchDataEventConsumer> {
     subject: Subjects.DataFetch = Subjects.DataFetch
     onMessage(data: { alert: Alerts; rawQuery: string; integrationType: string; integrationCredentials: JsonValue }): void {
-        console.log("Received alert for data fetching...")
+        console.log("Received alert for data fetching :: ", data)
         try {
-            this.fetchData(data.alert, data.rawQuery, data.integrationType, data.integrationCredentials)
-        } catch(err) {
+            if (data.alert && data.rawQuery && data.integrationType && data.integrationCredentials) {
+                this.fetchData(data.alert, data.rawQuery, data.integrationType, data.integrationCredentials)
+            }
+        } catch (err) {
             console.log(`Error in Sending Data Event : ${err}`)
         }
     }
-
 
     private async fetchData(alert: Alerts, rawQuery: string, integrationType: string, integrationCredentials: JsonValue) {
         const allData = await fetchDataService.getAllDataFromRawQuery(integrationType, integrationCredentials, rawQuery);
         if (!allData) throw createHttpError(404, "Unable to fetch data");
         const { data } = allData;
         console.log("Sending data fetch back to alert service...")
-        await new FetchDataProducer(KafkaService.getInstance()).publish({ rows: data, alert: alert })
+        const fetchDataProducer = new FetchDataProducer(KafkaService.getInstance());
+        await fetchDataProducer.init();
+        await fetchDataProducer.publish({ rows: data, alert: alert });
+        await fetchDataProducer.disconnect(); // Disconnect when done
         console.log("Successfully Sent data fetch back to alert service")
     }
 

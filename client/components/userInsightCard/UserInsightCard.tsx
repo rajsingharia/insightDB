@@ -115,33 +115,6 @@ export const UserInsightCard: React.FC<UserInsightCardProps> = ({ insight }) => 
         }, refreshRate)
     }
 
-    const makeSSEConnection = () => {
-
-        console.log("Making SSE Connection");
-
-        const eventSource = AuthEventSource.getAuthEventSource(insight.id);
-
-        eventSource.onopen = () => console.log("SSE Connection Opened");
-
-        eventSource.onmessage = (event) => {
-            console.log("SSE: ", event.data);
-            setChartData(JSON.parse(event.data));
-        }
-
-        eventSource.onerror = (event) => {
-            if (eventSource.readyState === 0) {
-                console.log("SSE Connection Closed");
-                eventSource.close();
-            } else {
-                console.log("SSE Error: ", event);
-            }
-        }
-
-        //to close the connection when the component unmounts or rerenders
-        // eventSource.close();
-
-    }
-
     const duplicateInsight = () => {
         const insightId = insight.id
         fetchDataAxios.post(`/insights/duplicate/${insightId}`)

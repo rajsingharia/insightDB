@@ -7,22 +7,36 @@ import { FetchDataProducer } from '../events/producers/FetchDataProducer';
 export class CronService {
 
     private cronAlertMapping: Map<string, CronJob>
-    private kafka: KafkaService
+    private fetchDataProducer: FetchDataProducer;
 
-    constructor(kafka: KafkaService) {
+    constructor() {
         this.cronAlertMapping = new Map<string, CronJob>
-        this.kafka = kafka
+        this.fetchDataProducer = new FetchDataProducer(KafkaService.getInstance());
     }
 
-
     public async startAllCronJob() {
+
+        await this.fetchDataProducer.init();
+
         const alerts = await AlertService.getAllAlerts();
         if (alerts.length > 0) {
             alerts.forEach((alert: Alerts) => {
                 const alertJob = new CronJob(alert.cronExpression, async () => {
-                    console.log("Sending alert for data fetching...")
-                    await new FetchDataProducer(KafkaService.getInstance()).publish({ alert });
-                    console.log("Successfully send alert data for fetching")
+                    const integration = await AlertService.getIntegrationFromAlert(alert.id)
+                    if (integration != null) {
+                        const data = {
+                            alert: alert,
+                            rawQuery: alert.rawQuery,
+                            integrationType: integration.type,
+                            integrationCredentials: integration.credentials
+                        }
+                        console.log("Sending alert data fetching :: " ,data);
+                        await this.fetchDataProducer.publish(data)
+                        console.log("Successfully send alert data for fetching")
+                    } else {
+                        console.log("Integration for alert :: " + alert.id + " is not found.")
+                    }
+
                 });
                 this.cronAlertMapping.set(alert.id, alertJob)
             })
@@ -47,7 +61,13 @@ export class CronService {
         }
 
         const alertJob = new CronJob(alert.cronExpression, async () => {
-            new FetchDataProducer(KafkaService.getInstance()).publish({ alert });
+            const integration = await AlertService.getIntegrationFromAlert(alert.id)
+            await this.fetchDataProducer.publish({
+                alert: alert,
+                rawQuery: alert.rawQuery,
+                integrationType: integration?.type ?? '',
+                integrationCredentials: integration?.credentials ?? ''
+            })
         });
         this.cronAlertMapping.set(alertId, alertJob)
         this.cronAlertMapping.get(alertId)?.start()
@@ -60,6 +80,5 @@ export class CronService {
         }
         this.cronAlertMapping.get(alertId)?.stop()
     }
-
 
 }

@@ -173,7 +173,7 @@ export default function Home() {
       {
         <div className="flex flex-row-reverse mb-4 gap-2 items-center">
           {
-            !loading && userInsights && userInsights.length > 0 &&
+            !loading  && (user.role === "ADMIN") && userInsights && userInsights.length > 0 &&
             <Button variant={enableEdit ? 'secondary' : 'destructive'} size="icon">
               {
                 enableEdit ? (
@@ -265,7 +265,7 @@ export default function Home() {
           <ResponsiveGridLayout
             className="layout"
             // cols={11}
-            rowHeight={30}
+            rowHeight={20}
             // width={1130}
             isDraggable={enableEdit}
             isResizable={enableEdit}

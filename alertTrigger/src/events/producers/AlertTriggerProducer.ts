@@ -11,4 +11,7 @@ interface AlertTriggerEventProducer {
 
 export class AlertTriggerProducer extends BaseProducer<AlertTriggerEventProducer> {
     topic: string = Subjects.DataFetch;
+    async init(): Promise<void> {
+        await super.init();
+    }
 }

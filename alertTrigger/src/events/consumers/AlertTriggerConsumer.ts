@@ -12,15 +12,19 @@ interface AlertTriggerEventConsumer {
 }
 
 export class AlertTriggerConsumer extends BaseConsumer<AlertTriggerEventConsumer> {
+    subject: Subjects.Alert = Subjects.Alert
     onMessage(data: { alert: Alerts }): void {
         this.sendAlert(data.alert)
     }
-    subject: Subjects.Alert = Subjects.Alert
 
     private async sendAlert(alert: Alerts) {
         const alertData = await AlertTriggerService.makeAlert(alert);
-        if(alertData != undefined) {
-            new AlertTriggerProducer(KafkaService.getInstance()).publish({ alertData });
+        if (alertData != undefined) {
+            // new AlertTriggerProducer(KafkaService.getInstance()).publish({ alertData });
+            const alertTriggerProducer = new AlertTriggerProducer(KafkaService.getInstance());
+            await alertTriggerProducer.init();
+            await alertTriggerProducer.publish({ alertData });
+            await alertTriggerProducer.disconnect(); // Disconnect when done
         }
     }
 }

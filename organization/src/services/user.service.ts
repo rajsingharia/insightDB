@@ -44,6 +44,16 @@ export class UserService {
         return user;
     }
 
+    public static findAllUsersOfOrganization = async (organizationId: string) => {
+        const allUsers = await this.prismaClient.user.findMany({
+            where: {
+                organisationId: organizationId
+            }
+        });
+        if (!allUsers) throw createHttpError(404, "Users not found");
+        return allUsers;
+    }
+
     public static findUserByEmail = async (email: string) => {
         const user = await this.prismaClient.user.findUnique({
             where: {

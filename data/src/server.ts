@@ -28,7 +28,7 @@ prisma.connect();
 
 
 new KafkaService()
-new FetchDataConsumer("FetchDataConsumer", KafkaService.getInstance()).listen()
+new FetchDataConsumer("data-fetch-data-consumer", KafkaService.getInstance()).listen()
 
 // Routes
 app.use(ValidateTokenMiddleware)

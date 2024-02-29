@@ -17,7 +17,7 @@ interface FetchDataEventConsumer {
 export class FetchDataConsumer extends BaseConsumer<FetchDataEventConsumer> {
     subject: Subjects.DataReceive = Subjects.DataReceive
     onMessage(data: { rows: unknown[]; alert: Alerts }): void {
-        console.log("Received data fetch from data service...")
+        console.log("Received data fetch from data service ", data);
         try {
             const condition = this.checkConditionForAlertGeneration(data.rows, data.alert)
             if (condition) {
@@ -32,13 +32,11 @@ export class FetchDataConsumer extends BaseConsumer<FetchDataEventConsumer> {
         const integration = await AlertService.getIntegrationFromAlert(alert.id)
         if (integration != null) {
             console.log("Sending alert data to alertTrigger service...")
-            await new AlertTriggerProducer(KafkaService.getInstance())
-                .publish({
-                    alert: alert,
-                    rawQuery: alert.rawQuery,
-                    integrationType: integration?.type,
-                    integrationCredentials: integration?.credentials
-                })
+            // await new AlertTriggerProducer(KafkaService.getInstance()).publish({ alert: alert })
+            const alertTriggerProducer = new AlertTriggerProducer(KafkaService.getInstance());
+            await alertTriggerProducer.init();
+            await alertTriggerProducer.publish({ alert: alert })
+            await alertTriggerProducer.disconnect(); // Disconnect when done
             console.log("Successfully Sent alert data to alertTrigger service")
         }
     }
