@@ -48,4 +48,5 @@ Happy visualizing!
 https://github.com/rajsingharia/insightDB/assets/67454147/4465e1d3-066e-43a5-b0a5-a3260aca40f8
 
 2. Alert
+   
 https://github.com/rajsingharia/insightDB/assets/67454147/5482290d-7798-4f2e-9931-c3bdceedae35
