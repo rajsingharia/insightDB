@@ -9,26 +9,13 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { useToast } from "@/components/ui/use-toast"
 import { CircularProgress } from "@/components/common/CircularProgress";
 import { Button } from "@/components/ui/button";
+import { getImageForDB } from "@/components/common/GetImageForDB";
 
 type RequiredCredentials = {
   name: string;
   type: string;
   description: string;
   required: boolean;
-}
-
-enum DataBaseType {
-  POSTGRES_QL,
-  MONGO_DB,
-  MY_SQL,
-  ORACLE,
-  CASSANDRA,
-  DYNAMO_DB,
-  REDIS,
-  KAFKA,
-  REST_API,
-  RABBIT_MQ,
-  ELASTIC_SEARCH
 }
 
 type Integration = {
@@ -57,7 +44,7 @@ export default function IntegrationsPage() {
   const [loading, setLoading] = useState<boolean>(true)
 
   useEffect(() => {
-    const customAxios = CustomAxios.getOrgAxios();
+    const customAxios = CustomAxios.getFetchDataAxios();
     customAxios.get('integrations/supported')
       .then((res: { data: Integration[] }) => {
         console.log(res.data)
@@ -92,7 +79,7 @@ export default function IntegrationsPage() {
       credentials: credentials
     }
     console.log(body)
-    const customAxios = CustomAxios.getOrgAxios();
+    const customAxios = CustomAxios.getFetchDataAxios();
     customAxios.post('/integrations', { integration: body })
       .then((res) => {
         console.log(res.data)
@@ -135,6 +122,7 @@ export default function IntegrationsPage() {
   }
 
 
+
   return (
     <>
       {
@@ -158,7 +146,9 @@ export default function IntegrationsPage() {
                       "flex flex-row justify-center items-center w-full cursor-pointer border-2 border-purple-500 border-opacity-30 rounded p-4"}
                     onClick={() => setClickedIntegration(integration)}>
                     <div className="flex flex-row justify-center items-center grow gap-3">
-                      <img src={integration.icon} alt="logo" className="w-10 h-10" />
+                      {
+                        getImageForDB(integration.type, 10)
+                      }
                       <p className="mr-4 grow font-mono">{integration.name}</p>
                     </div>
                     <ChevronsRight color="white" />
@@ -174,12 +164,17 @@ export default function IntegrationsPage() {
                   <h4 className="text-center decoration-2 font-mono text-2xl">
                     Add Credentials for {clickedIntegration?.name}
                   </h4>
-                  <Input
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="Name"
-                  />
-                  <div className="flex flex-col justify-center w-full p-10">
+                  <div className="flex flex-row justify-center w-full py-3">
+                    <div className="flex flex-col justify-center items-center">
+                      <p className="mr-4">Name</p>
+                    </div>
+                    <Input
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="Required"
+                    />
+                  </div>
+                  <div className="flex flex-col justify-center w-full">
                     {
                       clickedIntegration?.requiredCredentials.map((credential) => (
                         <div key={credential.name} className="flex flex-row justify-center items-center py-3 w-full">
@@ -188,17 +183,15 @@ export default function IntegrationsPage() {
                           </div>
                           <Input
                             id={credential.name}
-                            placeholder={credential.name + credential.required ? "Required*" : "Optional"}
+                            placeholder={credential.required ? "Required" : "Optional"}
                             type={credential.type}
                           />
                         </div>
                       ))
                     }
                   </div>
-                  <div className="flex flex-row justify-center items-center py-3 w-full ">
+                  <div className="flex flex-row justify-end items-center py-3 w-full gap-3">
                     <Button variant='secondary' onClick={(event) => checkConnection(event)}> Check Connection </Button>
-                  </div>
-                  <div className="flex flex-row justify-center items-center py-3 w-full ">
                     <Button type="submit"> Add </Button>
                   </div>
                 </form>

@@ -3,4 +3,4 @@ import { KafkaService } from "./services/kafka.service";
 import 'dotenv/config'
 
 new KafkaService()
-new AlertTriggerConsumer("AlertTriggerConsumer", KafkaService.getInstance()).listen()
+new AlertTriggerConsumer("alert-trigger-alert-trigger-consumer", KafkaService.getInstance()).listen()

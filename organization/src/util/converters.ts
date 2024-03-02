@@ -11,6 +11,7 @@ export class Converter {
             createdAt: userEntity.createdAt,
             updatedAt: userEntity.updatedAt,
             organisationName: organisationName,
+            role: userEntity.role
         }
     }
 }

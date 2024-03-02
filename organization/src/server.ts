@@ -32,8 +32,8 @@ app.use('/api/v1/organisation', Route.orgRouter);
 app.use(ValidateTokenMiddleware)
 app.use('/api/v1/user', Route.userRoute);
 app.use('/api/v1/dashboard', Route.dashboardRoute);
-app.use('/api/v1/integrations', Route.integrationRoute);
-app.use('/api/v1/insights', Route.insightRoute);
+// app.use('/api/v1/integrations', Route.integrationRoute);
+// app.use('/api/v1/insights', Route.insightRoute);
 
 // 404 handling
 app.use(NotFoundRoute);

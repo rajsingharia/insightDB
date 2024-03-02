@@ -5,4 +5,6 @@ const fetchDataRoute = express.Router();
 
 fetchDataRoute.post('/', FetchDataController.getAllData);
 
+fetchDataRoute.post('/query', FetchDataController.getAllDataForQuery);
+
 export default fetchDataRoute;

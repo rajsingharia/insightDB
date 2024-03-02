@@ -35,12 +35,12 @@ prisma.connect();
 app.use('/api/v1/alert', ValidateTokenMiddleware, Route.alertRouter)
 
 
-const kafka = new KafkaService()
-new FetchDataConsumer("FetchDataConsumer", KafkaService.getInstance()).listen()
-new AlertTriggerConsumer("AlertTriggerConsumer", KafkaService.getInstance()).listen()
+new KafkaService()
+new FetchDataConsumer("alert-fetch-data-consumer", KafkaService.getInstance()).listen()
+new AlertTriggerConsumer("alert-alert-trigger-consumer", KafkaService.getInstance()).listen()
 
 async function startCronService() {
-    const cronService = new CronService(kafka)
+    const cronService = new CronService()
     await cronService.startAllCronJob()
 }
 

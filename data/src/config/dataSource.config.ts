@@ -23,8 +23,8 @@ export class DataSourceConfig {
         return pool;
     }
     public static getMongoDBConfig = async (credentials: JsonValue) => {
-        credentials = credentials as { username: string; password: string; host: string; };
-        const uri = `mongodb+srv://${credentials.username}:${credentials.password}@${credentials.host}?retryWrites=true&w=majority`;
+        credentials = credentials as { username: string; password: string; host: string; database: string};
+        const uri = `mongodb+srv://${credentials.username}:${credentials.password}@${credentials.host}/${credentials.database}?retryWrites=true&w=majority`;
         return uri;
     }
 

@@ -13,4 +13,7 @@ interface FetchDataEventProducer {
 
 export class FetchDataProducer extends BaseProducer<FetchDataEventProducer> {
     topic: string = Subjects.DataReceive;
+    async init(): Promise<void> {
+        await super.init();
+    }
 }

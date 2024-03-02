@@ -57,17 +57,9 @@ export const UserInsightCard: React.FC<UserInsightCardProps> = ({ insight }) => 
     useEffect(() => {
 
         async function getData() {
-            const response = await orgAxios.get(`/integrations/${insight.integrationId}`)
-            if (response.status !== 200 || !response.data) {
-                console.log(response.statusText);
-                setError(response.statusText);
-            }
-            const integration = response.data
 
             const body = {
-                integrationType: integration.type,
-                integrationCredentials: integration.credentials,
-                rawQuery: insight.rawQuery
+                insightId: insight.id
             }
 
             fetchDataAxios.post('/fetchData', body)
@@ -98,8 +90,7 @@ export const UserInsightCard: React.FC<UserInsightCardProps> = ({ insight }) => 
         setInterval(() => {
 
             const body = {
-                integrationId: insight.integrationId,
-                rawQuery: insight.rawQuery
+                insightId: insight.id
             }
 
             fetchDataAxios.post('/fetchData', body)
@@ -113,33 +104,6 @@ export const UserInsightCard: React.FC<UserInsightCardProps> = ({ insight }) => 
                 });
 
         }, refreshRate)
-    }
-
-    const makeSSEConnection = () => {
-
-        console.log("Making SSE Connection");
-
-        const eventSource = AuthEventSource.getAuthEventSource(insight.id);
-
-        eventSource.onopen = () => console.log("SSE Connection Opened");
-
-        eventSource.onmessage = (event) => {
-            console.log("SSE: ", event.data);
-            setChartData(JSON.parse(event.data));
-        }
-
-        eventSource.onerror = (event) => {
-            if (eventSource.readyState === 0) {
-                console.log("SSE Connection Closed");
-                eventSource.close();
-            } else {
-                console.log("SSE Error: ", event);
-            }
-        }
-
-        //to close the connection when the component unmounts or rerenders
-        // eventSource.close();
-
     }
 
     const duplicateInsight = () => {
@@ -170,7 +134,7 @@ export const UserInsightCard: React.FC<UserInsightCardProps> = ({ insight }) => 
         <div className="flex flex-col justify-center items-center h-full w-full border-purple-500 border-2 rounded px-4 py-2 bg-purple-500 bg-opacity-0 hover:bg-opacity-10">
             {
                 chartData && chartDetails ?
-                    <div className="flex flex-col justify-between items-center w-full">
+                    <div className="flex flex-col justify-center items-center h-fit w-full">
                         <h4 className="text-l font-bold font-mono">{insight.title}</h4>
                         <div className='w-full h-[0.5px] bg-slate-500 rounded bg-opacity-30 mb-3' />
                         <InsightChart

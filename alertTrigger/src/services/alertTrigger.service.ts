@@ -48,7 +48,15 @@ export class AlertTriggerService {
         else if (alert.destination === 'SLACK') {
 
             const messageFormat = configurationObj?.message
-            const webHookUrlLink = configurationObj?.webhook
+            const webHookUrlLink: string = configurationObj?.webhook
+
+            console.log("Sending slack notification")
+            console.log("Webhook :: ", webHookUrlLink, "message :: ", messageFormat)
+
+            if(!webHookUrlLink.startsWith('http')) {
+                console.log(`Invalid Slack Webhook URL provided`)
+                return
+            }
 
             if (!alertId || !messageFormat || !webHookUrlLink) {
                 throw new Error("Fields missing while making alert on :" + alert.destination);

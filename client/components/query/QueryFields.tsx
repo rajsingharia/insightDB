@@ -4,6 +4,7 @@ import { ICharts } from "@/interfaces/ICharts"
 import { FetchDataResponse } from '@/app/(root)/addInsight/page';
 import { SQLQueryInput } from '@/components/query/SQLQueryInput';
 import { MongoQueryInput } from '@/components/query/MongoQueryInput';
+import { DataBaseType } from 'insightdb-common'
 
 
 export type QueryInfo = {
@@ -19,19 +20,6 @@ type QueryInfoResponse = {
     queryInfo: QueryInfo[];
 }
 
-enum DataBaseType {
-    POSTGRES_QL = 'POSTGRES_QL',
-    MONGO_DB = 'MONGO_DB',
-    MY_SQL = 'MY_SQL',
-    ORACLE = 'ORACLE',
-    CASSANDRA = 'CASSANDRA',
-    DYNAMO_DB = 'DYNAMO_DB',
-    REDIS = 'REDIS',
-    KAFKA = 'KAFKA',
-    REST_API = 'REST_API',
-    RABBIT_MQ = 'RABBIT_MQ',
-    ELASTIC_SEARCH = 'ELASTIC_SEARCH'
-}
 
 
 interface QueryFieldsProps {
@@ -53,12 +41,11 @@ export const QueryFields: React.FC<QueryFieldsProps> = ({
     setRawQuery }) => {
 
     const fetchDataAxios = CustomAxios.getFetchDataAxios();
-    const orgAxios = CustomAxios.getOrgAxios();
 
     const getInsightData = () => {
 
         async function getData() {
-            const response = await orgAxios.get(`/integrations/${integrationId}`)
+            const response = await fetchDataAxios.get(`/integrations/${integrationId}`)
             if (response.status !== 200 || !response.data) {
                 console.log(response.statusText);
                 //setError(response.statusText);
@@ -66,14 +53,13 @@ export const QueryFields: React.FC<QueryFieldsProps> = ({
             const integration = response.data
 
             const body = {
-                integrationType: integration.type,
-                integrationCredentials: integration.credentials,
+                integrationId: integrationId,
                 rawQuery: rawQuery
             }
 
-            fetchDataAxios.post('/fetchData', body)
+            fetchDataAxios.post('/fetchData/query', body)
                 .then((res) => {
-                    console.log("Data: ", res.data.data);
+                    console.log("Data: ", res.data);
                     setInsightData(res.data);
                 })
                 .catch((err) => {

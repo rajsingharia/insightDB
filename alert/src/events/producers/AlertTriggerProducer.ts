@@ -1,18 +1,17 @@
 import { Alerts } from "@prisma/client";
-import { JsonValue } from "@prisma/client/runtime/library";
 import { BaseProducer, Subjects } from "insightdb-common";
 
 interface AlertTriggerEventProducer {
     subject: Subjects.Alert,
     data: {
-        alert: Alerts,
-        rawQuery: string,
-        integrationType: string,
-        integrationCredentials: JsonValue
+        alert: Alerts
     }
 }
 
 
 export class AlertTriggerProducer extends BaseProducer<AlertTriggerEventProducer> {
-    topic: string = Subjects.DataFetch;
+    topic: Subjects.Alert = Subjects.Alert;
+    async init(): Promise<void> {
+        await super.init();
+    }
 }

@@ -28,12 +28,15 @@ prisma.connect();
 
 
 new KafkaService()
-new FetchDataConsumer("FetchDataConsumer", KafkaService.getInstance()).listen()
+new FetchDataConsumer("data-fetch-data-consumer", KafkaService.getInstance()).listen()
 
 // Routes
 app.use(ValidateTokenMiddleware)
 app.use('/api/v1/fetchData', Route.fetchDataRoute);
 app.use('/api/v1/checkConnection', Route.checkConnectionRoute);
+app.use('/api/v1/integrations', Route.integrationRoute);
+app.use('/api/v1/insights', Route.insightRoute);
+
 
 // 404 handling
 app.use(NotFoundRoute);

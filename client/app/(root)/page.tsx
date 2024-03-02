@@ -51,7 +51,8 @@ export default function Home() {
   const [dashboardDescription, setDashboardDescription] = useState<string>()
 
   const { toast } = useToast()
-  const fetchDataAxios = CustomAxios.getOrgAxios();
+  const orgAxios = CustomAxios.getOrgAxios();
+  const fetchDataAxios = CustomAxios.getFetchDataAxios();
 
   useEffect(() => {
 
@@ -63,10 +64,10 @@ export default function Home() {
         console.log("User Insights :: " + JSON.stringify(insights))
         setUserInsights(insights);
 
-        const allDashboardResponse = await fetchDataAxios.get('/dashboard/all');
+        const allDashboardResponse = await orgAxios.get('/dashboard/all');
         setAllDashboard(allDashboardResponse.data);
 
-        const defaultDashboardResponse = await fetchDataAxios.get('/dashboard/default');
+        const defaultDashboardResponse = await orgAxios.get('/dashboard/default');
         if (defaultDashboardResponse.data !== null) {
           setSelectedDashboardId(defaultDashboardResponse.data);
         }
@@ -157,7 +158,7 @@ export default function Home() {
       }
     }
 
-    fetchDataAxios.post(`/dashboard`, body)
+    orgAxios.post(`/dashboard`, body)
       .then((res) => {
         const dashboardAdded = res.data;
         setSelectedDashboardId(dashboardAdded.id);
@@ -173,7 +174,7 @@ export default function Home() {
       {
         <div className="flex flex-row-reverse mb-4 gap-2 items-center">
           {
-            !loading && userInsights && userInsights.length > 0 &&
+            !loading  && (user.role === "ADMIN") && userInsights && userInsights.length > 0 &&
             <Button variant={enableEdit ? 'secondary' : 'destructive'} size="icon">
               {
                 enableEdit ? (

@@ -41,10 +41,10 @@ export const AlertCreationSectionOne: React.FC<AlertCreationSectionOneProps> = (
 
         (
             async () => {
-                const customOrgAxios = CustomAxios.getOrgAxios();
+                const fetchDataAxios = CustomAxios.getFetchDataAxios();
                 try {
                     //setLoading(true)
-                    const userIntegrationsResponse = await customOrgAxios.get('/integrations')
+                    const userIntegrationsResponse = await fetchDataAxios.get('/integrations')
                     setUserIntegrations(userIntegrationsResponse.data)
                 } catch (error) {
                     console.log(error);

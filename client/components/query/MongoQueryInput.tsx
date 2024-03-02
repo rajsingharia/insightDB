@@ -40,9 +40,11 @@ export const MongoQueryInput: React.FC<QueryInputProps> = ({
                 value={collection}
                 onChange={(event) => setCollection(event.target.value)}
                 placeholder='Collection Name' />
-            <Label
-            title='example: name=john&age>21&fields=name,age&sort=name,-age&offset=10&limit=10'/>
+
+            <p className="text-sm text-muted-foreground">{"example: name=john&age>21&fields=name,age&sort=name,-age&offset=10&limit=10"}</p>
+
             <Input
+                id='mongoDBQuery'
                 value={mongoRawQuery}
                 onChange={(event) => setMongoRawQuery(event.target.value)}
                 placeholder='MongoDB Query' />

@@ -26,6 +26,15 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { CircularProgress } from "@/components/common/CircularProgress";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 
 export type userIntegrationResponse = {
   id: string;
@@ -84,14 +93,14 @@ export default function AddInsightPage() {
   useEffect(() => {
 
     const fetchData = async () => {
-      const customOrgAxios = CustomAxios.getOrgAxios();
-      const customDataAxios = CustomAxios.getOrgAxios()
+      const fetchDataAxios = CustomAxios.getFetchDataAxios();
+      const orgAxios = CustomAxios.getOrgAxios()
       try {
         //setLoading(true)
-        const userIntegrationsResponse = await customOrgAxios.get('/integrations')
+        const userIntegrationsResponse = await fetchDataAxios.get('/integrations')
         setUserIntegrations(userIntegrationsResponse.data)
 
-        const allDashboardResponse = await customDataAxios.get('/dashboard/all')
+        const allDashboardResponse = await orgAxios.get('/dashboard/all')
         setDashboards(allDashboardResponse.data)
 
       } catch (error) {
@@ -110,7 +119,12 @@ export default function AddInsightPage() {
   const handelSelectedIntegrationChange = (id: string) => {
     const selectedIntegration = userIntegrations.find(i => i.id === id)
     console.log("selectedIntegration :: " + JSON.stringify(selectedIntegration))
-    setSelectedIntegration(selectedIntegration);
+    try {
+      setSelectedIntegration(selectedIntegration);
+    } catch(err) {
+      console.log('handelSelectedIntegrationChange Error:: '+ err)
+    }
+    
   };
 
   const handelDashboardChange = (id: string) => {
@@ -119,7 +133,7 @@ export default function AddInsightPage() {
 
   const saveInsight = () => {
 
-    const customAxios = CustomAxios.getOrgAxios();
+    const fetchDataAxios = CustomAxios.getFetchDataAxios();
 
     if (!selectedIntegration) {
       toast({ title: "No Integration Selected" });
@@ -152,7 +166,7 @@ export default function AddInsightPage() {
       insight: saveInsightRequest
     }
 
-    customAxios.post('/insights', body)
+    fetchDataAxios.post('/insights', body)
       .then((res) => {
         console.log(`Insight Saved: `, res.data)
         toast({ title: "Insight Saved Successfully ✅🔒" });
@@ -215,18 +229,59 @@ export default function AddInsightPage() {
                       <RefreshCcw
                         className="h-4 w-4" />
                     </Button>
-                    <Button
-                      onClick={saveInsight}>
-                      <PinIcon
-                        className="h-4 w-4 mr-2" /> Save
-                    </Button>
+
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button>
+                          <PinIcon
+                            className="h-4 w-4 mr-2" /> Save
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-[425px]">
+                        <DialogHeader>
+                          <DialogTitle>Add Insight</DialogTitle>
+                        </DialogHeader>
+                        <div className="flex flex-col gap-4 py-4">
+                          <Select
+                            onValueChange={(value: string) => {
+                              handelDashboardChange(value)
+                            }}>
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Select Dashboard" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectGroup>
+                                {
+                                  dashboards.map((dashboard) => {
+                                    return (
+                                      <SelectItem
+                                        value={dashboard.id}
+                                        key={dashboard.id}>
+                                        {dashboard.title}
+                                      </SelectItem>
+                                    )
+                                  })
+                                }
+                              </SelectGroup>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <DialogFooter>
+                          <Button
+                            onClick={saveInsight}
+                            type="submit">
+                            Add Insight
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
                   </div>
                 }
               </ResizablePanel>
               <ResizableHandle withHandle />
               <ResizablePanel defaultSize={60} className="w-full p-1 rounded-lg">
                 {
-                  selectedDashboard && selectedIntegration &&
+                  selectedIntegration &&
                   <QueryFields
                     integrationId={selectedIntegration.id}
                     integrationType={selectedIntegration?.type}
@@ -245,7 +300,7 @@ export default function AddInsightPage() {
             <div className="flex flex-col justify-start items-center h-full w-full p-1">
               Settings
               {
-                dashboards && dashboards.length > 0 &&
+                // dashboards && dashboards.length > 0 &&
                 <ChartSettings
                   handelSelectedIntegrationChange={handelSelectedIntegrationChange}
                   userIntegrations={userIntegrations}

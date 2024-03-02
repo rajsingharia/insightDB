@@ -20,12 +20,25 @@ export class IntegrationService {
         return integration;
     }
 
-    public static async createIntegration(integration: IntegrationDTO): Promise<string> {
+
+    public static async getOrganisationIntegrations(organisationId: string) {
+        const allIntegrations = await this.prismaClient.integration.findMany({
+            where: {
+                organisationId: organisationId
+            }
+        })
+        return allIntegrations
+    }
+
+    public static async createIntegration(organisationId: string, integration: IntegrationDTO): Promise<string> {
         const updatedUser = await this.prismaClient.integration.create({
             data: {
                 name: integration.name,
                 type: integration.type,
-                credentials: integration.credentials 
+                credentials: integration.credentials,
+                Organisation: {
+                    connect: { id: organisationId }
+                }
             }
         });
         return updatedUser.id;

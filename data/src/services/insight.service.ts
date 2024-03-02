@@ -101,10 +101,13 @@ export class InsightService {
         
     }
 
-    public static async getInsightById(insightId: string): Promise<Insight | null> {
+    public static async getInsightWithIntegrationById(insightId: string) {
         const insight = await this.prismaClient.insight.findFirst({
             where: {
                 id: insightId
+            },
+            include: {
+                integration: true
             }
         });
         return insight;

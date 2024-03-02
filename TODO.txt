@@ -1,6 +1,7 @@
 
-# add support for mongoDB
-# add kubernetes -> to auto scale 
-# generate alert -> slack
-# find a way to show query in SQLQueryInput
-# run cron job in a different nodejs instance (Docker)
+# Graceful disconnecting kafka producers and consumers
+# Use Redis to store hits on each organization fetch route
+# test support for mongoDB
+# test kubernetes -> to auto scale 
+# generate alert -> slack (test)
+# find a way to show query in SQLQueryInput (NOT DONE)
