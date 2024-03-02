@@ -29,13 +29,14 @@ export default function Settings() {
   useEffect(() => {
     (
       async () => {
-        const customAxios = CustomAxios.getOrgAxios();
+        const fetchDataAxios = CustomAxios.getFetchDataAxios();
+        const orgAxios = CustomAxios.getOrgAxios();
         setLoading(true)
         try {
-          const integrationsResponse = await customAxios.get('/integrations')
+          const integrationsResponse = await fetchDataAxios.get('/integrations')
           setUserIntegrations(integrationsResponse.data)
 
-          const allUsersResponse = await customAxios.get('/users/all')
+          const allUsersResponse = await orgAxios.get('/users/all')
           setAllUsers(allUsersResponse.data)
 
         } catch (error) {

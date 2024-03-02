@@ -30,8 +30,8 @@ export class connectDataSourceService {
         else if (type === DataBaseType.MONGO_DB.valueOf()) {
             const getMongoDBConfig = await DataSourceConfig.getMongoDBConfig(credentials);
 
-            console.log("mongoDb getMongoDBConfig :: " + getMongoDBConfig)
-            console.log("mongoDb credentials :: " + credentials)
+            console.log("mongoDb getMongoDBConfig :: ", getMongoDBConfig)
+            console.log("mongoDb credentials :: ", credentials)
 
             try {
                 const mongoConnection = await mongoose.connect(

@@ -99,7 +99,7 @@ export default function AddInsightPageQuery() {
     const fetchData = async () => {
       setLoading(true)
       try {
-        const insightsResponse = await customOrgAxios.get(`/insights/${insightId}`)
+        const insightsResponse = await customDataAxios.get(`/insights/${insightId}`)
         if (!insightsResponse || !insightsResponse.data) throw new Error("Failed to get Insight")
         const insight = insightsResponse.data
         setRawQuery(insight.rawQuery)
@@ -112,7 +112,7 @@ export default function AddInsightPageQuery() {
         setInsightTitle(insight.title)
         setInsightDescription(insight.description)
 
-        const userIntegrationsResponse = await customOrgAxios.get('/integrations')
+        const userIntegrationsResponse = await customDataAxios.get('/integrations')
         setUserIntegrations(userIntegrationsResponse.data)
         const selectedIntegration = userIntegrationsResponse.data.find((integration: any) => integration.id == insight.integrationId)
         setSelectedIntegration(selectedIntegration)
@@ -152,7 +152,7 @@ export default function AddInsightPageQuery() {
 
   const editInsight = () => {
 
-    const customOrgAxios = CustomAxios.getOrgAxios();
+    const fetchDataAxios = CustomAxios.getFetchDataAxios();
 
     if (!selectedIntegration) {
       toast({ title: "No Integration Selected" });
@@ -180,7 +180,7 @@ export default function AddInsightPageQuery() {
       insight: saveInsightRequest
     }
 
-    customOrgAxios.patch(`/insights/${insightId}`, body)
+    fetchDataAxios.patch(`/insights/${insightId}`, body)
       .then((res) => {
         console.log(`Insight Saved: `, res.data)
         toast({ title: "Insight Updated Successfully ✅" });
@@ -279,7 +279,6 @@ export default function AddInsightPageQuery() {
               Settings
               {
                 <ChartSettings
-                  selectedIntegration={selectedIntegration}
                   handelSelectedIntegrationChange={handelSelectedIntegrationChange}
                   userIntegrations={userIntegrations}
                   insightTitle={insightTitle}

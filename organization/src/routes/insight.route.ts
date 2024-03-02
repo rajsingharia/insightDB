@@ -1,22 +1,22 @@
-import express from 'express';
-import { InsightController } from '../controllers/insight.controller';
+// import express from 'express';
+// import { InsightController } from '../controllers/insight.controller';
 
-const insightRoute = express.Router();
+// const insightRoute = express.Router();
 
-insightRoute.get('/default', InsightController.getInsightsFromDefaultDashboard);
+// insightRoute.get('/default', InsightController.getInsightsFromDefaultDashboard);
 
-insightRoute.get('/dashboard/:id', InsightController.getInsights);
+// insightRoute.get('/dashboard/:id', InsightController.getInsights);
 
-insightRoute.get('/:id', InsightController.getInsightWithId);
+// insightRoute.get('/:id', InsightController.getInsightWithId);
 
-insightRoute.delete('/:id', InsightController.deleteInsightWithId);
+// insightRoute.delete('/:id', InsightController.deleteInsightWithId);
 
-insightRoute.post('/duplicate/:id', InsightController.duplicateInsightWithId);
+// insightRoute.post('/duplicate/:id', InsightController.duplicateInsightWithId);
 
-insightRoute.post('/', InsightController.addInsight);
+// insightRoute.post('/', InsightController.addInsight);
 
-insightRoute.patch('/:id', InsightController.updateInsight);
+// insightRoute.patch('/:id', InsightController.updateInsight);
 
-insightRoute.patch('/onLayoutChange/:id', InsightController.updateInsightLayout);
+// insightRoute.patch('/onLayoutChange/:id', InsightController.updateInsightLayout);
 
-export default insightRoute;
+// export default insightRoute;

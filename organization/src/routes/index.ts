@@ -1,5 +1,5 @@
-import integrationRoute from './integrations.route'
-import insightRoute from './insight.route'
+// import integrationRoute from './integrations.route'
+// import insightRoute from './insight.route'
 import dashboardRoute from './dashboard.route'
 import  userRoute from './user.route'
 import orgRouter from './org.route'
@@ -10,7 +10,7 @@ export default {
     authRouter,
     userRoute,
     orgRouter,
-    integrationRoute,
-    insightRoute,
+    // integrationRoute,
+    // insightRoute,
     dashboardRoute
 }

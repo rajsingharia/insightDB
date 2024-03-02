@@ -16,8 +16,6 @@ export type Connection = pg.PoolClient | mongoose.Mongoose | Axios | Redis | mys
 interface IGetAllData {
     fields?: string[];
     data: unknown[];
-    timeField?: string;
-    countOfFields: number
 }
 
 export class fetchDataService {
@@ -89,8 +87,7 @@ export class fetchDataService {
 
             return {
                 fields: fields,
-                data: response.rows,
-                countOfFields: fields.length
+                data: response.rows
             }
         } catch (error) {
             console.log(`Postgres Error: ${error}`);
@@ -100,27 +97,39 @@ export class fetchDataService {
     }
 
 
-    private static async getAllDataMongoDB(mongoose: mongoose.Mongoose, query: string): Promise<IGetAllData> {
+    private static async getAllDataMongoDB(mongoose: mongoose.Mongoose, query: string): Promise<IGetAllData | undefined> {
         //const mongoParams = parameters as MongoDBParametersDTO;
         //const collectionName = mongoParams.sourceName!;
+        console.log("Mongo Raw Query :: ", query)
         const { collection, rawQuery } = JSON.parse(query);
         const queryResponse = q2m(rawQuery);
+        console.log("Mongo Query :: ", queryResponse)
 
+
+        // const specificDbConnection = mongoose.connection.useDb('notify');
         const collectionConnection = mongoose.connection.db.collection(collection);
+
+        // The database name may not be available on the collectionConnection instance.
+        // Instead, you can use the dbName property on the specificDbConnection.
+        console.log(collectionConnection.dbName);
         //const query = QueryBuilderService.buildMongoDBQuery(mongoParams);
         try {
             const response = await collectionConnection
                 .find(queryResponse.criteria, queryResponse.options as FindOptions<WithId<Document>>)
                 .toArray();
+
+            console.log("Response :: ", response)
+
+            const fields = Object.keys(response[0])
             return {
-                fields: undefined,
-                data: response,
-                countOfFields: 0,
+                fields: fields,
+                data: response
             };
         } catch (error) {
             console.log(`Mongodb Error: ${error}`);
             throw createHttpError(500, "Internal Server Error");
         }
+
     }
 
 
@@ -133,7 +142,6 @@ export class fetchDataService {
                 const result: IGetAllData = {
                     fields: key,
                     data: [redisString],
-                    countOfFields: 1
                 }
                 return result;
             }
@@ -142,7 +150,6 @@ export class fetchDataService {
                 const result: IGetAllData = {
                     fields: Object.keys(hashObj),
                     data: Object.values(hashObj).map((val) => { return JSON.parse(val) }),
-                    countOfFields: Object.keys(hashObj).length
                 }
                 return result;
             }
@@ -151,12 +158,14 @@ export class fetchDataService {
                 const result: IGetAllData = {
                     fields: Object.keys(hashObj),
                     data: Object.values(hashObj).map((val) => { return JSON.parse(val) }),
-                    countOfFields: Object.keys(hashObj).length
                 }
                 return result;
             } else if (dataType === 'SET') {
                 const arrSet = await redisClient.smembers(key);
-                return { fields: undefined, data: arrSet, countOfFields: arrSet.length };
+                return {
+                    fields: undefined,
+                    data: arrSet
+                };
             } else {
                 throw new Error('Invalid Data Type');
             }
@@ -178,7 +187,6 @@ export class fetchDataService {
             return {
                 fields: fieldNames,
                 data: typedRows,
-                countOfFields: fieldNames.length,
             };
         } catch (error) {
             console.log(`Postgres Error: ${error}`);
@@ -220,7 +228,6 @@ export class fetchDataService {
             return {
                 fields: parameters.columns!,
                 data: filteredResponse,
-                countOfFields: 0
             }
 
         } catch (error) {

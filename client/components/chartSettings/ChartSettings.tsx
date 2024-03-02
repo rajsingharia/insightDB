@@ -63,7 +63,7 @@ export const ChartSettings: React.FC<ChartSettingsProps> = (
     return (
         <div className="flex flex-col justify-start items-start w-full mt-2 gap-3">
 
-            <Select
+            {/* <Select
                 onValueChange={(value: string) => {
                     handelDashboardChange(value)
                 }}>
@@ -85,7 +85,7 @@ export const ChartSettings: React.FC<ChartSettingsProps> = (
                         }
                     </SelectGroup>
                 </SelectContent>
-            </Select>
+            </Select> */}
 
             <Select
                 onValueChange={(value: string) => {
@@ -97,13 +97,15 @@ export const ChartSettings: React.FC<ChartSettingsProps> = (
                 <SelectContent>
                     <SelectGroup>
                         {
-                            userIntegrations.map((integration) => (
-                                <SelectItem
-                                    key={integration.id}
-                                    value={integration.id}>
-                                    {integration.name}
-                                </SelectItem>
-                            ))
+                            userIntegrations.map((integration) => {
+                                return (
+                                    <SelectItem
+                                        key={integration.id}
+                                        value={integration.id}>
+                                        {integration.name}
+                                    </SelectItem>
+                                )
+                            })
                         }
                     </SelectGroup>
                 </SelectContent>

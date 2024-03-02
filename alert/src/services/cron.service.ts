@@ -26,11 +26,9 @@ export class CronService {
                     if (integration != null) {
                         const data = {
                             alert: alert,
-                            rawQuery: alert.rawQuery,
-                            integrationType: integration.type,
-                            integrationCredentials: integration.credentials
+                            integrationId: integration.id
                         }
-                        console.log("Sending alert data fetching :: " ,data);
+                        console.log("Sending alert data fetching :: ", data);
                         await this.fetchDataProducer.publish(data)
                         console.log("Successfully send alert data for fetching")
                     } else {
@@ -64,9 +62,7 @@ export class CronService {
             const integration = await AlertService.getIntegrationFromAlert(alert.id)
             await this.fetchDataProducer.publish({
                 alert: alert,
-                rawQuery: alert.rawQuery,
-                integrationType: integration?.type ?? '',
-                integrationCredentials: integration?.credentials ?? ''
+                integrationId: integration?.id ?? ''
             })
         });
         this.cronAlertMapping.set(alertId, alertJob)

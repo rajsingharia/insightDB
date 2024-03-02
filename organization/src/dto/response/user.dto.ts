@@ -6,4 +6,5 @@ export interface UserDTO {
     createdAt: Date;
     updatedAt: Date;
     organisationName: string;
+    role: string
 }
