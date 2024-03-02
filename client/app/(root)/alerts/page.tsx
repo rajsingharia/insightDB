@@ -34,6 +34,7 @@ import {
 } from "@/components/ui/carousel"
 import { AlertCreationSectionOne } from '@/components/alert/AlertCreationSectionOne'
 import { AlertCreationSectionTwo } from '@/components/alert/AlertCreationSectionTwo'
+import { AlertTriggerChart } from '@/components/alert/AlertTriggerChart'
 
 
 type AlertResponse = {
@@ -47,7 +48,7 @@ type AlertResponse = {
     repeatCount: number;
 }
 
-type alertTriggered = {
+export type alertTriggered = {
     id: string;
     alertId: string;
     isSuccessful: boolean;
@@ -225,7 +226,7 @@ export default function AlertsPage() {
                                 <Card className="flex items-center justify-center h-full w-1/2">
                                     {
                                         alertTriggers &&
-                                        <h1 className="text-4xl font-extrabold text-red-500">
+                                        <h1 className="text-4xl font-extrabold text-green-500">
                                             {`Successfully ${alertTriggers.filter(alertTrigger => alertTrigger.isSuccessful).length}`}
                                         </h1>
                                     }
@@ -233,14 +234,19 @@ export default function AlertsPage() {
                                 <Card className="flex items-center justify-center h-full w-1/2">
                                     {
                                         alertTriggers &&
-                                        <h1 className="text-4xl font-extrabold text-green-500">
+                                        <h1 className="text-4xl font-extrabold text-red-500">
                                             {`Failure ${alertTriggers.filter(alertTrigger => !alertTrigger.isSuccessful).length}`}
                                         </h1>
                                     }
                                 </Card>
                             </div>
-                            <div className='flex h-1/2 p-1 bg-slate-500'>
-                                {/* graph for all alert triggers*/}
+                            <div className='h-1/2 p-1'>
+                                {
+                                    alertTriggers &&
+                                    <Card className="flex items-center justify-center h-full w-full p-4">
+                                        <AlertTriggerChart alertTriggers={alertTriggers} />
+                                    </Card>
+                                }
                             </div>
                         </div>
                         <ScrollArea className='w-1/3'>
@@ -265,9 +271,16 @@ export default function AlertsPage() {
                                                         <TableCell>{alert.title}</TableCell>
                                                         <TableCell>{alert.destination}</TableCell>
                                                         <TableCell className="text-right">
-                                                            <Button variant="link" onClick={() => {
-                                                                //TODO: show alertTriggers for this alert
-                                                            }}>Triggers</Button>
+                                                            <Dialog>
+                                                                <DialogTrigger asChild>
+                                                                    <Button variant="link">Triggers</Button>
+                                                                </DialogTrigger>
+                                                                <DialogContent>
+                                                                    <div className="flex flex-col gap-4 py-4">
+
+                                                                    </div>
+                                                                </DialogContent>
+                                                            </Dialog>
                                                         </TableCell>
                                                     </TableRow>
                                                 ))

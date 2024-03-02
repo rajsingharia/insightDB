@@ -134,7 +134,7 @@ export const UserInsightCard: React.FC<UserInsightCardProps> = ({ insight }) => 
         <div className="flex flex-col justify-center items-center h-full w-full border-purple-500 border-2 rounded px-4 py-2 bg-purple-500 bg-opacity-0 hover:bg-opacity-10">
             {
                 chartData && chartDetails ?
-                    <div className="flex flex-col justify-center items-center h-fit w-full">
+                    <div className="flex flex-col justify-center items-center h-full w-full p-2">
                         <h4 className="text-l font-bold font-mono">{insight.title}</h4>
                         <div className='w-full h-[0.5px] bg-slate-500 rounded bg-opacity-30 mb-3' />
                         <InsightChart

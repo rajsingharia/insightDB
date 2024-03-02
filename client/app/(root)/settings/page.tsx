@@ -6,6 +6,8 @@ import { IUser } from '@/interfaces/IUser';
 import { CircularProgress } from '@/components/common/CircularProgress';
 import { ScrollArea } from '@radix-ui/react-scroll-area';
 import { useToast } from '@/components/ui/use-toast';
+import { getImageForDB } from '@/components/common/GetImageForDB';
+import { User } from 'lucide-react';
 
 type userIntegrationResponse = {
   id: string;
@@ -36,7 +38,7 @@ export default function Settings() {
           const integrationsResponse = await fetchDataAxios.get('/integrations')
           setUserIntegrations(integrationsResponse.data)
 
-          const allUsersResponse = await orgAxios.get('/users/all')
+          const allUsersResponse = await orgAxios.get('/user/all')
           setAllUsers(allUsersResponse.data)
 
         } catch (error) {
@@ -63,14 +65,19 @@ export default function Settings() {
         <div className='w-full h-full flex flex-row gap-4'>
           <ScrollArea className="w-3/4 rounded h-full p-4">
             <div>User Integrations</div>
-            <div className="flex flex-col justify-center items-center mt-4">
+            <div className="flex flex-col justify-center items-center mt-4 gap-3">
               {
                 userIntegrations.map((integration) => {
                   return (
-                    <div key={integration.id}>
-                      <div>{integration.name}</div>
-                      <div>{integration.type}</div>
-                      {/* <div>{JSON.stringify(integration.credentials)}</div> */}
+                    <div
+                      key={integration.id}
+                      className="flex flex-row justify-center items-center w-full cursor-pointer border-2 border-purple-500 border-opacity-30 rounded p-4">
+                      <div className="flex flex-row justify-center items-center grow gap-3">
+                        {
+                          getImageForDB(integration.type, 10)
+                        }
+                        <p className="mr-4 grow font-mono">{integration.name}</p>
+                      </div>
                     </div>
                   )
                 })
@@ -84,8 +91,9 @@ export default function Settings() {
                 allUsers?.map((user) => (
                   <div
                     key={user.id}>
-                    <div className="flex flex-row justify-center items-center grow gap-3">
-                      <p className="mr-4 grow font-mono">{user.firstName}</p>
+                    <div className="flex flex-row w-full justify-center items-center grow gap-3">
+                      <User />
+                      <p className="mr-4 grow font-mono">{user.firstName + " " + user.lastName}</p>
                     </div>
                   </div>
                 ))
