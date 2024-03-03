@@ -161,10 +161,10 @@ export const UserInsightCard: React.FC<UserInsightCardProps> = ({ insight }) => 
                                             Edit
                                             <DropdownMenuShortcut>⌘E</DropdownMenuShortcut>
                                         </DropdownMenuItem>
-                                        <DropdownMenuItem>
+                                        {/* <DropdownMenuItem>
                                             Share
                                             <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
-                                        </DropdownMenuItem>
+                                        </DropdownMenuItem> */}
                                         <DropdownMenuItem onClick={duplicateInsight}>
                                             Duplicate
                                             <DropdownMenuShortcut>⌘D</DropdownMenuShortcut>

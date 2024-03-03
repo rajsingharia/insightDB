@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select"
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
+import { CircularProgress } from "../common/CircularProgress";
 
 interface AlertCreationSectionOneProps {
     title: string | undefined;
@@ -43,7 +44,7 @@ export const AlertCreationSectionOne: React.FC<AlertCreationSectionOneProps> = (
             async () => {
                 const fetchDataAxios = CustomAxios.getFetchDataAxios();
                 try {
-                    //setLoading(true)
+                    setLoading(true)
                     const userIntegrationsResponse = await fetchDataAxios.get('/integrations')
                     setUserIntegrations(userIntegrationsResponse.data)
                 } catch (error) {
@@ -59,43 +60,54 @@ export const AlertCreationSectionOne: React.FC<AlertCreationSectionOneProps> = (
     }, [toast]);
 
     return (
-        <div className="w-full h-full">
+        <>
             {
-                userIntegrations &&
-                <div className="flex flex-col w-full h-full gap-10 p-2">
-                    <Input
-                        value={title}
-                        onChange={e => setTitle(e.target.value)}
-                        placeholder="Enter Alert Title" />
-                    <Select
-                        value={integrationId}
-                        onValueChange={(value: string) => {
-                            setIntegrationId(value)
-                        }}>
-                        <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select Integration" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectGroup>
-                                {
-                                    userIntegrations.map((integration) => (
-                                        <SelectItem
-                                            key={integration.id}
-                                            value={integration.id}>
-                                            {integration.name}
-                                        </SelectItem>
-                                    ))
-                                }
-                            </SelectGroup>
-                        </SelectContent>
-                    </Select>
-                    <Textarea
-                        value={rawQuery}
-                        rows={5}
-                        onChange={e => setRawQuery(e.target.value)}
-                        placeholder="Enter Raw Query" />
+                loading &&
+                <div className="flex flex-col justify-center items-center w-full h-full ">
+                    <CircularProgress />
                 </div>
             }
-        </div>
+            {
+                !loading &&
+                <div className="w-full h-full">
+                    {
+                        userIntegrations &&
+                        <div className="flex flex-col w-full h-full gap-10 p-2">
+                            <Input
+                                value={title}
+                                onChange={e => setTitle(e.target.value)}
+                                placeholder="Enter Alert Title" />
+                            <Select
+                                value={integrationId}
+                                onValueChange={(value: string) => {
+                                    setIntegrationId(value)
+                                }}>
+                                <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Select Integration" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectGroup>
+                                        {
+                                            userIntegrations.map((integration) => (
+                                                <SelectItem
+                                                    key={integration.id}
+                                                    value={integration.id}>
+                                                    {integration.name}
+                                                </SelectItem>
+                                            ))
+                                        }
+                                    </SelectGroup>
+                                </SelectContent>
+                            </Select>
+                            <Textarea
+                                value={rawQuery}
+                                rows={5}
+                                onChange={e => setRawQuery(e.target.value)}
+                                placeholder="Enter Raw Query" />
+                        </div>
+                    }
+                </div>
+            }
+        </>
     );
 }

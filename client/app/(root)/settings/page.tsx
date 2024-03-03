@@ -64,7 +64,7 @@ export default function Settings() {
         !loading &&
         <div className='w-full h-full flex flex-row gap-4'>
           <ScrollArea className="w-3/4 rounded h-full p-4">
-            <div>User Integrations</div>
+            <div>Organisation Integrations</div>
             <div className="flex flex-col justify-center items-center mt-4 gap-3">
               {
                 userIntegrations.map((integration) => {
@@ -85,7 +85,7 @@ export default function Settings() {
             </div>
           </ScrollArea>
           <ScrollArea className="w-1/4 h-full p-4">
-            <h4 className="text-center font-mono font-semibold text-2xl mb-4">Add Integration</h4>
+            <h4 className="text-center font-mono font-semibold text-2xl mb-4">Users In Organisation</h4>
             <div className="flex flex-col w-full h-full rounded gap-5">
               {
                 allUsers?.map((user) => (

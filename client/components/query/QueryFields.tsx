@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react'
+import React, { ReactNode, useState } from 'react'
 import CustomAxios from "@/utils/CustomAxios"
 import { ICharts } from "@/interfaces/ICharts"
 import { FetchDataResponse } from '@/app/(root)/addInsight/page';
@@ -41,45 +41,37 @@ export const QueryFields: React.FC<QueryFieldsProps> = ({
     setRawQuery }) => {
 
     const fetchDataAxios = CustomAxios.getFetchDataAxios();
+    const [loading, setLoading] = useState<boolean>()
 
     const getInsightData = () => {
-
-        async function getData() {
-            const response = await fetchDataAxios.get(`/integrations/${integrationId}`)
-            if (response.status !== 200 || !response.data) {
-                console.log(response.statusText);
-                //setError(response.statusText);
+        (
+            async () => {
+                try {
+                    setLoading(true)
+                    const body = {
+                        integrationId: integrationId,
+                        rawQuery: rawQuery
+                    }
+                    const insightDataResponse = await fetchDataAxios.post('/fetchData/query', body)
+                    setInsightData(insightDataResponse.data);
+                } catch (error) {
+                    console.log(error);
+                } finally {
+                    setLoading(false)
+                }
             }
-            const integration = response.data
-
-            const body = {
-                integrationId: integrationId,
-                rawQuery: rawQuery
-            }
-
-            fetchDataAxios.post('/fetchData/query', body)
-                .then((res) => {
-                    console.log("Data: ", res.data);
-                    setInsightData(res.data);
-                })
-                .catch((err) => {
-                    console.log(err);
-                    //setError(err.message);
-                });
-
-        }
-
-        getData()
-
+        )();
     }
 
     const getQueryInputForIntegrationType = (): ReactNode => {
-        if (integrationType === DataBaseType.POSTGRES_QL.valueOf()) {
+        if (integrationType === DataBaseType.POSTGRES_QL.valueOf() ||
+            integrationType === DataBaseType.MY_SQL.valueOf()) {
             return (
                 <SQLQueryInput
                     rawQuery={rawQuery}
                     setRawQuery={setRawQuery}
-                    getInsightData={getInsightData} />
+                    getInsightData={getInsightData}
+                    loading={loading} />
             )
         }
 
@@ -87,7 +79,8 @@ export const QueryFields: React.FC<QueryFieldsProps> = ({
             return (
                 <MongoQueryInput
                     setRawQuery={setRawQuery}
-                    getInsightData={getInsightData} />
+                    getInsightData={getInsightData}
+                    loading={loading} />
             )
         }
 

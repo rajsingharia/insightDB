@@ -5,16 +5,19 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from '@radix-ui/react-select';
+import { ReloadIcon } from '@radix-ui/react-icons';
 
 type QueryInputProps = {
-    setRawQuery: React.Dispatch<React.SetStateAction<string>>;
-    getInsightData: () => void
+    setRawQuery: React.Dispatch<React.SetStateAction<string>>,
+    getInsightData: () => void,
+    loading: boolean | undefined
 }
 
 
 export const MongoQueryInput: React.FC<QueryInputProps> = ({
     setRawQuery,
-    getInsightData
+    getInsightData,
+    loading
 }) => {
 
     const [collection, setCollection] = useState<string>("")
@@ -50,7 +53,13 @@ export const MongoQueryInput: React.FC<QueryInputProps> = ({
                 placeholder='MongoDB Query' />
             <Button
                 onClick={getData}>
-                Get Data
+                {
+                    loading &&
+                    <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                } 
+                {
+                    loading ? "Fetching Data..." : "Get Data"
+                }
             </Button>
         </div>
     )

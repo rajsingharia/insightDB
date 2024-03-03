@@ -23,12 +23,13 @@ import { Card } from "@/components/ui/card"
 import { PlusCircleIcon } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { Textarea } from "@/components/ui/textarea"
-import { TrashIcon } from '@radix-ui/react-icons';
+import { ReloadIcon, TrashIcon } from '@radix-ui/react-icons';
 
 type QueryInputProps = {
-    rawQuery: string;
-    setRawQuery: React.Dispatch<React.SetStateAction<string>>;
+    rawQuery: string,
+    setRawQuery: React.Dispatch<React.SetStateAction<string>>,
     getInsightData: () => void
+    loading: boolean | undefined
 }
 
 type ColumnInput = {
@@ -46,15 +47,17 @@ type WhereInput = {
 export const SQLQueryInput: React.FC<QueryInputProps> = ({
     rawQuery,
     setRawQuery,
-    getInsightData
+    getInsightData,
+    loading
 }) => {
 
     const { toast } = useToast()
     const [source, setSource] = useState<string>('')
     const [columns, setColumns] = useState<Array<ColumnInput>>([{ columnName: '' }])
-    const [where, setWhere] = useState<WhereInput>({columnName: "", condition: "", input: ""} as WhereInput)
+    const [where, setWhere] = useState<WhereInput>({ columnName: "", condition: "", input: "" } as WhereInput)
     const [sortBy, setSortBy] = useState<string>('')
     const [limit, setLimit] = useState<string>('')
+
 
     const addColumn = () => {
         setColumns([...columns, { columnName: '' }])
@@ -62,10 +65,10 @@ export const SQLQueryInput: React.FC<QueryInputProps> = ({
 
     // TODO: If query is already present -> add it to states
     useEffect(() => {
-        if(rawQuery && rawQuery.length > 0) {
+        if (rawQuery && rawQuery.length > 0) {
             // write logic to extract source, columns, where, sortedBy, limit from rawQuery
         }
-    },[])
+    }, [])
 
 
     useEffect(() => {
@@ -90,15 +93,15 @@ export const SQLQueryInput: React.FC<QueryInputProps> = ({
 
             currentQuery += " FROM " + source
 
-            if(where.columnName && where.columnName !== "" && where.condition !== "" && where.input != "") {
+            if (where.columnName && where.columnName !== "" && where.condition !== "" && where.input != "") {
                 currentQuery += " WHERE " + where.columnName + " " + where.condition + " " + where.input
             }
 
-            if(sortBy != "") {
+            if (sortBy != "") {
                 currentQuery += " ORDER BY " + sortBy
             }
 
-            if(limit != "") {
+            if (limit != "") {
                 currentQuery += " LIMIT " + limit
             }
 
@@ -146,7 +149,7 @@ export const SQLQueryInput: React.FC<QueryInputProps> = ({
     }
 
     const changeWhereColumn = (column: string) => {
-        setWhere( prevWhere => {
+        setWhere(prevWhere => {
             const updatedWhere = {
                 columnName: column,
                 condition: prevWhere.condition,
@@ -157,7 +160,7 @@ export const SQLQueryInput: React.FC<QueryInputProps> = ({
     }
 
     const changeWhereCondition = (condition: string) => {
-        setWhere( prevWhere => {
+        setWhere(prevWhere => {
             const updatedWhere = {
                 columnName: prevWhere.columnName,
                 condition: condition,
@@ -168,7 +171,7 @@ export const SQLQueryInput: React.FC<QueryInputProps> = ({
     }
 
     const changeWhereInput = (input: string) => {
-        setWhere( prevWhere => {
+        setWhere(prevWhere => {
             const updatedWhere = {
                 columnName: prevWhere.columnName,
                 condition: prevWhere.condition,
@@ -181,8 +184,8 @@ export const SQLQueryInput: React.FC<QueryInputProps> = ({
 
     const getData = () => {
 
-        if(!rawQuery || rawQuery.length == 0) {
-            toast({title: "Provide appropriate query input"})
+        if (!rawQuery || rawQuery.length == 0) {
+            toast({ title: "Provide appropriate query input" })
             return
         }
 
@@ -269,7 +272,7 @@ export const SQLQueryInput: React.FC<QueryInputProps> = ({
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectGroup>
-                                        <SelectItem value=" ">{"None"}</SelectItem>
+                                            <SelectItem value=" ">{"None"}</SelectItem>
                                             <SelectItem value="==">{"equal == "}</SelectItem>
                                             <SelectItem value=">=">{"greater than equal to >="}</SelectItem>
                                             <SelectItem value="<=">{"less than equal to <="}</SelectItem>
@@ -306,8 +309,14 @@ export const SQLQueryInput: React.FC<QueryInputProps> = ({
                                 value={format(rawQuery)}
                             />
                             <Button
-                                onClick={getInsightData}>
-                                Get Data
+                                onClick={getData}>
+                                {
+                                    loading &&
+                                    <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                                }
+                                {
+                                    loading ? "Fetching Data..." : "Get Data"
+                                }
                             </Button>
                         </Card>
                     </TabsContent>
@@ -320,7 +329,13 @@ export const SQLQueryInput: React.FC<QueryInputProps> = ({
                             />
                             <Button
                                 onClick={getData}>
-                                Get Data
+                                {
+                                    loading &&
+                                    <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                                }
+                                {
+                                    loading ? "Fetching Data..." : "Get Data"
+                                }
                             </Button>
                         </Card>
                     </TabsContent>

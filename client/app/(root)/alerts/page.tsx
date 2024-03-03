@@ -92,9 +92,11 @@ export default function AlertsPage() {
                     setAlerts(alertResponse.data)
 
                     const alertTriggersResponse = await alertAxios.get('/alert/alertTriggered')
+                    console.log(alertTriggersResponse.data)
                     setAlertTriggers(alertTriggersResponse.data)
 
                     const alertTriggerCountResponse = await alertAxios.get('/alert/alertTriggered/count')
+                    console.log(alertTriggerCountResponse.data)
                     setAlertTriggerCount(alertTriggerCountResponse.data)
 
                 } catch (error: unknown) {
