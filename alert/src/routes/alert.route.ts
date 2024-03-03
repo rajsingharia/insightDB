@@ -13,6 +13,8 @@ alertRouter.delete('/', alertController.deleteAlert);
 
 alertRouter.get('/alertTriggered/', alertController.getAllAlertTriggers);
 
+alertRouter.get('/alertTriggered/count', alertController.getAllAlertTriggersCount);
+
 alertRouter.get('/alertTriggered/:id', alertController.getAlertTriggers);
 
 export default alertRouter;

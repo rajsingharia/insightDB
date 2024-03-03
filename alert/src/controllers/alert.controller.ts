@@ -7,7 +7,8 @@ import { AlertDTO } from "../dto/request/alert.dto";
 
 export const getAlerts = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const response = await AlertService.getAllAlerts()
+        const organisationId = req.body.organisationId;
+        const response = await AlertService.getAllOrganisationAlerts(organisationId)
         res.status(200).send(response);
     } catch (error) {
         next(error);
@@ -19,13 +20,14 @@ export const addAlerts = async (req: Request, res: Response, next: NextFunction)
     try {
         const userId: string = req.body.userId
         const newAlert: AlertDTO = req.body.alert
+        const organisationId = req.body.organisationId;
 
         const validationErrors = await validate(newAlert);
         if (validationErrors.length > 0) {
             throw createHttpError(400, `Validation error: ${validationErrors}`);
         }
 
-        const response = await AlertService.addAlert(userId, newAlert)
+        const response = await AlertService.addAlert(userId, organisationId, newAlert)
         res.status(200).send(response);
     } catch (error) {
         next(error);
@@ -63,7 +65,18 @@ export const deleteAlert = async (req: Request, res: Response, next: NextFunctio
 
 export const getAllAlertTriggers = async(req: Request, res: Response, next: NextFunction) => {
     try {
-        const response = await AlertService.getAllAlertTriggers()
+        const organisationId = req.body.organisationId;
+        const response = await AlertService.getAllAlertTriggers(organisationId)
+        res.status(200).send(response);
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const getAllAlertTriggersCount = async(req: Request, res: Response, next: NextFunction) => {
+    try {
+        const organisationId = req.body.organisationId;
+        const response = await AlertService.getAlertTriggersCount(organisationId)
         res.status(200).send(response);
     } catch (error) {
         next(error);

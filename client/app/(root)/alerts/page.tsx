@@ -60,16 +60,7 @@ export default function AlertsPage() {
 
     const [alerts, setAlerts] = useState<AlertResponse[]>()
     const [alertTriggers, setAlertTriggers] = useState<alertTriggered[]>()
-
-    // model Alerts {
-    //     title              String
-    //     rawQuery           String
-    //     destination        AlertDestinations
-    //     integrationId        String
-    //     configuration      Json //{ row, condition, value }
-    //     cronExpression     String
-    //     repeatCount        Int               @default(1)
-    //   }
+    const [alertTriggerCount, setAlertTriggerCount] = useState<{ successful: number, unsuccessful: number}>()
 
     //Section One
     const [title, setTitle] = useState<string>()
@@ -88,6 +79,35 @@ export default function AlertsPage() {
 
     const { toast } = useToast()
     const [loading, setLoading] = useState<boolean>(true)
+
+    
+
+    useEffect(() => {
+        (
+            async () => {
+                const alertAxios = CustomAxios.getAlertAxios()
+                setLoading(true)
+                try {
+                    const alertResponse = await alertAxios.get('/alert')
+                    setAlerts(alertResponse.data)
+
+                    const alertTriggersResponse = await alertAxios.get('/alert/alertTriggered')
+                    setAlertTriggers(alertTriggersResponse.data)
+
+                    const alertTriggerCountResponse = await alertAxios.get('/alert/alertTriggered/count')
+                    setAlertTriggerCount(alertTriggerCountResponse.data)
+
+                } catch (error: unknown) {
+                    toast({ title: "Error : " + error })
+                } finally {
+                    setLoading(false)
+                }
+
+            }
+        )();
+
+    }, [toast])
+
 
     const createNewAlert = () => {
 
@@ -154,31 +174,6 @@ export default function AlertsPage() {
     ]
 
 
-    useEffect(() => {
-        (
-            async () => {
-                const alertAxios = CustomAxios.getAlertAxios()
-                setLoading(true)
-                try {
-                    const alertResponse = await alertAxios.get('/alert')
-                    setAlerts(alertResponse.data)
-
-                    const alertTriggersResponse = await alertAxios.get('/alert/alertTriggered')
-                    setAlertTriggers(alertTriggersResponse.data)
-
-                } catch (error: unknown) {
-                    toast({ title: "Error : " + error })
-                } finally {
-                    setLoading(false)
-                }
-
-            }
-        )();
-
-    }, [toast])
-
-
-
     return (
         <>
             {
@@ -225,17 +220,17 @@ export default function AlertsPage() {
                             <div className='flex flex-row gap-4 h-1/2'>
                                 <Card className="flex items-center justify-center h-full w-1/2">
                                     {
-                                        alertTriggers &&
+                                        alertTriggerCount &&
                                         <h1 className="text-4xl font-extrabold text-green-500">
-                                            {`Successfully ${alertTriggers.filter(alertTrigger => alertTrigger.isSuccessful).length}`}
+                                            {`Successfully ${alertTriggerCount?.successful}`}
                                         </h1>
                                     }
                                 </Card>
                                 <Card className="flex items-center justify-center h-full w-1/2">
                                     {
-                                        alertTriggers &&
+                                        alertTriggerCount &&
                                         <h1 className="text-4xl font-extrabold text-red-500">
-                                            {`Failure ${alertTriggers.filter(alertTrigger => !alertTrigger.isSuccessful).length}`}
+                                            {`Failure ${alertTriggerCount?.unsuccessful}`}
                                         </h1>
                                     }
                                 </Card>

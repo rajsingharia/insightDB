@@ -6,8 +6,12 @@ export class AlertService {
 
     private static prismaClient = prisma.getInstance();
 
-    public static getAllAlerts = async () => {
-        return await this.prismaClient.alerts.findMany()
+    public static getAllOrganisationAlerts = async (organisationId: string) => {
+        return await this.prismaClient.alerts.findMany({
+            where: {
+                organisationId: organisationId
+            }
+        })
     }
 
     public static getAlertById = async (alertId: string) => {
@@ -18,7 +22,7 @@ export class AlertService {
         })
     }
 
-    public static addAlert = async (userId: string, newAlert: AlertDTO) => {
+    public static addAlert = async (userId: string, organisationId: string, newAlert: AlertDTO) => {
         const alert = await this.prismaClient.alerts.create({
             data: {
                 userId: userId,
@@ -31,6 +35,11 @@ export class AlertService {
                 integration: {
                     connect: {
                         id: newAlert.integrationId
+                    }
+                },
+                Organisation: {
+                    connect: {
+                        id: organisationId
                     }
                 }
             }
@@ -86,9 +95,47 @@ export class AlertService {
 
     }
 
-    public static getAllAlertTriggers = async () => {
-        const alertTriggers = await this.prismaClient.alertTriggered.findMany()
+    public static getAllAlertTriggers = async (organisationId: string) => {
+
+        const organizationAlerts = await this.getAllOrganisationAlerts(organisationId)
+
+
+        const alertTriggers = await this.prismaClient.alertTriggered.findMany({
+            where:{
+                alertId: {
+                    in: organizationAlerts.map((alert)=> alert.id)
+                }
+            }
+        })
+
         return alertTriggers
+    }
+
+    public static getAlertTriggersCount = async (organisationId: string) => {
+
+        const organizationAlerts = await this.getAllOrganisationAlerts(organisationId)
+
+        const alertTriggerTotalCount = await this.prismaClient.alertTriggered.count({
+            where:{
+                alertId: {
+                    in: organizationAlerts.map((alert)=> alert.id)
+                }
+            }
+        })
+
+        const alertTriggerTotalCountUnSuccessful = await this.prismaClient.alertTriggered.count({
+            where:{
+                alertId: {
+                    in: organizationAlerts.map((alert)=> alert.id)
+                },
+                isSuccessful: false
+            }
+        })
+
+        return {
+            successful: alertTriggerTotalCount - alertTriggerTotalCountUnSuccessful,
+            unsuccessful: alertTriggerTotalCountUnSuccessful
+        }
     }
 
     public static getAlertTriggerByAlertId = async (alertId: string) => {
