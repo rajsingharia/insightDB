@@ -7,8 +7,6 @@ import { Axios } from "axios";
 import { RestApiParametersDTO } from "../dto/request/parameters/RestApi.parameters.dto";
 import { DataBaseType } from "insightdb-common"
 import { Redis } from "ioredis";
-import { FindOptions, WithId } from 'mongodb';
-import q2m from 'query-to-mongo';
 import * as mysql from "mysql2/promise"
 
 export type Connection = pg.PoolClient | mongoose.Mongoose | Axios | Redis | mysql.Connection | undefined;
@@ -75,6 +73,48 @@ export class fetchDataService {
     }
 
 
+    public static getAllInfo = async (type: string, credentials: JsonValue): Promise<unknown[] | undefined> => {
+
+        const pool: Connection = await connectDataSourceService.connectDataSource(type, credentials);
+        if (!pool) throw createHttpError(500, "Internal Server Error pool empty");
+
+        if (type === DataBaseType.POSTGRES_QL.valueOf()) {
+            const rawQueryForInfo = "SELECT table_name, column_name FROM information_schema.columns WHERE table_schema = 'public' ORDER BY table_name, ordinal_position;"
+            const response = await this.getAllDataFromRawQuery(type, credentials, rawQueryForInfo)
+            const tableColumnStrings = (response?.data as { table_name: string, column_name: string }[]).map(row => `${row.table_name} : ${row.column_name}`);
+            return tableColumnStrings
+        }
+        else if (type === DataBaseType.MONGO_DB.valueOf()) {
+            const mongoose = (pool as mongoose.Mongoose)
+            try {
+                const collections = await mongoose.connection.db.listCollections().toArray();
+                const tableColumnStrings: string[] = []
+                for (const collection of collections) {
+                    const collectionName = collection.name;
+                    const keys = await mongoose.connection.db.collection(collectionName).findOne();
+                    for (const key in keys) {
+                        tableColumnStrings.push(`${collectionName} : ${key}`);
+                    }
+                }
+
+                mongoose.connection.close();
+                return tableColumnStrings
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        if (type === DataBaseType.MY_SQL.valueOf()) {
+            const rawQueryForInfo = "SELECT table_name, column_name FROM information_schema.columns WHERE table_schema = 'public' ORDER BY table_name, ordinal_position;"
+            const response = await this.getAllDataFromRawQuery(type, credentials, rawQueryForInfo)
+            const tableColumnStrings = (response?.data as { table_name: string, column_name: string }[]).map(row => `${row.table_name} : ${row.column_name}`);
+            return tableColumnStrings
+        }
+        else if (type === DataBaseType.REDIS.valueOf()) {
+            return []
+        }
+
+    }
+
 
     private static async getAllDataPostgres(pool: pg.PoolClient, query: string): Promise<IGetAllData> {
 
@@ -98,24 +138,15 @@ export class fetchDataService {
 
 
     private static async getAllDataMongoDB(mongoose: mongoose.Mongoose, query: string): Promise<IGetAllData | undefined> {
-        //const mongoParams = parameters as MongoDBParametersDTO;
-        //const collectionName = mongoParams.sourceName!;
+
         console.log("Mongo Raw Query :: ", query)
-        const { collection, rawQuery } = JSON.parse(query);
-        const queryResponse = q2m(rawQuery);
-        console.log("Mongo Query :: ", queryResponse)
+        const { collection, pipeline } = JSON.parse(query);
 
-
-        // const specificDbConnection = mongoose.connection.useDb('notify');
         const collectionConnection = mongoose.connection.db.collection(collection);
 
-        // The database name may not be available on the collectionConnection instance.
-        // Instead, you can use the dbName property on the specificDbConnection.
-        console.log(collectionConnection.dbName);
-        //const query = QueryBuilderService.buildMongoDBQuery(mongoParams);
         try {
             const response = await collectionConnection
-                .find(queryResponse.criteria, queryResponse.options as FindOptions<WithId<Document>>)
+                .aggregate(pipeline)
                 .toArray();
 
             console.log("Response :: ", response)

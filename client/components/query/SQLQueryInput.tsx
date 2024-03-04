@@ -24,6 +24,12 @@ import { PlusCircleIcon } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { Textarea } from "@/components/ui/textarea"
 import { ReloadIcon, TrashIcon } from '@radix-ui/react-icons';
+import AceEditor from "react-ace";
+import "ace-builds/src-min-noconflict/mode-mysql";
+import "ace-builds/src-noconflict/theme-monokai";
+import "ace-builds/src-noconflict/theme-github";
+import "ace-builds/src-min-noconflict/ext-language_tools";
+import { useTheme } from 'next-themes';
 
 type QueryInputProps = {
     rawQuery: string,
@@ -58,6 +64,8 @@ export const SQLQueryInput: React.FC<QueryInputProps> = ({
     const [sortBy, setSortBy] = useState<string>('')
     const [limit, setLimit] = useState<string>('')
 
+    const { theme } = useTheme()
+
 
     const addColumn = () => {
         setColumns([...columns, { columnName: '' }])
@@ -65,6 +73,7 @@ export const SQLQueryInput: React.FC<QueryInputProps> = ({
 
     // TODO: If query is already present -> add it to states
     useEffect(() => {
+        setRawQuery("")
         if (rawQuery && rawQuery.length > 0) {
             // write logic to extract source, columns, where, sortedBy, limit from rawQuery
         }
@@ -196,12 +205,47 @@ export const SQLQueryInput: React.FC<QueryInputProps> = ({
     return (
         <div className="w-full h-full">
             {
-                <Tabs defaultValue="Query" className="w-full h-full">
+                <Tabs defaultValue="raw_query" className="w-full h-full">
                     <TabsList className="grid w-full grid-cols-2">
-                        <TabsTrigger value="Query">Query</TabsTrigger>
-                        <TabsTrigger value="Raw_Query">Raw Query</TabsTrigger>
+                        <TabsTrigger value="raw_query">Raw Query</TabsTrigger>
+                        <TabsTrigger value="query">Query</TabsTrigger>
                     </TabsList>
-                    <TabsContent value="Query">
+                    <TabsContent value="raw_query">
+                        <Card className='p-1 flex flex-col gap-1'>
+                            <AceEditor
+                                aria-label="editor"
+                                mode="mysql"
+                                theme={theme === "dark" ? "monokai": "github"}
+                                name="editor"
+                                width="100%"
+                                fontSize={12}
+                                minLines={13}
+                                maxLines={18}
+                                showPrintMargin={false}
+                                showGutter
+                                placeholder="SELECT * FROM [TABLE_NAME]"
+                                editorProps={{ $blockScrolling: true }}
+                                setOptions={{
+                                    enableBasicAutocompletion: true,
+                                    enableLiveAutocompletion: true,
+                                    enableSnippets: true
+                                }}
+                                value={rawQuery}
+                                onChange={(value) => setRawQuery(value)}
+                            />
+                            <Button
+                                onClick={getData}>
+                                {
+                                    loading &&
+                                    <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                                }
+                                {
+                                    loading ? "Fetching Data..." : "Get Data"
+                                }
+                            </Button>
+                        </Card>
+                    </TabsContent>
+                    <TabsContent value="query">
                         <Card className='p-1 flex flex-col gap-1'>
                             <Input
                                 id="source"
@@ -302,12 +346,12 @@ export const SQLQueryInput: React.FC<QueryInputProps> = ({
                                 onChange={(e) => setLimit(e.target.value)}
                                 className="w-[200px]" />
 
-                            <Textarea
+                            {/* <Textarea
                                 placeholder="Raw Query"
                                 readOnly={true}
                                 className="mt-5"
                                 value={format(rawQuery)}
-                            />
+                            /> */}
                             <Button
                                 onClick={getData}>
                                 {
@@ -320,25 +364,7 @@ export const SQLQueryInput: React.FC<QueryInputProps> = ({
                             </Button>
                         </Card>
                     </TabsContent>
-                    <TabsContent value="Raw_Query">
-                        <Card className='p-1 flex flex-col gap-1'>
-                            <Textarea
-                                placeholder="Raw Query"
-                                value={format(rawQuery)}
-                                onChange={(e) => setRawQuery(e.target.value)}
-                            />
-                            <Button
-                                onClick={getData}>
-                                {
-                                    loading &&
-                                    <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                                }
-                                {
-                                    loading ? "Fetching Data..." : "Get Data"
-                                }
-                            </Button>
-                        </Card>
-                    </TabsContent>
+
                 </Tabs>
             }
         </div>

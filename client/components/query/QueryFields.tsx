@@ -78,6 +78,7 @@ export const QueryFields: React.FC<QueryFieldsProps> = ({
         else if (integrationType === DataBaseType.MONGO_DB.valueOf()) {
             return (
                 <MongoQueryInput
+                    rawQuery={rawQuery}
                     setRawQuery={setRawQuery}
                     getInsightData={getInsightData}
                     loading={loading} />

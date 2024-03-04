@@ -86,9 +86,14 @@ export default function AddInsightPage() {
   const [dashboards, setDashboards] = useState<{ id: string, title: string }[]>([])
   const [selectedDashboard, setSelectedDashboard] = useState<{ id: string, title: string }>()
 
+
+
   const changeRefreshRate = (refreshRate: number) => {
     setRefreshRate(refreshRate);
   }
+
+
+
 
   useEffect(() => {
 
@@ -121,10 +126,10 @@ export default function AddInsightPage() {
     console.log("selectedIntegration :: " + JSON.stringify(selectedIntegration))
     try {
       setSelectedIntegration(selectedIntegration);
-    } catch(err) {
-      console.log('handelSelectedIntegrationChange Error:: '+ err)
+    } catch (err) {
+      console.log('handelSelectedIntegrationChange Error:: ' + err)
     }
-    
+
   };
 
   const handelDashboardChange = (id: string) => {
@@ -302,14 +307,13 @@ export default function AddInsightPage() {
               {
                 // dashboards && dashboards.length > 0 &&
                 <ChartSettings
+                  selectedIntegration={selectedIntegration}
                   handelSelectedIntegrationChange={handelSelectedIntegrationChange}
                   userIntegrations={userIntegrations}
                   insightTitle={insightTitle}
                   setInsightTitle={setInsightTitle}
                   insightDescription={insightDescription}
                   setInsightDescription={setInsightDescription}
-                  dashboards={dashboards}
-                  handelDashboardChange={handelDashboardChange}
                 />
               }
               <div className="w-full mt-4 pr-4 overflow-y-scroll rounded">
