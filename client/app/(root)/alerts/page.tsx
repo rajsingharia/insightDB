@@ -32,6 +32,16 @@ import {
     CarouselNext,
     CarouselPrevious,
 } from "@/components/ui/carousel"
+import {
+    Drawer,
+    DrawerClose,
+    DrawerContent,
+    DrawerDescription,
+    DrawerFooter,
+    DrawerHeader,
+    DrawerTitle,
+    DrawerTrigger,
+} from "@/components/ui/drawer"
 import { AlertCreationSectionOne } from '@/components/alert/AlertCreationSectionOne'
 import { AlertCreationSectionTwo } from '@/components/alert/AlertCreationSectionTwo'
 import { AlertTriggerChart } from '@/components/alert/AlertTriggerChart'
@@ -60,7 +70,7 @@ export default function AlertsPage() {
 
     const [alerts, setAlerts] = useState<AlertResponse[]>()
     const [alertTriggers, setAlertTriggers] = useState<alertTriggered[]>()
-    const [alertTriggerCount, setAlertTriggerCount] = useState<{ successful: number, unsuccessful: number}>()
+    const [alertTriggerCount, setAlertTriggerCount] = useState<{ successful: number, unsuccessful: number }>()
 
     //Section One
     const [title, setTitle] = useState<string>()
@@ -80,7 +90,7 @@ export default function AlertsPage() {
     const { toast } = useToast()
     const [loading, setLoading] = useState<boolean>(true)
 
-    
+
 
     useEffect(() => {
         (
@@ -187,18 +197,35 @@ export default function AlertsPage() {
             {
                 !loading &&
                 <div className='w-full h-full flex flex-col gap-1'>
-                    <div className='flex'>
-                        <Dialog>
+                    <div>
+                        <Drawer>
+                            <DrawerTrigger asChild>
+                                <Button>
+                                    <PlusCircle className='mr-2 h-4 w-4' />Add Alert
+                                </Button>
+                            </DrawerTrigger>
+                            <DrawerContent>
+                                <div className="flex flex-row gap-2 h-full w-full p-2">
+                                    {
+                                        carouselContentArray[0]
+                                    }
+                                    {
+                                        carouselContentArray[1]
+                                    }
+                                </div>
+                            </DrawerContent>
+                        </Drawer>
+                        {/* <Dialog >
                             <DialogTrigger>
                                 <Button>
                                     <PlusCircle className='mr-2 h-4 w-4' />Add Alert
                                 </Button>
                             </DialogTrigger>
-                            <DialogContent className="w-[1000px]">
+                            <DialogContent className="w-[1000px] h-[400px]">
                                 <DialogHeader>
                                     <DialogTitle>Add Alert</DialogTitle>
                                 </DialogHeader>
-                                <div className="w-full h-full">
+                                <div className="flex flex-row gap-2 w-full h-[1200px]">
                                     <Carousel className="w-full">
                                         <CarouselContent>
                                             {carouselContentArray.map((child, index) => (
@@ -214,8 +241,7 @@ export default function AlertsPage() {
                                     </Carousel>
                                 </div>
                             </DialogContent>
-                        </Dialog>
-
+                        </Dialog> */}
                     </div>
                     <div className='flex flex-row gap-4 w-full h-full'>
                         <div className='flex flex-col gap-4 w-2/3 h-full'>
