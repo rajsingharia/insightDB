@@ -1,6 +1,6 @@
 "use client"
 
-import { userIntegrationResponse } from '@/app/(root)/addInsight/page'
+import { ChartDataInput, FetchDataResponse, userIntegrationResponse } from '@/app/(root)/addInsight/page'
 import {
     Select,
     SelectContent,
@@ -16,15 +16,25 @@ import { ScrollArea } from '@radix-ui/react-scroll-area'
 import { Separator } from '@radix-ui/react-select'
 import { useEffect, useState } from 'react'
 import CustomAxios from '@/utils/CustomAxios'
+import {
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
+} from "@/components/ui/tabs"
+import { ICharts } from '@/interfaces/ICharts'
+import { SupportedCharList } from '../supportedChartsList/SupportedCharList'
+import { CircularProgress } from '../common/CircularProgress'
 
 interface ChartSettingsProps {
     selectedIntegration: userIntegrationResponse | undefined,
     handelSelectedIntegrationChange: (id: string) => void,
     userIntegrations: userIntegrationResponse[],
-    insightTitle: string,
-    setInsightTitle: React.Dispatch<React.SetStateAction<string>>,
-    insightDescription: string,
-    setInsightDescription: React.Dispatch<React.SetStateAction<string>>,
+    selectedChart: ICharts,
+    setSelectedChart: (chart: ICharts) => void,
+    chartUIData: ChartDataInput | undefined,
+    setChartUIData: React.Dispatch<React.SetStateAction<ChartDataInput | undefined>>,
+    insightData: FetchDataResponse | undefined
 }
 
 
@@ -33,20 +43,22 @@ export const ChartSettings: React.FC<ChartSettingsProps> = (
         selectedIntegration,
         handelSelectedIntegrationChange,
         userIntegrations,
-        insightTitle,
-        setInsightTitle,
-        insightDescription,
-        setInsightDescription,
-    }) => {
+        selectedChart,
+        setSelectedChart,
+        chartUIData,
+        setChartUIData,
+        insightData }) => {
 
     const { toast } = useToast();
 
+    const [loading, setLoading] = useState<boolean>()
     const [dataInfo, setDataInfo] = useState<string[]>()
 
     useEffect(() => {
         if (selectedIntegration != null) {
             (
                 async () => {
+                    setLoading(true)
                     const fetchDataAxios = CustomAxios.getFetchDataAxios();
                     try {
                         const body = {
@@ -57,6 +69,8 @@ export const ChartSettings: React.FC<ChartSettingsProps> = (
                         setDataInfo(dataInfoResponse.data)
                     } catch (error) {
                         toast({ title: "Error : " + error })
+                    } finally {
+                        setLoading(false)
                     }
                 }
             )()
@@ -64,85 +78,71 @@ export const ChartSettings: React.FC<ChartSettingsProps> = (
     }, [toast, selectedIntegration])
 
     return (
-        <div className="flex flex-col justify-start items-start w-full mt-2 gap-3">
-
-            {/* <Select
-                onValueChange={(value: string) => {
-                    handelDashboardChange(value)
-                }}>
-                <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select Dashboard" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectGroup>
+        <Tabs defaultValue="chart_setting" className="w-full h-full">
+            <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="chart_setting">Setting</TabsTrigger>
+                <TabsTrigger value="visualization">Visualization</TabsTrigger>
+            </TabsList>
+            <TabsContent value="chart_setting">
+                <ScrollArea className="flex flex-col justify-start items-start w-full mt-2 gap-3">
+                    <Select
+                        onValueChange={(value: string) => {
+                            handelSelectedIntegrationChange(value)
+                        }}>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Select Integration" />
+                        </SelectTrigger>
+                        <SelectContent >
+                            <SelectGroup>
+                                {
+                                    userIntegrations.map((integration) => {
+                                        return (
+                                            <SelectItem
+                                                key={integration.id}
+                                                value={integration.id}>
+                                                {integration.name}
+                                            </SelectItem>
+                                        )
+                                    })
+                                }
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
+                    <div className="p-4 w-full">
                         {
-                            dashboards.map((dashboard) => {
-                                return (
-                                    <SelectItem
-                                        value={dashboard.id}
-                                        key={dashboard.id}>
-                                        {dashboard.title}
-                                    </SelectItem>
-                                )
-                            })
+                            loading &&
+                            <div className="flex flex-col justify-center items-center w-full h-full ">
+                                <CircularProgress />
+                            </div>
                         }
-                    </SelectGroup>
-                </SelectContent>
-            </Select> */}
-
-            <Select
-                onValueChange={(value: string) => {
-                    handelSelectedIntegrationChange(value)
-                }}>
-                <SelectTrigger className="w-full h-[35px]">
-                    <SelectValue placeholder="Select Integration" />
-                </SelectTrigger>
-                <SelectContent >
-                    <SelectGroup>
                         {
-                            userIntegrations.map((integration) => {
-                                return (
-                                    <SelectItem
-                                        className="h-[35px]"
-                                        key={integration.id}
-                                        value={integration.id}>
-                                        {integration.name}
-                                    </SelectItem>
-                                )
-                            })
+                            !loading &&
+                            dataInfo?.map((tag, i) => (
+                                <>
+                                    <div
+                                        key={i}
+                                        className="text-sm">
+                                        {tag}
+                                    </div>
+                                    <Separator className="my-2" />
+                                </>
+                            ))
                         }
-                    </SelectGroup>
-                </SelectContent>
-            </Select>
-
-            <Input
-                className="h-[35px]"
-                placeholder="Chart Title"
-                value={insightTitle}
-                onChange={(event) => setInsightTitle(event.target.value)}
-            />
-            <Input
-                className="h-[35px]"
-                placeholder="Chart Description"
-                value={insightDescription}
-                onChange={(event) => setInsightDescription(event.target.value)}
-            />
-            <ScrollArea className="w-full h-72 rounded-md border">
-                <div className="p-4">
-                    {
-                        dataInfo?.map((tag, i) => (
-                            <>
-                                <div
-                                    key={i}
-                                    className="text-sm">
-                                    {tag}
-                                </div>
-                                <Separator className="my-2" />
-                            </>
-                        ))
-                    }
-                </div>
-            </ScrollArea>
-        </div>
+                    </div>
+                </ScrollArea>
+            </TabsContent>
+            <TabsContent value="visualization">
+                {
+                    insightData && insightData.countOfFields > 0 &&
+                    <SupportedCharList
+                        selectedChart={selectedChart}
+                        setSelectedChart={setSelectedChart}
+                        chartUIData={chartUIData}
+                        setChartUIData={setChartUIData}
+                        insightData={insightData}
+                    />
+                }
+            </TabsContent>
+        </Tabs>
     )
 }

@@ -73,6 +73,7 @@ export const BarGraph: React.FC<TimeBarGraphProps> = ({
 
     return (
         <Bar
+            className='h-full w-full p-3'
             data={data}
             options={options}
         />

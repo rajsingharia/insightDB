@@ -11,16 +11,17 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 import { ChartDataInput, FetchDataResponse } from '@/app/(root)/addInsight/page'
-import BarChartInput from '@/components/supportedChartsList/BarChartInput'
+import BarChartInput, { BarChartData } from '@/components/supportedChartsList/BarChartInput'
 import PieChartInput from '@/components/supportedChartsList/PieChartInput'
 import LineChartInput from '@/components/supportedChartsList/LineChartInput'
 import ScatterChartInput from '@/components/supportedChartsList/ScatterChartInput'
 import TextAreaInput from '@/components/supportedChartsList/TextInput'
-import TableViewInput from '@/components/supportedChartsList/tableViewInput'
+import TableViewInput from '@/components/supportedChartsList/TableViewInput'
 
 interface SupportedCharListProps {
     selectedChart: ICharts,
     setSelectedChart: (chart: ICharts) => void,
+    chartUIData: ChartDataInput | undefined,
     setChartUIData: React.Dispatch<React.SetStateAction<ChartDataInput | undefined>>,
     insightData: FetchDataResponse | undefined
 }
@@ -28,6 +29,7 @@ interface SupportedCharListProps {
 export const SupportedCharList: React.FC<SupportedCharListProps> = ({
     selectedChart,
     setSelectedChart,
+    chartUIData,
     setChartUIData,
     insightData }) => {
 
@@ -36,6 +38,7 @@ export const SupportedCharList: React.FC<SupportedCharListProps> = ({
         if (chartType === 'bar') {
             return (
                 <BarChartInput
+                    chartUIData={chartUIData}
                     setChartUIData={setChartUIData}
                     insightData={insightData} />
             )
@@ -43,6 +46,7 @@ export const SupportedCharList: React.FC<SupportedCharListProps> = ({
         else if (chartType === 'pie') {
             return (
                 <PieChartInput
+                    chartUIData={chartUIData}
                     setChartUIData={setChartUIData}
                     insightData={insightData} />
             )
@@ -50,6 +54,7 @@ export const SupportedCharList: React.FC<SupportedCharListProps> = ({
         else if (chartType === 'line') {
             return (
                 <LineChartInput
+                    chartUIData={chartUIData}
                     setChartUIData={setChartUIData}
                     insightData={insightData} />
             )
@@ -95,8 +100,8 @@ export const SupportedCharList: React.FC<SupportedCharListProps> = ({
                                         setSelectedChart(chart)
                                     }}>
                                     <div className={chart.value === selectedChart.value ?
-                                        'border-4 border-purple-500 bg-purple-600 bg-opacity-40 rounded-lg' :
-                                        'border-4 border-transparent'}>
+                                        'border-2 border-purple-500 bg-purple-600 bg-opacity-40 rounded-lg' :
+                                        'border-2 border-transparent'}>
                                         <div className='flex flex-row items-center justify-center p-1'>
                                             <span className={chart.value === selectedChart.value ?
                                                 'text-sm font-mono font-extrabold mr-2 text-center text-white' :

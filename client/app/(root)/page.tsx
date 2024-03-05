@@ -35,6 +35,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
+import { ScrollArea } from "@radix-ui/react-scroll-area";
 
 
 export default function Home() {
@@ -172,7 +173,7 @@ export default function Home() {
   return (
     <div className="flex flex-col w-full h-full">
       {
-        <div className="flex flex-row-reverse mb-4 gap-2 items-center">
+        <div className="flex flex-row-reverse mb-1 gap-2 items-center">
           {
             !loading  && (user.role === "ADMIN") && userInsights && userInsights.length > 0 &&
             <Button variant={enableEdit ? 'secondary' : 'destructive'} size="icon">
@@ -180,12 +181,12 @@ export default function Home() {
                 enableEdit ? (
                   <Unlock
                     onClick={() => changeEnableState(false)}
-                    className="h-[1.5rem] w-[1.5rem] rotate-0 scale-100 transition-all"
+                    className="h-[1.25rem] w-[1.25rem] rotate-0 scale-100 transition-all"
                   />
                 ) : (
                   <Lock
                     onClick={() => changeEnableState(true)}
-                    className="h-[1.5rem] w-[1.5rem] rotate-0 scale-100 transition-all"
+                    className="h-[1.25rem] w-[1.25rem] rotate-0 scale-100 transition-all"
                   />
                 )
               }
@@ -194,7 +195,7 @@ export default function Home() {
           <Dialog>
             <DialogTrigger asChild>
               <Button variant="secondary" size="icon">
-                <FolderPlus />
+                <FolderPlus className="h-[1.25rem] w-[1.25rem]"/>
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
@@ -262,11 +263,11 @@ export default function Home() {
       }
       {
         !loading && userInsights && userInsights.length > 0 &&
-        <div className="flex flex-col w-full h-full">
+        <ScrollArea className="flex flex-col w-full h-full">
           <ResponsiveGridLayout
             className="layout"
             // cols={11}
-            rowHeight={30}
+            rowHeight={20}
             // width={1130}
             isDraggable={enableEdit}
             isResizable={enableEdit}
@@ -290,7 +291,7 @@ export default function Home() {
               })
             }
           </ResponsiveGridLayout>
-        </div>
+        </ScrollArea>
       }
     </div>
   )

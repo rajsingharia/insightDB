@@ -7,7 +7,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { TableViewData } from "../supportedChartsList/tableViewInput";
+import { TableViewData } from "@/components/supportedChartsList/TableViewInput"
 import { ScrollArea } from "@/components/ui/scroll-area"
 
 interface TimeBarGraphProps {
@@ -31,7 +31,7 @@ export const TableView: React.FC<TimeBarGraphProps> = ({
     });
 
     return (
-        <ScrollArea className="h-72 w-72 rounded-md border">
+        <ScrollArea className="h-full w-full">
             <div className="p-4">
             <Table>
                 <TableHeader>

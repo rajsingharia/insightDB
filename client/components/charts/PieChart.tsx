@@ -15,9 +15,9 @@ interface PieChartProps {
     pieChartUiData: PieChartData;
 }
 
-export const PieChart: React.FC<PieChartProps> = ({ 
-    chartData, 
-    pieChartUiData}) => {
+export const PieChart: React.FC<PieChartProps> = ({
+    chartData,
+    pieChartUiData }) => {
 
     const chartDataColumns = pieChartUiData.columns
 
@@ -26,8 +26,8 @@ export const PieChart: React.FC<PieChartProps> = ({
             data: chartDataColumns.map((column) => {
                 return chartData.map((item: any) => item[column.column])
             }),
-            backgroundColor: chartDataColumns.map((value)=> value.color + '40'),
-            borderColor: chartDataColumns.map((value)=> value.color),
+            backgroundColor: chartDataColumns.map((value) => value.color + '40'),
+            borderColor: chartDataColumns.map((value) => value.color),
             borderWidth: 2
         }
     ];
@@ -40,6 +40,7 @@ export const PieChart: React.FC<PieChartProps> = ({
     }
 
     return <Pie
+        className='h-full w-full p-3'
         data={data}
     />;
 }

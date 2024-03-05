@@ -35,6 +35,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input";
 
 export type userIntegrationResponse = {
   id: string;
@@ -247,6 +248,18 @@ export default function AddInsightPage() {
                           <DialogTitle>Add Insight</DialogTitle>
                         </DialogHeader>
                         <div className="flex flex-col gap-4 py-4">
+                          <Input
+                            className="w-full"
+                            placeholder="Chart Title"
+                            value={insightTitle}
+                            onChange={(event) => setInsightTitle(event.target.value)}
+                          />
+                          <Input
+                            className="w-full"
+                            placeholder="Chart Description"
+                            value={insightDescription}
+                            onChange={(event) => setInsightDescription(event.target.value)}
+                          />
                           <Select
                             onValueChange={(value: string) => {
                               handelDashboardChange(value)
@@ -303,20 +316,19 @@ export default function AddInsightPage() {
           <ResizableHandle withHandle />
           <ResizablePanel defaultSize={25} className="flex flex-col justify-start items-center h-full rounded-lg">
             <div className="flex flex-col justify-start items-center h-full w-full p-1">
-              Settings
               {
-                // dashboards && dashboards.length > 0 &&
                 <ChartSettings
                   selectedIntegration={selectedIntegration}
                   handelSelectedIntegrationChange={handelSelectedIntegrationChange}
                   userIntegrations={userIntegrations}
-                  insightTitle={insightTitle}
-                  setInsightTitle={setInsightTitle}
-                  insightDescription={insightDescription}
-                  setInsightDescription={setInsightDescription}
+                  selectedChart={selectedChart}
+                  setSelectedChart={setSelectedChart}
+                  chartUIData={chartUIData}
+                  setChartUIData={setChartUIData}
+                  insightData={insightData}
                 />
               }
-              <div className="w-full mt-4 pr-4 overflow-y-scroll rounded">
+              {/* <div className="w-full mt-4 pr-4 overflow-y-scroll rounded">
                 {
                   insightData && insightData.countOfFields > 0 &&
                   <SupportedCharList
@@ -326,7 +338,7 @@ export default function AddInsightPage() {
                     insightData={insightData}
                   />
                 }
-              </div>
+              </div> */}
             </div>
           </ResizablePanel>
         </ResizablePanelGroup >

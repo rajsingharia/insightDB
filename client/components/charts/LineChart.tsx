@@ -33,8 +33,8 @@ interface LineChartProps {
 }
 
 
-export const LineChart: React.FC<LineChartProps> = ({ 
-    chartData, 
+export const LineChart: React.FC<LineChartProps> = ({
+    chartData,
     lineChartUiData }) => {
 
     const xAxis = lineChartUiData.xAxisColumn
@@ -53,7 +53,7 @@ export const LineChart: React.FC<LineChartProps> = ({
     const labels = chartData.map((item: any) => moment(item[xAxis]).format('MMM YYYY'));
     let bgIdx = 0, boIdx = 0;
 
-    const datasets = yAxis.map(({column, alias, color, isEnabled, isFilled}) => {
+    const datasets = yAxis.map(({ column, alias, color, isEnabled, isFilled }) => {
         if (isEnabled) {
             return {
                 fill: isFilled,
@@ -73,6 +73,7 @@ export const LineChart: React.FC<LineChartProps> = ({
 
     return (
         <Line
+            className='h-full w-full p-3'
             options={options}
             data={data} />
     );

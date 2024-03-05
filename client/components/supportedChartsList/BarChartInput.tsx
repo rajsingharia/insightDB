@@ -31,6 +31,7 @@ import {
 
 
 interface BarChartInputListProps {
+    chartUIData: ChartDataInput | undefined,
     setChartUIData: React.Dispatch<React.SetStateAction<ChartDataInput | undefined>>,
     insightData: FetchDataResponse | undefined
 }
@@ -48,11 +49,18 @@ export interface BarChartData extends ChartDataInput {
 }
 
 export const BarChartInput: React.FC<BarChartInputListProps> = ({
+    chartUIData,
     setChartUIData,
     insightData }) => {
 
     const [xAxis, setXAxis] = useState<string>();
     const [yAxisList, setYAxisList] = useState<BarChartYAxisColumnData>()
+
+    const currentChartUIData = chartUIData as BarChartData
+    // if(currentChartUIData) {
+    //     setXAxis(currentChartUIData.xAxisColumn)
+    //     setYAxisList(currentChartUIData.yAxis)
+    // }
 
     const onXAxisChange = (value: string) => {
         setXAxis(value)
@@ -77,12 +85,15 @@ export const BarChartInput: React.FC<BarChartInputListProps> = ({
     }
 
     const createChart = () => {
-        const temp: BarChartData = {
-            type: 'bar',
-            xAxisColumn: xAxis!,
-            yAxis: yAxisList!
+        if (xAxis && yAxisList) {
+            const temp: BarChartData = {
+                type: 'bar',
+                xAxisColumn: xAxis!,
+                yAxis: yAxisList!
+            }
+            console.log("temp", temp)
+            setChartUIData(temp)
         }
-        setChartUIData(temp)
     }
 
     const changeEnabled = (idx: number, enable: boolean | string) => {

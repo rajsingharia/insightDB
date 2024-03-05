@@ -14,22 +14,22 @@ import "ace-builds/src-min-noconflict/ext-language_tools";
 import { useTheme } from 'next-themes';
 
 type QueryInputProps = {
-    rawQuery: string,
-    setRawQuery: React.Dispatch<React.SetStateAction<string>>,
-    getInsightData: () => void,
-    loading: boolean | undefined
+  rawQuery: string,
+  setRawQuery: React.Dispatch<React.SetStateAction<string>>,
+  getInsightData: () => void,
+  loading: boolean | undefined
 }
 
 
 export const MongoQueryInput: React.FC<QueryInputProps> = ({
-    rawQuery,
-    setRawQuery,
-    getInsightData,
-    loading
+  rawQuery,
+  setRawQuery,
+  getInsightData,
+  loading
 }) => {
 
-    useEffect(() => {
-        const sampleJSON = `{
+  useEffect(() => {
+    const sampleJSON = `{
             "collection": "yourCollectionName",
             "pipeline": [
               {
@@ -60,17 +60,19 @@ export const MongoQueryInput: React.FC<QueryInputProps> = ({
               }
             ]
           }`
-        setRawQuery(sampleJSON)
-    }, [])
+    if (!rawQuery) {
+      setRawQuery(sampleJSON)
+    }
+  }, [])
 
 
-    const { theme } = useTheme()
+  const { theme } = useTheme()
 
 
 
-    return (
-        <div className="flex flex-col gap-2 w-full h-full">
-            {/* <Input
+  return (
+    <div className="flex flex-col gap-2 w-full h-full">
+      {/* <Input
                 value={collection}
                 onChange={(event) => setCollection(event.target.value)}
                 placeholder='Collection Name' />
@@ -82,36 +84,36 @@ export const MongoQueryInput: React.FC<QueryInputProps> = ({
                 value={mongoRawQuery}
                 onChange={(event) => setMongoRawQuery(event.target.value)}
                 placeholder='MongoDB Query' /> */}
-            <AceEditor
-                aria-label="editor"
-                mode="javascript"
-                theme={theme === "dark" ? "monokai" : "github"}
-                name="editor"
-                width="100%"
-                fontSize={12}
-                minLines={13}
-                maxLines={18}
-                showPrintMargin={false}
-                showGutter
-                editorProps={{ $blockScrolling: true }}
-                setOptions={{
-                    enableBasicAutocompletion: true,
-                    enableLiveAutocompletion: true,
-                    enableSnippets: true
-                }}
-                value={rawQuery}
-                onChange={(value) => setRawQuery(value)}
-            />
-            <Button
-                onClick={getInsightData}>
-                {
-                    loading &&
-                    <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                }
-                {
-                    loading ? "Fetching Data..." : "Get Data"
-                }
-            </Button>
-        </div>
-    )
+      <AceEditor
+        aria-label="editor"
+        mode="javascript"
+        theme={theme === "dark" ? "monokai" : "github"}
+        name="editor"
+        width="100%"
+        fontSize={12}
+        minLines={13}
+        maxLines={18}
+        showPrintMargin={false}
+        showGutter
+        editorProps={{ $blockScrolling: true }}
+        setOptions={{
+          enableBasicAutocompletion: true,
+          enableLiveAutocompletion: true,
+          enableSnippets: true
+        }}
+        value={rawQuery}
+        onChange={(value) => setRawQuery(value)}
+      />
+      <Button
+        onClick={getInsightData}>
+        {
+          loading &&
+          <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+        }
+        {
+          loading ? "Fetching Data..." : "Get Data"
+        }
+      </Button>
+    </div>
+  )
 }

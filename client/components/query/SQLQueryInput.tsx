@@ -73,10 +73,12 @@ export const SQLQueryInput: React.FC<QueryInputProps> = ({
 
     // TODO: If query is already present -> add it to states
     useEffect(() => {
-        setRawQuery("")
-        if (rawQuery && rawQuery.length > 0) {
-            // write logic to extract source, columns, where, sortedBy, limit from rawQuery
+        if (!rawQuery) {
+            setRawQuery("SELECT * FROM [TABLE_NAME] LIMIT 100")
         }
+        // if (rawQuery && rawQuery.length > 0) {
+        //     // write logic to extract source, columns, where, sortedBy, limit from rawQuery
+        // }
     }, [])
 
 
@@ -215,7 +217,7 @@ export const SQLQueryInput: React.FC<QueryInputProps> = ({
                             <AceEditor
                                 aria-label="editor"
                                 mode="mysql"
-                                theme={theme === "dark" ? "monokai": "github"}
+                                theme={theme === "dark" ? "monokai" : "github"}
                                 name="editor"
                                 width="100%"
                                 fontSize={12}
@@ -223,7 +225,7 @@ export const SQLQueryInput: React.FC<QueryInputProps> = ({
                                 maxLines={18}
                                 showPrintMargin={false}
                                 showGutter
-                                placeholder="SELECT * FROM [TABLE_NAME]"
+                                placeholder="SELECT * FROM [TABLE_NAME] LIMIT 100"
                                 editorProps={{ $blockScrolling: true }}
                                 setOptions={{
                                     enableBasicAutocompletion: true,
@@ -364,7 +366,6 @@ export const SQLQueryInput: React.FC<QueryInputProps> = ({
                             </Button>
                         </Card>
                     </TabsContent>
-
                 </Tabs>
             }
         </div>
