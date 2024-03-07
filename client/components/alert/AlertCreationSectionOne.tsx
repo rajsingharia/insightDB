@@ -1,4 +1,4 @@
-import { userIntegrationResponse } from "@/app/(root)/addInsight/page";
+import { FetchDataResponse, userIntegrationResponse } from "@/app/(root)/addInsight/page";
 import CustomAxios from "@/utils/CustomAxios";
 import { useEffect, useState } from "react";
 import { useToast } from "../ui/use-toast";
@@ -15,14 +15,15 @@ import {
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { CircularProgress } from "../common/CircularProgress";
+import { QueryFields } from "../query/QueryFields";
 
 interface AlertCreationSectionOneProps {
     title: string | undefined;
     setTitle: React.Dispatch<React.SetStateAction<string | undefined>>;
-    rawQuery: string | undefined;
-    setRawQuery: React.Dispatch<React.SetStateAction<string | undefined>>;
-    integrationId: string | undefined;
-    setIntegrationId: React.Dispatch<React.SetStateAction<string | undefined>>;
+    rawQuery: string;
+    setRawQuery: React.Dispatch<React.SetStateAction<string>>;
+    selectedIntegration: userIntegrationResponse | undefined;
+    setSelectedIntegration: React.Dispatch<React.SetStateAction<userIntegrationResponse | undefined>>;
 }
 
 
@@ -31,12 +32,13 @@ export const AlertCreationSectionOne: React.FC<AlertCreationSectionOneProps> = (
     setTitle,
     rawQuery,
     setRawQuery,
-    integrationId,
-    setIntegrationId }) => {
+    selectedIntegration,
+    setSelectedIntegration }) => {
 
     const [userIntegrations, setUserIntegrations] = useState<userIntegrationResponse[]>([]);
     const { toast } = useToast()
     const [loading, setLoading] = useState<boolean>(true)
+    const [insightData, setInsightData] = useState<FetchDataResponse>()
 
     useEffect(() => {
 
@@ -72,15 +74,17 @@ export const AlertCreationSectionOne: React.FC<AlertCreationSectionOneProps> = (
                 <div className="w-full h-full">
                     {
                         userIntegrations &&
-                        <div className="flex flex-col w-full h-full gap-10 p-2">
+                        <div className="flex flex-col w-full h-full gap-2 p-2">
                             <Input
                                 value={title}
                                 onChange={e => setTitle(e.target.value)}
                                 placeholder="Enter Alert Title" />
                             <Select
-                                value={integrationId}
+                                value={selectedIntegration?.id}
                                 onValueChange={(value: string) => {
-                                    setIntegrationId(value)
+                                    setSelectedIntegration(
+                                        userIntegrations.find((integration) => integration.id == value)
+                                    )
                                 }}>
                                 <SelectTrigger className="w-full">
                                     <SelectValue placeholder="Select Integration" />
@@ -99,11 +103,21 @@ export const AlertCreationSectionOne: React.FC<AlertCreationSectionOneProps> = (
                                     </SelectGroup>
                                 </SelectContent>
                             </Select>
-                            <Textarea
+                            {
+                                selectedIntegration &&
+                                <QueryFields
+                                    integrationId={selectedIntegration?.id}
+                                    integrationType={selectedIntegration?.type}
+                                    setInsightData={undefined}
+                                    rawQuery={rawQuery}
+                                    setRawQuery={setRawQuery}
+                                />
+                            }
+                            {/* <Textarea
                                 value={rawQuery}
                                 rows={5}
                                 onChange={e => setRawQuery(e.target.value)}
-                                placeholder="Enter Raw Query" />
+                                placeholder="Enter Raw Query" /> */}
                         </div>
                     }
                 </div>

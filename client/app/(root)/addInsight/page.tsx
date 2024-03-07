@@ -304,7 +304,6 @@ export default function AddInsightPage() {
                     integrationId={selectedIntegration.id}
                     integrationType={selectedIntegration?.type}
                     setInsightData={setInsightData}
-                    chartType={selectedChart}
                     rawQuery={rawQuery}
                     setRawQuery={setRawQuery}
                   />

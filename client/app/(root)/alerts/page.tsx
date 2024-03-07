@@ -45,6 +45,8 @@ import {
 import { AlertCreationSectionOne } from '@/components/alert/AlertCreationSectionOne'
 import { AlertCreationSectionTwo } from '@/components/alert/AlertCreationSectionTwo'
 import { AlertTriggerChart } from '@/components/alert/AlertTriggerChart'
+import { userIntegrationResponse } from '../addInsight/page'
+import moment from 'moment'
 
 
 type AlertResponse = {
@@ -74,8 +76,8 @@ export default function AlertsPage() {
 
     //Section One
     const [title, setTitle] = useState<string>()
-    const [integrationId, setIntegrationId] = useState<string>()
-    const [rawQuery, setRawQuery] = useState<string>()
+    const [selectedIntegration, setSelectedIntegration] = useState<userIntegrationResponse>()
+    const [rawQuery, setRawQuery] = useState<string>('')
 
     //Section Two
     const [destination, setDestination] = useState<string>()
@@ -136,7 +138,7 @@ export default function AlertsPage() {
         const body = {
             alert: {
                 title: title,
-                integrationId: integrationId,
+                integrationId: selectedIntegration?.id,
                 rawQuery: rawQuery,
                 destination: destination,
                 configuration: config,
@@ -154,37 +156,36 @@ export default function AlertsPage() {
             })
     }
 
-    const carouselContentArray = [
-
-        <AlertCreationSectionOne
-            key={1}
-            title={title}
-            setTitle={setTitle}
-            rawQuery={rawQuery}
-            setRawQuery={setRawQuery}
-            integrationId={integrationId}
-            setIntegrationId={setIntegrationId} />,
-
-        <AlertCreationSectionTwo
-            key={2}
-            destination={destination}
-            setDestination={setDestination}
-            row={row}
-            setRow={setRow}
-            condition={condition}
-            setCondition={setCondition}
-            value={value}
-            setValue={setValue}
-            otherConfig={otherConfig}
-            setOtherConfig={setOtherConfig}
-            cronExp={cronExp}
-            setCronExp={setCronExp}
-            repeatCount={repeatCount}
-            setRepeatCount={setRepeatCount}
-            createNewAlert={createNewAlert} />
-
-    ]
-
+    const findAlertTriggers = (alertId: string) => {
+        const alertTriggersForAlertId = alertTriggers?.filter((alertTrigger) => alertTrigger.alertId === alertId)
+        return (
+            <Card className='p-1'>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead className="w-[100px]">ID</TableHead>
+                            <TableHead>Success</TableHead>
+                            <TableHead>Error</TableHead>
+                            <TableHead>Created At</TableHead>
+                            <TableHead />
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {
+                            alertTriggersForAlertId?.map((alertTrigger) => (
+                                <TableRow key={alertTrigger?.id}>
+                                    <TableCell className="font-medium">{alertTrigger.id.slice(0, 8)}</TableCell>
+                                    <TableCell>{alertTrigger.isSuccessful.toString()}</TableCell>
+                                    <TableCell>{alertTrigger.errorMessage.length === 0 ? "N/A" : alertTrigger.errorMessage}</TableCell>
+                                    <TableCell>{moment(alertTrigger.createdAt).utc().format('MM/DD/YYYY HH:mm:ss')}</TableCell>
+                                </TableRow>
+                            ))
+                        }
+                    </TableBody>
+                </Table>
+            </Card>
+        )
+    }
 
     return (
         <>
@@ -205,43 +206,39 @@ export default function AlertsPage() {
                                 </Button>
                             </DrawerTrigger>
                             <DrawerContent>
-                                <div className="flex flex-row gap-2 h-full w-full p-2">
-                                    {
-                                        carouselContentArray[0]
-                                    }
-                                    {
-                                        carouselContentArray[1]
-                                    }
+                                <div className="flex flex-row gap-2 h-[400px] w-full p-2">
+                                    <div className='w-1/2'>
+                                        <AlertCreationSectionOne
+                                            key={1}
+                                            title={title}
+                                            setTitle={setTitle}
+                                            rawQuery={rawQuery}
+                                            setRawQuery={setRawQuery}
+                                            selectedIntegration={selectedIntegration}
+                                            setSelectedIntegration={setSelectedIntegration} />,
+                                    </div>
+                                    <div className='w-1/2'>
+                                        <AlertCreationSectionTwo
+                                            key={2}
+                                            destination={destination}
+                                            setDestination={setDestination}
+                                            row={row}
+                                            setRow={setRow}
+                                            condition={condition}
+                                            setCondition={setCondition}
+                                            value={value}
+                                            setValue={setValue}
+                                            otherConfig={otherConfig}
+                                            setOtherConfig={setOtherConfig}
+                                            cronExp={cronExp}
+                                            setCronExp={setCronExp}
+                                            repeatCount={repeatCount}
+                                            setRepeatCount={setRepeatCount}
+                                            createNewAlert={createNewAlert} />
+                                    </div>
                                 </div>
                             </DrawerContent>
                         </Drawer>
-                        {/* <Dialog >
-                            <DialogTrigger>
-                                <Button>
-                                    <PlusCircle className='mr-2 h-4 w-4' />Add Alert
-                                </Button>
-                            </DialogTrigger>
-                            <DialogContent className="w-[1000px] h-[400px]">
-                                <DialogHeader>
-                                    <DialogTitle>Add Alert</DialogTitle>
-                                </DialogHeader>
-                                <div className="flex flex-row gap-2 w-full h-[1200px]">
-                                    <Carousel className="w-full">
-                                        <CarouselContent>
-                                            {carouselContentArray.map((child, index) => (
-                                                <CarouselItem key={index}>
-                                                    {
-                                                        child
-                                                    }
-                                                </CarouselItem>
-                                            ))}
-                                        </CarouselContent>
-                                        <CarouselPrevious />
-                                        <CarouselNext />
-                                    </Carousel>
-                                </div>
-                            </DialogContent>
-                        </Dialog> */}
                     </div>
                     <div className='flex flex-row gap-4 w-full h-full'>
                         <div className='flex flex-col gap-4 w-2/3 h-full'>
@@ -295,12 +292,18 @@ export default function AlertsPage() {
                                                         <TableCell>{alert.destination}</TableCell>
                                                         <TableCell className="text-right">
                                                             <Dialog>
+
                                                                 <DialogTrigger asChild>
                                                                     <Button variant="link">Triggers</Button>
                                                                 </DialogTrigger>
                                                                 <DialogContent>
+                                                                    <DialogHeader>
+                                                                        {`Alert Trigger for alert id : ${alert.id.slice(0, 8)}`}
+                                                                    </DialogHeader>
                                                                     <div className="flex flex-col gap-4 py-4">
-
+                                                                        {
+                                                                            findAlertTriggers(alert.id)
+                                                                        }
                                                                     </div>
                                                                 </DialogContent>
                                                             </Dialog>

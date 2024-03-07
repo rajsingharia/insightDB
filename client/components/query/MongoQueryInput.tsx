@@ -7,25 +7,25 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from '@radix-ui/react-select';
 import { ReloadIcon } from '@radix-ui/react-icons';
 import AceEditor from "react-ace";
-import "ace-builds/src-min-noconflict/mode-mysql";
+import "ace-builds/src-min-noconflict/mode-json";
 import "ace-builds/src-noconflict/theme-monokai";
-import "ace-builds/src-noconflict/theme-github";
+import "ace-builds/src-noconflict/theme-terminal";
 import "ace-builds/src-min-noconflict/ext-language_tools";
 import { useTheme } from 'next-themes';
 
 type QueryInputProps = {
   rawQuery: string,
   setRawQuery: React.Dispatch<React.SetStateAction<string>>,
-  getInsightData: () => void,
-  loading: boolean | undefined
+  // getInsightData: () => void,
+  // loading: boolean | undefined
 }
 
 
 export const MongoQueryInput: React.FC<QueryInputProps> = ({
   rawQuery,
   setRawQuery,
-  getInsightData,
-  loading
+  // getInsightData,
+  // loading
 }) => {
 
   useEffect(() => {
@@ -86,8 +86,8 @@ export const MongoQueryInput: React.FC<QueryInputProps> = ({
                 placeholder='MongoDB Query' /> */}
       <AceEditor
         aria-label="editor"
-        mode="javascript"
-        theme={theme === "dark" ? "monokai" : "github"}
+        mode="json"
+        theme={theme === "dark" ? "terminal" : "github"}
         name="editor"
         width="100%"
         fontSize={12}
@@ -104,7 +104,7 @@ export const MongoQueryInput: React.FC<QueryInputProps> = ({
         value={rawQuery}
         onChange={(value) => setRawQuery(value)}
       />
-      <Button
+      {/* <Button
         onClick={getInsightData}>
         {
           loading &&
@@ -113,7 +113,7 @@ export const MongoQueryInput: React.FC<QueryInputProps> = ({
         {
           loading ? "Fetching Data..." : "Get Data"
         }
-      </Button>
+      </Button> */}
     </div>
   )
 }
