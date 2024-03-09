@@ -1,4 +1,4 @@
-import { userIntegrationResponse } from "@/app/(root)/addInsight/page";
+import { FetchDataResponse, userIntegrationResponse } from "@/app/(root)/addInsight/page";
 import CustomAxios from "@/utils/CustomAxios";
 import { useEffect, useState } from "react";
 import { useToast } from "../ui/use-toast";
@@ -37,7 +37,8 @@ interface AlertCreationSectionOneProps {
     setCronExp: React.Dispatch<React.SetStateAction<string | undefined>>;
     repeatCount: number | undefined;
     setRepeatCount: React.Dispatch<React.SetStateAction<number | undefined>>;
-    createNewAlert: () => void
+    createNewAlert: () => void,
+    insightData: FetchDataResponse
 }
 
 
@@ -56,9 +57,10 @@ export const AlertCreationSectionTwo: React.FC<AlertCreationSectionOneProps> = (
     setCronExp,
     repeatCount,
     setRepeatCount,
-    createNewAlert }) => {
+    createNewAlert,
+    insightData }) => {
 
-    const AlertDestinations = ["SLACK", "EMAIL"]
+    const AlertDestinations = ["SLACK", "EMAIL", "WEBHOOK"]
     const Conditions = ["equal", "notEqual", "greaterThan", "lessThan", "greaterThanEqual", "lessThanEqual"]
 
     const { theme } = useTheme()
@@ -131,6 +133,28 @@ export const AlertCreationSectionTwo: React.FC<AlertCreationSectionOneProps> = (
                         OtherConfig()
                     }
                     <div className="flex flex-row items-center mt-2 gap-2">
+                        <Select
+                            value={row}
+                            onValueChange={(value: string) => {
+                                setRow(value)
+                            }}>
+                            <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Row" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectGroup>
+                                    {
+                                        insightData.fields.map((fields, idx) => (
+                                            <SelectItem
+                                                key={idx}
+                                                value={fields}>
+                                                {fields}
+                                            </SelectItem>
+                                        ))
+                                    }
+                                </SelectGroup>
+                            </SelectContent>
+                        </Select>
                         <Input
                             value={row}
                             onChange={e => setRow(e.target.value)}
@@ -175,8 +199,8 @@ export const AlertCreationSectionTwo: React.FC<AlertCreationSectionOneProps> = (
                     <Button
                         onClick={createNewAlert}>
                         Submit</Button>
-                </div>
+                </div >
             }
-        </div>
+        </div >
     );
 }

@@ -78,13 +78,13 @@ export const ChartSettings: React.FC<ChartSettingsProps> = (
     }, [toast, selectedIntegration])
 
     return (
-        <Tabs defaultValue="chart_setting" className="w-full h-full">
+        <Tabs defaultValue="chart_setting" className="p-1">
             <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="chart_setting">Setting</TabsTrigger>
                 <TabsTrigger value="visualization">Visualization</TabsTrigger>
             </TabsList>
             <TabsContent value="chart_setting">
-                <ScrollArea className="flex flex-col justify-start items-start w-full mt-2 gap-3">
+                <div className='flex flex-col gap-4 h-20'>
                     <Select
                         onValueChange={(value: string) => {
                             handelSelectedIntegrationChange(value)
@@ -108,13 +108,13 @@ export const ChartSettings: React.FC<ChartSettingsProps> = (
                             </SelectGroup>
                         </SelectContent>
                     </Select>
-                    <div className="p-4 w-full">
-                        {
-                            loading &&
-                            <div className="flex flex-col justify-center items-center w-full h-full ">
-                                <CircularProgress />
-                            </div>
-                        }
+                    {
+                        loading &&
+                        <div className="flex flex-col justify-center items-center w-full h-full ">
+                            <CircularProgress />
+                        </div>
+                    }
+                    <ScrollArea className='h-20'>
                         {
                             !loading &&
                             dataInfo?.map((tag, i) => (
@@ -128,8 +128,8 @@ export const ChartSettings: React.FC<ChartSettingsProps> = (
                                 </>
                             ))
                         }
-                    </div>
-                </ScrollArea>
+                    </ScrollArea>
+                </div>
             </TabsContent>
             <TabsContent value="visualization">
                 {

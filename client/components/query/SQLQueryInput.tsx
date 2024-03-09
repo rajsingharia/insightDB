@@ -74,7 +74,7 @@ export const SQLQueryInput: React.FC<QueryInputProps> = ({
     // TODO: If query is already present -> add it to states
     useEffect(() => {
         if (!rawQuery) {
-            setRawQuery("SELECT * FROM [TABLE_NAME] LIMIT 100")
+            setRawQuery("SELECT *\nFROM [TABLE_NAME]\nLIMIT 100")
         }
         // if (rawQuery && rawQuery.length > 0) {
         //     // write logic to extract source, columns, where, sortedBy, limit from rawQuery
@@ -352,7 +352,7 @@ export const SQLQueryInput: React.FC<QueryInputProps> = ({
                     maxLines={18}
                     showPrintMargin={false}
                     showGutter
-                    placeholder="SELECT * FROM [TABLE_NAME] LIMIT 100"
+                    // placeholder="SELECT * FROM [TABLE_NAME] LIMIT 100"
                     editorProps={{ $blockScrolling: true }}
                     setOptions={{
                         enableBasicAutocompletion: true,

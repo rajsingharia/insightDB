@@ -16,49 +16,18 @@ import { useTheme } from 'next-themes';
 type QueryInputProps = {
   rawQuery: string,
   setRawQuery: React.Dispatch<React.SetStateAction<string>>,
-  // getInsightData: () => void,
-  // loading: boolean | undefined
 }
 
 
-export const MongoQueryInput: React.FC<QueryInputProps> = ({
+export const RedisQueryInput: React.FC<QueryInputProps> = ({
   rawQuery,
-  setRawQuery,
-  // getInsightData,
-  // loading
+  setRawQuery
 }) => {
 
   useEffect(() => {
     const sampleJSON = `{
-            "collection": "COLLECTION_NAME",
-            "pipeline": [
-              {
-                "$match": {
-                  "FIELD_1": "VALUE",
-                  "FIELD_2": { "$gte": 10 }
-                }
-              },
-              {
-                "$project": {
-                  "_id": "0",
-                  "FIELD": 1
-                }
-              },
-              {
-                "$group": {
-                  "_id": "$groupField",
-                  "SUM_FIELD": { "$sum": "$FIELD" }
-                }
-              },
-              {
-                "$sort": {
-                  "FIELD": -1
-                }
-              },
-              {
-                "$limit": 10
-              }
-            ]
+            "dataType": "DATA_TYPE",
+            "key": "KEY"
           }`
     if (!rawQuery) {
       setRawQuery(sampleJSON)
@@ -92,16 +61,6 @@ export const MongoQueryInput: React.FC<QueryInputProps> = ({
         value={rawQuery}
         onChange={(value) => setRawQuery(value)}
       />
-      {/* <Button
-        onClick={getInsightData}>
-        {
-          loading &&
-          <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-        }
-        {
-          loading ? "Fetching Data..." : "Get Data"
-        }
-      </Button> */}
     </div>
   )
 }

@@ -24,6 +24,7 @@ interface AlertCreationSectionOneProps {
     setRawQuery: React.Dispatch<React.SetStateAction<string>>;
     selectedIntegration: userIntegrationResponse | undefined;
     setSelectedIntegration: React.Dispatch<React.SetStateAction<userIntegrationResponse | undefined>>;
+    setInsightData: React.Dispatch<React.SetStateAction<FetchDataResponse | undefined>> | undefined;
 }
 
 
@@ -33,12 +34,12 @@ export const AlertCreationSectionOne: React.FC<AlertCreationSectionOneProps> = (
     rawQuery,
     setRawQuery,
     selectedIntegration,
-    setSelectedIntegration }) => {
+    setSelectedIntegration,
+    setInsightData }) => {
 
     const [userIntegrations, setUserIntegrations] = useState<userIntegrationResponse[]>([]);
     const { toast } = useToast()
     const [loading, setLoading] = useState<boolean>(true)
-    const [insightData, setInsightData] = useState<FetchDataResponse>()
 
     useEffect(() => {
 
@@ -82,6 +83,7 @@ export const AlertCreationSectionOne: React.FC<AlertCreationSectionOneProps> = (
                             <Select
                                 value={selectedIntegration?.id}
                                 onValueChange={(value: string) => {
+                                    setRawQuery("")
                                     setSelectedIntegration(
                                         userIntegrations.find((integration) => integration.id == value)
                                     )
@@ -108,7 +110,7 @@ export const AlertCreationSectionOne: React.FC<AlertCreationSectionOneProps> = (
                                 <QueryFields
                                     integrationId={selectedIntegration?.id}
                                     integrationType={selectedIntegration?.type}
-                                    setInsightData={undefined}
+                                    setInsightData={setInsightData}
                                     rawQuery={rawQuery}
                                     setRawQuery={setRawQuery}
                                 />

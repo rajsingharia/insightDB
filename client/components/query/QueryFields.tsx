@@ -8,6 +8,8 @@ import { DataBaseType } from 'insightdb-common'
 import { Button } from '@/components/ui/button';
 import { ReloadIcon } from '@radix-ui/react-icons';
 import { useToast } from '../ui/use-toast';
+import { ScrollArea } from '@radix-ui/react-scroll-area';
+import { RedisQueryInput } from './RedisQueryInput';
 
 
 export type QueryInfo = {
@@ -93,6 +95,14 @@ export const QueryFields: React.FC<QueryFieldsProps> = ({
             )
         }
 
+        else if (integrationType === DataBaseType.REDIS.valueOf()) {
+            return (
+                <RedisQueryInput
+                    rawQuery={rawQuery}
+                    setRawQuery={setRawQuery} />
+            )
+        }
+
         return (
             <div>
                 Query Input
@@ -102,8 +112,8 @@ export const QueryFields: React.FC<QueryFieldsProps> = ({
 
 
     return (
-        <div className="flex flex-col h-full w-full">
-            <div className="p-2 w-full h-full overflow-y-scroll">
+        <ScrollArea className="h-full w-full">
+            <div className="flex flex-col h-full w-full gap-1">
                 {
                     getQueryInputForIntegrationType()
                 }
@@ -121,6 +131,6 @@ export const QueryFields: React.FC<QueryFieldsProps> = ({
                     </Button>
                 }
             </div>
-        </div>
+        </ScrollArea>
     )
 }

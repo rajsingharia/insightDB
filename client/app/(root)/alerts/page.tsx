@@ -45,7 +45,7 @@ import {
 import { AlertCreationSectionOne } from '@/components/alert/AlertCreationSectionOne'
 import { AlertCreationSectionTwo } from '@/components/alert/AlertCreationSectionTwo'
 import { AlertTriggerChart } from '@/components/alert/AlertTriggerChart'
-import { userIntegrationResponse } from '../addInsight/page'
+import { FetchDataResponse, userIntegrationResponse } from '../addInsight/page'
 import moment from 'moment'
 
 
@@ -87,6 +87,7 @@ export default function AlertsPage() {
     const [cronExp, setCronExp] = useState<string>()
     const [otherConfig, setOtherConfig] = useState<string>()
     const [repeatCount, setRepeatCount] = useState<number>()
+    const [insightData, setInsightData] = useState<FetchDataResponse | undefined>(undefined);
 
 
     const { toast } = useToast()
@@ -215,26 +216,31 @@ export default function AlertsPage() {
                                             rawQuery={rawQuery}
                                             setRawQuery={setRawQuery}
                                             selectedIntegration={selectedIntegration}
-                                            setSelectedIntegration={setSelectedIntegration} />,
+                                            setSelectedIntegration={setSelectedIntegration}
+                                            setInsightData={setInsightData} />,
                                     </div>
                                     <div className='w-1/2'>
-                                        <AlertCreationSectionTwo
-                                            key={2}
-                                            destination={destination}
-                                            setDestination={setDestination}
-                                            row={row}
-                                            setRow={setRow}
-                                            condition={condition}
-                                            setCondition={setCondition}
-                                            value={value}
-                                            setValue={setValue}
-                                            otherConfig={otherConfig}
-                                            setOtherConfig={setOtherConfig}
-                                            cronExp={cronExp}
-                                            setCronExp={setCronExp}
-                                            repeatCount={repeatCount}
-                                            setRepeatCount={setRepeatCount}
-                                            createNewAlert={createNewAlert} />
+                                        {
+                                            insightData &&
+                                            <AlertCreationSectionTwo
+                                                key={2}
+                                                destination={destination}
+                                                setDestination={setDestination}
+                                                row={row}
+                                                setRow={setRow}
+                                                condition={condition}
+                                                setCondition={setCondition}
+                                                value={value}
+                                                setValue={setValue}
+                                                otherConfig={otherConfig}
+                                                setOtherConfig={setOtherConfig}
+                                                cronExp={cronExp}
+                                                setCronExp={setCronExp}
+                                                repeatCount={repeatCount}
+                                                setRepeatCount={setRepeatCount}
+                                                createNewAlert={createNewAlert}
+                                                insightData={insightData} />
+                                        }
                                     </div>
                                 </div>
                             </DrawerContent>

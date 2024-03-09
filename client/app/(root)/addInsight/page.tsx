@@ -74,7 +74,7 @@ export default function AddInsightPage() {
 
   const [userIntegrations, setUserIntegrations] = useState<userIntegrationResponse[]>([]);
   const [selectedIntegration, setSelectedIntegration] = useState<userIntegrationResponse>();
-  const [selectedInt, setSelectedInt] = useState<userIntegrationResponse | undefined>(undefined);
+  // const [selectedInt, setSelectedInt] = useState<userIntegrationResponse | undefined>(undefined);
   const [selectedChart, setSelectedChart] = useState<ICharts>({} as ICharts);
   // const [selectedChartColors, setSelectedChartColors] = useState<ChartColors | undefined>(undefined);
   const [refreshRate, setRefreshRate] = useState<number>(0);
@@ -126,6 +126,7 @@ export default function AddInsightPage() {
     const selectedIntegration = userIntegrations.find(i => i.id === id)
     console.log("selectedIntegration :: " + JSON.stringify(selectedIntegration))
     try {
+      setRawQuery("")
       setSelectedIntegration(selectedIntegration);
     } catch (err) {
       console.log('handelSelectedIntegrationChange Error:: ' + err)
@@ -313,32 +314,17 @@ export default function AddInsightPage() {
 
           </ResizablePanel >
           <ResizableHandle withHandle />
-          <ResizablePanel defaultSize={25} className="flex flex-col justify-start items-center h-full rounded-lg">
-            <div className="flex flex-col justify-start items-center h-full w-full p-1">
-              {
-                <ChartSettings
-                  selectedIntegration={selectedIntegration}
-                  handelSelectedIntegrationChange={handelSelectedIntegrationChange}
-                  userIntegrations={userIntegrations}
-                  selectedChart={selectedChart}
-                  setSelectedChart={setSelectedChart}
-                  chartUIData={chartUIData}
-                  setChartUIData={setChartUIData}
-                  insightData={insightData}
-                />
-              }
-              {/* <div className="w-full mt-4 pr-4 overflow-y-scroll rounded">
-                {
-                  insightData && insightData.countOfFields > 0 &&
-                  <SupportedCharList
-                    selectedChart={selectedChart}
-                    setSelectedChart={setSelectedChart}
-                    setChartUIData={setChartUIData}
-                    insightData={insightData}
-                  />
-                }
-              </div> */}
-            </div>
+          <ResizablePanel defaultSize={25} >
+            <ChartSettings
+              selectedIntegration={selectedIntegration}
+              handelSelectedIntegrationChange={handelSelectedIntegrationChange}
+              userIntegrations={userIntegrations}
+              selectedChart={selectedChart}
+              setSelectedChart={setSelectedChart}
+              chartUIData={chartUIData}
+              setChartUIData={setChartUIData}
+              insightData={insightData}
+            />
           </ResizablePanel>
         </ResizablePanelGroup >
       }

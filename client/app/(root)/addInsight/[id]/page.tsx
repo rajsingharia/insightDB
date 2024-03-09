@@ -346,7 +346,7 @@ export default function AddInsightPageQuery() {
           </ResizablePanel >
           <ResizableHandle withHandle />
           <ResizablePanel defaultSize={25} className="flex flex-col justify-start items-center h-full rounded-lg">
-            <div className="flex flex-col justify-start items-center h-full w-full p-1">
+            <div className="flex flex-col justify-start items-center h-[400px] w-full p-1">
               {
                 <ChartSettings
                   selectedIntegration={selectedIntegration}

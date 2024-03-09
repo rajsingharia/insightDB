@@ -46,7 +46,6 @@ export class fetchDataService {
 
         const pool: Connection = await connectDataSourceService.connectDataSource(type, credentials);
         if (!pool) throw createHttpError(500, "Internal Server Error pool empty");
-        //console.log(typeof pool);
 
         if (type === DataBaseType.POSTGRES_QL.valueOf()) {
             const response = await this.getAllDataPostgres(pool as pg.PoolClient, rawQuery);
@@ -79,9 +78,9 @@ export class fetchDataService {
         if (!pool) throw createHttpError(500, "Internal Server Error pool empty");
 
         if (type === DataBaseType.POSTGRES_QL.valueOf()) {
-            const rawQueryForInfo = "SELECT table_name, column_name FROM information_schema.columns WHERE table_schema = 'public' ORDER BY table_name, ordinal_position;"
+            const rawQueryForInfo = `SELECT table_schema, table_name, column_name FROM information_schema.columns WHERE table_schema NOT IN ('information_schema', 'pg_catalog', 'pg_toast') ORDER BY table_name, ordinal_position;`
             const response = await this.getAllDataFromRawQuery(type, credentials, rawQueryForInfo)
-            const tableColumnStrings = (response?.data as { table_name: string, column_name: string }[]).map(row => `${row.table_name} : ${row.column_name}`);
+            const tableColumnStrings = (response?.data as { table_schema: string, table_name: string, column_name: string }[]).map(row => `${row.table_name} : ${row.column_name}`);
             return tableColumnStrings
         }
         else if (type === DataBaseType.MONGO_DB.valueOf()) {
@@ -104,9 +103,9 @@ export class fetchDataService {
             }
         }
         if (type === DataBaseType.MY_SQL.valueOf()) {
-            const rawQueryForInfo = "SELECT table_name, column_name FROM information_schema.columns WHERE table_schema = 'public' ORDER BY table_name, ordinal_position;"
+            const rawQueryForInfo = "SELECT table_name, column_name FROM information_schema.columns WHERE table_schema NOT IN ('information_schema', 'mysql', 'performance_schema', 'sys') ORDER BY table_name, ordinal_position;"
             const response = await this.getAllDataFromRawQuery(type, credentials, rawQueryForInfo)
-            const tableColumnStrings = (response?.data as { table_name: string, column_name: string }[]).map(row => `${row.table_name} : ${row.column_name}`);
+            const tableColumnStrings = (response?.data as { TABLE_NAME: string, COLUMN_NAME: string }[]).map(row => `${row.TABLE_NAME} : ${row.COLUMN_NAME}`);
             return tableColumnStrings
         }
         else if (type === DataBaseType.REDIS.valueOf()) {

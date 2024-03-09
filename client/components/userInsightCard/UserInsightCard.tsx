@@ -132,7 +132,7 @@ export const UserInsightCard: React.FC<UserInsightCardProps> = ({ insight }) => 
     }
 
     return (
-        <div className="flex flex-col justify-center items-center h-full w-full rounded-lg px-4 py-2 bg-purple-500 bg-opacity-0 hover:bg-opacity-10">
+        <div className="flex flex-col justify-center items-center border-solid hover:border-dotted border-purple-600 border-2 h-full w-full rounded-lg px-4 py-2 bg-purple-500 bg-opacity-0 hover:bg-opacity-10">
             {
                 chartData && chartDetails ?
                     <div className="flex flex-col items-center h-full w-full p-3 ">
