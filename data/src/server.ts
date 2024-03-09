@@ -26,9 +26,17 @@ app.use(morgan('dev'));
 
 prisma.connect();
 
+async function startConsumingKafkaEvents() {
+    new KafkaService()
+    new FetchDataConsumer("data-fetch-data-consumer", KafkaService.getInstance()).listen()
+}
 
-new KafkaService()
-new FetchDataConsumer("data-fetch-data-consumer", KafkaService.getInstance()).listen()
+try {
+    //startConsumingKafkaEvents()
+} catch (err) {
+    console.log(err)
+}
+
 
 // Routes
 app.use(ValidateTokenMiddleware)

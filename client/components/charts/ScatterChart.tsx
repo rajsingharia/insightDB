@@ -55,6 +55,7 @@ export const ScatterChart: React.FC<ScatterChartProps> = ({
 
     return (
         <Scatter
+            className='h-full w-full p-3'
             options={options}
             data={data} />
     );

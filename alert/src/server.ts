@@ -34,17 +34,24 @@ prisma.connect();
 // Routes
 app.use('/api/v1/alert', ValidateTokenMiddleware, Route.alertRouter)
 
-
-new KafkaService()
-new FetchDataConsumer("alert-fetch-data-consumer", KafkaService.getInstance()).listen()
-new AlertTriggerConsumer("alert-alert-trigger-consumer", KafkaService.getInstance()).listen()
+async function startConsumingKafkaEvents() {
+    new KafkaService()
+    new FetchDataConsumer("alert-fetch-data-consumer", KafkaService.getInstance()).listen()
+    new AlertTriggerConsumer("alert-alert-trigger-consumer", KafkaService.getInstance()).listen()
+}
 
 async function startCronService() {
     const cronService = new CronService()
     await cronService.startAllCronJob()
 }
 
-startCronService()
+try {
+    //startCronService()
+    //startConsumingKafkaEvents()
+} catch (err) {
+    console.log(err)
+}
+
 
 // 404 handling
 app.use(NotFoundRoute);

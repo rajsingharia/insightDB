@@ -12,7 +12,7 @@ import { MultiTypeChart } from "@/components/charts/MultiTypeChart";
 import { ScatterChartData } from "@/components/supportedChartsList/ScatterChartInput";
 import { TextAreaData } from "@/components/supportedChartsList/TextInput";
 import { TextArea } from "@/components/charts/TextArea"
-import { TableViewData } from "../supportedChartsList/tableViewInput";
+import { TableViewData } from "@/components/supportedChartsList/TableViewInput";
 import { TableView } from "./TableView";
 
 type InsightChartProps = {
@@ -32,13 +32,18 @@ export const InsightChart: React.FC<InsightChartProps> = ({
     const chartData = insightData.data;
 
     if (chartDetail.value === 'bar') {
-        const barChartUiData = chartUIData as BarChartData
-        return (
-            <BarGraph
-                chartData={chartData}
-                barChartUiData={barChartUiData}
-            />
-        )
+        try {
+            const barChartUiData = chartUIData as BarChartData
+            return (
+                <BarGraph
+                    chartData={chartData}
+                    barChartUiData={barChartUiData}
+                />
+            )
+        } catch (err) {
+            console.log("Error in rendering bar chart : ", err)
+        }
+
     } else if (chartDetail.value === 'pie') {
         const pieChartUiData = chartUIData as PieChartData
         return (

@@ -24,6 +24,7 @@ import {
 
 
 interface BarChartInputListProps {
+    chartUIData: ChartDataInput | undefined,
     setChartUIData: React.Dispatch<React.SetStateAction<ChartDataInput | undefined>>,
     insightData: FetchDataResponse | undefined
 }
@@ -40,10 +41,16 @@ export interface PieChartData extends ChartDataInput {
 }
 
 export const PieChartInput: React.FC<BarChartInputListProps> = ({
+    chartUIData,
     setChartUIData,
     insightData }) => {
 
     const [pieChartData, setPieChartData] = useState<PirChartColumnData>()
+
+    const currentChartUIData = chartUIData as PieChartData
+    // if (currentChartUIData) {
+    //     setPieChartData(currentChartUIData.columns)
+    // }
 
     useEffect(() => {
 
@@ -64,9 +71,9 @@ export const PieChartInput: React.FC<BarChartInputListProps> = ({
 
         setPieChartData(pieData)
 
-    },[insightData])
+    }, [insightData])
 
- 
+
 
     const createChart = () => {
         const temp: PieChartData = {

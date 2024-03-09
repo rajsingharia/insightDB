@@ -29,6 +29,16 @@ import {
 import IUserInsights from "@/interfaces/IUserInsights";
 import { SupportedCharts } from "@/utils/Constants";
 import { CircularProgress } from "@/components/common/CircularProgress";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input";
 
 export type userIntegrationResponse = {
   id: string;
@@ -99,12 +109,17 @@ export default function AddInsightPageQuery() {
     const fetchData = async () => {
       setLoading(true)
       try {
+        console.log("insightId : ", insightId)
         const insightsResponse = await customDataAxios.get(`/insights/${insightId}`)
         if (!insightsResponse || !insightsResponse.data) throw new Error("Failed to get Insight")
+
         const insight = insightsResponse.data
+        console.log("insight : ", insight)
+
         setRawQuery(insight.rawQuery)
         setRefreshRate(insight.refreshRate)
         setChartUIData(insight.graphData)
+
         const chart = SupportedCharts.find((chart) => chart.value === insight.graphData.type)
         if (chart != null) {
           setSelectedChart(chart)
@@ -113,8 +128,11 @@ export default function AddInsightPageQuery() {
         setInsightDescription(insight.description)
 
         const userIntegrationsResponse = await customDataAxios.get('/integrations')
+        console.log("Integrations response : ", userIntegrationsResponse.data)
         setUserIntegrations(userIntegrationsResponse.data)
+
         const selectedIntegration = userIntegrationsResponse.data.find((integration: any) => integration.id == insight.integrationId)
+        console.log("selectedIntegration : ", selectedIntegration)
         setSelectedIntegration(selectedIntegration)
 
         const body = {
@@ -123,13 +141,13 @@ export default function AddInsightPageQuery() {
           rawQuery: insight.rawQuery
         }
 
-        const chartInsightDataResponse = await customDataAxios.post('/fetchData', body)
-        const fetchedData = chartInsightDataResponse.data as FetchDataResponse;
-        setInsightChartData(fetchedData);
-
-
+        const chartInsightDataResponse = await customDataAxios.post('/fetchData/query', body)
+        const fetchedData = chartInsightDataResponse.data;
+        console.log("fetchedData : ", fetchedData as FetchDataResponse)
+        setInsightChartData(fetchedData as FetchDataResponse);
 
         const dashboardsResponse = await customOrgAxios.get('/dashboard/all')
+        console.log("dashboardsResponse : ", dashboardsResponse)
         setDashboards(dashboardsResponse.data)
 
       } catch (error) {
@@ -213,7 +231,7 @@ export default function AddInsightPageQuery() {
             <ResizablePanelGroup
               direction="vertical"
               className="gap-2">
-              <ResizablePanel defaultSize={40} className="flex justify-center items-center w-full p-1 rounded-lg relative">
+              <ResizablePanel defaultSize={40} className="flex justify-center items-center w-full p-1 rounded-lg relative flex-col">
                 {
                   // TODO: Explore lazy loading of chart component
                   insightChartData && insightChartData.countOfFields > 0 && chartUIData &&
@@ -226,13 +244,12 @@ export default function AddInsightPageQuery() {
                 {
                   insightChartData && insightChartData.countOfFields > 0 && selectedChart &&
                   <div className="z-10 h-full w-full flex justify-end absolute gap-1 mt-[1px]">
-                    <Select value={refreshRate?.toString()} onValueChange={(value) => changeRefreshRate(Number(value))}>
-                      <SelectTrigger className="w-[110px]">
+                    <Select onValueChange={(value) => changeRefreshRate(Number(value))}>
+                      <SelectTrigger className="w-[100px]">
                         <SelectValue placeholder="Refresh" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
-                          <SelectItem value="0">No repeat</SelectItem>
                           <SelectItem value="1">1 seconds</SelectItem>
                           <SelectItem value="10">10 seconds</SelectItem>
                           <SelectItem value="60">1 minutes</SelectItem>
@@ -248,11 +265,65 @@ export default function AddInsightPageQuery() {
                       <RefreshCcw
                         className="h-4 w-4" />
                     </Button>
-                    <Button
-                      onClick={editInsight}>
-                      <PinIcon
-                        className="h-4 w-4 mr-2" /> Update
-                    </Button>
+
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button>
+                          <PinIcon
+                            className="h-4 w-4 mr-2" /> Save
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-[425px]">
+                        <DialogHeader>
+                          <DialogTitle>Add Insight</DialogTitle>
+                        </DialogHeader>
+                        <div className="flex flex-col gap-4 py-4">
+                          <Input
+                            className="w-full"
+                            placeholder="Chart Title"
+                            value={insightTitle}
+                            onChange={(event) => setInsightTitle(event.target.value)}
+                          />
+                          <Input
+                            className="w-full"
+                            placeholder="Chart Description"
+                            value={insightDescription}
+                            onChange={(event) => setInsightDescription(event.target.value)}
+                          />
+                          <Select
+                            value={selectedDashboard?.id}
+                            onValueChange={(value: string) => {
+                              handelDashboardChange(value)
+                            }}>
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Select Dashboard" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectGroup>
+                                {
+                                  dashboards.map((dashboard) => {
+                                    return (
+                                      <SelectItem
+                                        value={dashboard.id}
+                                        key={dashboard.id}>
+                                        {dashboard.title}
+                                      </SelectItem>
+                                    )
+                                  })
+                                }
+                              </SelectGroup>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <DialogFooter>
+                          <Button
+                            onClick={editInsight}
+                            type="submit">
+                            Add Insight
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
                   </div>
                 }
               </ResizablePanel>
@@ -262,7 +333,7 @@ export default function AddInsightPageQuery() {
                   selectedIntegration &&
                   <QueryFields
                     integrationId={selectedIntegration.id}
-                    integrationType={selectedIntegration.type}
+                    integrationType={selectedIntegration?.type}
                     setInsightData={setInsightChartData}
                     chartType={selectedChart}
                     rawQuery={rawQuery}
@@ -275,31 +346,19 @@ export default function AddInsightPageQuery() {
           </ResizablePanel >
           <ResizableHandle withHandle />
           <ResizablePanel defaultSize={25} className="flex flex-col justify-start items-center h-full rounded-lg">
-            <div className="flex flex-col justify-start items-center h-full w-full p-1">
-              Settings
+            <div className="flex flex-col justify-start items-center h-[400px] w-full p-1">
               {
                 <ChartSettings
+                  selectedIntegration={selectedIntegration}
                   handelSelectedIntegrationChange={handelSelectedIntegrationChange}
                   userIntegrations={userIntegrations}
-                  insightTitle={insightTitle}
-                  setInsightTitle={setInsightTitle}
-                  insightDescription={insightDescription}
-                  setInsightDescription={setInsightDescription}
-                  dashboards={dashboards}
-                  handelDashboardChange={handelDashboardChange}
+                  selectedChart={selectedChart}
+                  setSelectedChart={setSelectedChart}
+                  chartUIData={chartUIData}
+                  setChartUIData={setChartUIData}
+                  insightData={insightChartData}
                 />
               }
-              <div className="w-full mt-4 pr-4 overflow-y-scroll rounded">
-                {
-                  insightChartData && insightChartData.countOfFields > 0 &&
-                  <SupportedCharList
-                    selectedChart={selectedChart}
-                    setSelectedChart={setSelectedChart}
-                    setChartUIData={setChartUIData}
-                    insightData={insightChartData}
-                  />
-                }
-              </div>
             </div>
           </ResizablePanel>
         </ResizablePanelGroup >

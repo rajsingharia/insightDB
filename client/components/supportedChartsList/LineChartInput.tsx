@@ -31,6 +31,7 @@ import {
 
 
 interface LineChartInputListProps {
+    chartUIData: ChartDataInput | undefined,
     setChartUIData: React.Dispatch<React.SetStateAction<ChartDataInput | undefined>>,
     insightData: FetchDataResponse | undefined,
 }
@@ -49,17 +50,24 @@ export interface LineChartData extends ChartDataInput {
 }
 
 export const LineChartInput: React.FC<LineChartInputListProps> = ({
+    chartUIData,
     setChartUIData,
     insightData }) => {
 
     const [xAxis, setXAxis] = useState<string>();
     const [yAxisList, setYAxisList] = useState<LineChartYAxisColumnData>()
 
-    
+    const currentChartUIData = chartUIData as LineChartData
+    // if (currentChartUIData) {
+    //     setXAxis(currentChartUIData.xAxisColumn)
+    //     setYAxisList(currentChartUIData.yAxis)
+    // }
+
+
 
     const onXAxisChange = (value: string) => {
         setXAxis(value)
-        
+
         const randomColors = getRandomNeonColor(Number(insightData?.countOfFields))
         var lineChartYAxisColumnData: LineChartYAxisColumnData = []
         var idx = 0;

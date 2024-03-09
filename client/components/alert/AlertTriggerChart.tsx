@@ -67,6 +67,10 @@ export const AlertTriggerChart: React.FC<AlertTriggerChart> = ({ alertTriggers }
 
     const chartOptions = {
         scales: {
+            x: {
+                beginAtZero: false,
+                min: -1,
+            },
             y: {
                 beginAtZero: true,
             },

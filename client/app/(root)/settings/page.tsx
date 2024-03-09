@@ -7,7 +7,8 @@ import { CircularProgress } from '@/components/common/CircularProgress';
 import { ScrollArea } from '@radix-ui/react-scroll-area';
 import { useToast } from '@/components/ui/use-toast';
 import { getImageForDB } from '@/components/common/GetImageForDB';
-import { User } from 'lucide-react';
+import { Edit2Icon, MoreVerticalIcon, User } from 'lucide-react';
+import { Button } from "@/components/ui/button";
 
 type userIntegrationResponse = {
   id: string;
@@ -77,6 +78,9 @@ export default function Settings() {
                           getImageForDB(integration.type, 10)
                         }
                         <p className="mr-4 grow font-mono">{integration.name}</p>
+                        <Button variant="secondary" size="icon">
+                          <Edit2Icon className="h-[1rem] w-[1rem]" />
+                        </Button>
                       </div>
                     </div>
                   )
@@ -94,6 +98,7 @@ export default function Settings() {
                     <div className="flex flex-row w-full justify-center items-center grow gap-3">
                       <User />
                       <p className="mr-4 grow font-mono">{user.firstName + " " + user.lastName}</p>
+                      <MoreVerticalIcon className='h-[1rem] w-[1rem]' />
                     </div>
                   </div>
                 ))

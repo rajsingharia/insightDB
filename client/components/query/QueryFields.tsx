@@ -5,6 +5,11 @@ import { FetchDataResponse } from '@/app/(root)/addInsight/page';
 import { SQLQueryInput } from '@/components/query/SQLQueryInput';
 import { MongoQueryInput } from '@/components/query/MongoQueryInput';
 import { DataBaseType } from 'insightdb-common'
+import { Button } from '@/components/ui/button';
+import { ReloadIcon } from '@radix-ui/react-icons';
+import { useToast } from '../ui/use-toast';
+import { ScrollArea } from '@radix-ui/react-scroll-area';
+import { RedisQueryInput } from './RedisQueryInput';
 
 
 export type QueryInfo = {
@@ -25,9 +30,7 @@ type QueryInfoResponse = {
 interface QueryFieldsProps {
     integrationId: string;
     integrationType: string;
-    setInsightData: React.Dispatch<React.SetStateAction<FetchDataResponse | undefined>>;
-    // setSelectedChartColors: React.Dispatch<React.SetStateAction<ChartColors | undefined>>;
-    chartType: ICharts;
+    setInsightData: React.Dispatch<React.SetStateAction<FetchDataResponse | undefined>> | undefined;
     rawQuery: string;
     setRawQuery: React.Dispatch<React.SetStateAction<string>>;
 }
@@ -42,6 +45,7 @@ export const QueryFields: React.FC<QueryFieldsProps> = ({
 
     const fetchDataAxios = CustomAxios.getFetchDataAxios();
     const [loading, setLoading] = useState<boolean>()
+    const { toast } = useToast()
 
     const getInsightData = () => {
         (
@@ -53,7 +57,7 @@ export const QueryFields: React.FC<QueryFieldsProps> = ({
                         rawQuery: rawQuery
                     }
                     const insightDataResponse = await fetchDataAxios.post('/fetchData/query', body)
-                    setInsightData(insightDataResponse.data);
+                    if (setInsightData) setInsightData(insightDataResponse.data);
                 } catch (error) {
                     console.log(error);
                 } finally {
@@ -63,24 +67,39 @@ export const QueryFields: React.FC<QueryFieldsProps> = ({
         )();
     }
 
+    const getData = () => {
+
+        if (!rawQuery || rawQuery.length == 0) {
+            toast({ title: "Provide appropriate query input" })
+            return
+        }
+
+        getInsightData()
+    }
+
     const getQueryInputForIntegrationType = (): ReactNode => {
         if (integrationType === DataBaseType.POSTGRES_QL.valueOf() ||
             integrationType === DataBaseType.MY_SQL.valueOf()) {
             return (
                 <SQLQueryInput
                     rawQuery={rawQuery}
-                    setRawQuery={setRawQuery}
-                    getInsightData={getInsightData}
-                    loading={loading} />
+                    setRawQuery={setRawQuery} />
             )
         }
 
         else if (integrationType === DataBaseType.MONGO_DB.valueOf()) {
             return (
                 <MongoQueryInput
-                    setRawQuery={setRawQuery}
-                    getInsightData={getInsightData}
-                    loading={loading} />
+                    rawQuery={rawQuery}
+                    setRawQuery={setRawQuery} />
+            )
+        }
+
+        else if (integrationType === DataBaseType.REDIS.valueOf()) {
+            return (
+                <RedisQueryInput
+                    rawQuery={rawQuery}
+                    setRawQuery={setRawQuery} />
             )
         }
 
@@ -93,12 +112,25 @@ export const QueryFields: React.FC<QueryFieldsProps> = ({
 
 
     return (
-        <div className="flex flex-col h-full w-full">
-            <div className="p-2 w-full h-full overflow-y-scroll">
+        <ScrollArea className="h-full w-full">
+            <div className="flex flex-col h-full w-full gap-1">
                 {
                     getQueryInputForIntegrationType()
                 }
+                {
+                    setInsightData &&
+                    <Button
+                        onClick={getData}>
+                        {
+                            loading &&
+                            <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                        }
+                        {
+                            loading ? "Fetching Data..." : "Get Data"
+                        }
+                    </Button>
+                }
             </div>
-        </div>
+        </ScrollArea>
     )
 }

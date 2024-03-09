@@ -69,4 +69,24 @@ export default class FetchDataController {
         }
     }
 
+    public static getInfo = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const  { integrationId  } = req.body;
+
+            const integration = await IntegrationService.getIntegrationById(integrationId);
+
+            if(!integration) throw createHttpError(404, "Associated integration not found");
+
+            const allData = await fetchDataService.getAllInfo(integration.type, integration.credentials);
+
+            if (!allData) throw createHttpError(404, "Unable to fetch data");
+            
+            res.status(200).json(allData);
+
+        } catch (error) {
+            next(error);
+        }
+    }
+
+
 }

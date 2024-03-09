@@ -27,6 +27,7 @@ import { useRouter } from 'next/navigation';
 import { useToast } from "@/components/ui/use-toast"
 import { InsightChart } from "@/components/charts/InsightChart"
 import CustomAxios from '@/utils/CustomAxios';
+import { Separator } from '@radix-ui/react-select';
 type UserInsightCardProps = {
     insight: IUserInsights;
 }
@@ -131,12 +132,11 @@ export const UserInsightCard: React.FC<UserInsightCardProps> = ({ insight }) => 
     }
 
     return (
-        <div className="flex flex-col justify-center items-center h-full w-full border-purple-500 border-2 rounded px-4 py-2 bg-purple-500 bg-opacity-0 hover:bg-opacity-10">
+        <div className="flex flex-col justify-center items-center border-solid hover:border-dotted border-purple-600 border-2 h-full w-full rounded-lg px-4 py-2 bg-purple-500 bg-opacity-0 hover:bg-opacity-10">
             {
                 chartData && chartDetails ?
-                    <div className="flex flex-col justify-center items-center h-full w-full p-2">
-                        <h4 className="text-l font-bold font-mono">{insight.title}</h4>
-                        <div className='w-full h-[0.5px] bg-slate-500 rounded bg-opacity-30 mb-3' />
+                    <div className="flex flex-col items-center h-full w-full p-3 ">
+                        <h4 className="text-sm font-bold font-mono w-full">{insight.title}</h4>
                         <InsightChart
                             insightData={chartData}
                             chartDetail={chartDetails}
@@ -146,7 +146,7 @@ export const UserInsightCard: React.FC<UserInsightCardProps> = ({ insight }) => 
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <div className='absolute top-0 right-0 z-50 p-1 mt-1 cursor-pointer'>
-                                        <MoreVerticalIcon className='h-[1.1rem] w-[1.1rem]' />
+                                        <MoreVerticalIcon className='h-[1rem] w-[1rem]' />
                                     </div>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent className="w-56">
