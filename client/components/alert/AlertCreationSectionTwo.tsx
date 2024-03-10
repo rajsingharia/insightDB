@@ -21,6 +21,7 @@ import "ace-builds/src-noconflict/theme-monokai";
 import "ace-builds/src-noconflict/theme-terminal";
 import "ace-builds/src-min-noconflict/ext-language_tools";
 import { useTheme } from "next-themes";
+import { CustomAceEditor } from "../aceEditor/CustomAceEditor";
 
 interface AlertCreationSectionOneProps {
     destination: string | undefined;
@@ -66,13 +67,13 @@ export const AlertCreationSectionTwo: React.FC<AlertCreationSectionOneProps> = (
     const { theme } = useTheme()
 
     const OtherConfig = () => {
-        if (destination === 'SLACK') {
+        if (destination === 'SLACK' && otherConfig == undefined) {
             otherConfig = '{\n\t"message": "YOUR_MESSAGE",\n\t"slack_webhook": "YOUR_WEB_HOOK"\n}'
         }
-        else if (destination === 'EMAIL') {
+        else if (destination === 'EMAIL' && otherConfig == undefined) {
             otherConfig = '{\n\t"message": "YOUR_MESSAGE",\n\t"email": "YOUR_EMAIL"\n}'
         }
-        else if (destination === 'WEBHOOK') {
+        else if (destination === 'WEBHOOK' && otherConfig == undefined) {
             otherConfig = '{\n\t"message": "YOUR_MESSAGE",\n\t"webhook": "YOUR_WEB_HOOK"\n}'
         }
         return (
@@ -80,25 +81,9 @@ export const AlertCreationSectionTwo: React.FC<AlertCreationSectionOneProps> = (
                 <p className="text-sm text-muted-foreground">
                     {"Use {{row}} {{condition}} {{value}} in message for usage of row, condition and value"}
                 </p>
-                <AceEditor
-                    aria-label="editor"
-                    mode="json"
-                    theme={theme === "dark" ? "terminal" : "github"}
-                    name="editor"
-                    width="100%"
-                    fontSize={12}
-                    minLines={13}
-                    maxLines={18}
-                    showPrintMargin={false}
-                    showGutter
-                    editorProps={{ $blockScrolling: true }}
-                    setOptions={{
-                        enableBasicAutocompletion: true,
-                        enableLiveAutocompletion: true,
-                        enableSnippets: true
-                    }}
-                    value={otherConfig}
-                    onChange={(value) => setOtherConfig(value)}
+                <CustomAceEditor
+                    data={otherConfig}
+                    setData={setOtherConfig}
                 />
             </>
         )
@@ -110,7 +95,10 @@ export const AlertCreationSectionTwo: React.FC<AlertCreationSectionOneProps> = (
                 <div className="flex flex-col w-full h-full gap-2 p-2">
                     <Select
                         value={destination}
-                        onValueChange={(value: string) => { setDestination(value) }}>
+                        onValueChange={(value: string) => {
+                            setOtherConfig(undefined)
+                            setDestination(value)
+                        }}>
                         <SelectTrigger className="w-full">
                             <SelectValue placeholder="Select Destination" />
                         </SelectTrigger>
@@ -155,10 +143,6 @@ export const AlertCreationSectionTwo: React.FC<AlertCreationSectionOneProps> = (
                                 </SelectGroup>
                             </SelectContent>
                         </Select>
-                        <Input
-                            value={row}
-                            onChange={e => setRow(e.target.value)}
-                            placeholder="Row" />
                         <Select
                             value={condition}
                             onValueChange={(value: string) => {

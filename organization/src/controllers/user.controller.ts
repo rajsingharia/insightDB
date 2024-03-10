@@ -53,7 +53,7 @@ export const getAllUsersOfOrganization = async (req: Request, res: Response, nex
 
         const allUsers = await UserService.findAllUsersOfOrganization(organisationId)
 
-        const response: UserDTO[] = allUsers.map((user) => {
+        const response = allUsers.map((user) => {
             return Converter.UserEntityToUserDto(organisation.name, user);
         })
         res.status(200).send(response);

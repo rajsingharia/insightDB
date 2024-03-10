@@ -17,6 +17,18 @@ import LineChartInput from '@/components/supportedChartsList/LineChartInput'
 import ScatterChartInput from '@/components/supportedChartsList/ScatterChartInput'
 import TextAreaInput from '@/components/supportedChartsList/TextInput'
 import TableViewInput from '@/components/supportedChartsList/TableViewInput'
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+import Image from 'next/image'
+import { InsightChart } from '../charts/InsightChart'
+import MultiTypeChartInput from './MultiTypeChartInput'
 
 interface SupportedCharListProps {
     selectedChart: ICharts,
@@ -66,6 +78,14 @@ export const SupportedCharList: React.FC<SupportedCharListProps> = ({
                     insightData={insightData} />
             )
         }
+        else if (chartType === 'multi') {
+            return (
+                <MultiTypeChartInput
+                    chartUIData={chartUIData}
+                    setChartUIData={setChartUIData}
+                    insightData={insightData} />
+            )
+        }
         else if (chartType === 'text') {
             return (
                 <TextAreaInput
@@ -90,13 +110,48 @@ export const SupportedCharList: React.FC<SupportedCharListProps> = ({
             }
             {
                 SupportedCharts.map((chart, index) => {
+                    // return (
+                    //     <Popover key={index}>
+                    //         <PopoverTrigger>
+                    //             <Card
+                    //                 key={index}
+                    //                 onClick={() => {
+                    //                     setChartUIData(undefined) // resetting chartUI
+                    //                     setSelectedChart(chart)
+                    //                 }}>
+                    //                 <div className={chart.value === selectedChart.value ?
+                    //                     'border-2 border-purple-500 bg-purple-600 bg-opacity-40 rounded-lg' :
+                    //                     'border-2 border-transparent'}>
+                    //                     <div className='flex flex-row items-center justify-center p-1'>
+                    //                         <span className={chart.value === selectedChart.value ?
+                    //                             'text-sm font-mono font-extrabold mr-2 text-center text-white' :
+                    //                             'text-sm font-mono font-extrabold mr-2 text-center'}>
+                    //                             {chart?.name}
+                    //                         </span>
+                    //                         <img
+                    //                             src={chart.icon}
+                    //                             alt={chart.name}
+                    //                             className="h-5 w-5" />
+                    //                     </div>
+                    //                 </div>
+                    //             </Card>
+                    //         </PopoverTrigger>
+                    //         <PopoverContent className='w-[400px]'>
+                    //             {
+                    //                 getChartData(chart.value)
+                    //             }
+                    //         </PopoverContent>
+                    //     </Popover>
+                    // )
                     return (
-                        <Popover key={index}>
-                            <PopoverTrigger>
+                        <Dialog key={index}>
+                            <DialogTrigger asChild>
                                 <Card
                                     key={index}
                                     onClick={() => {
-                                        setChartUIData(undefined) // resetting chartUI
+                                        if (chart.value !== selectedChart.value) {
+                                            setChartUIData(undefined)
+                                        }
                                         setSelectedChart(chart)
                                     }}>
                                     <div className={chart.value === selectedChart.value ?
@@ -115,13 +170,27 @@ export const SupportedCharList: React.FC<SupportedCharListProps> = ({
                                         </div>
                                     </div>
                                 </Card>
-                            </PopoverTrigger>
-                            <PopoverContent className='w-[400px]'>
-                                {
-                                    getChartData(chart.value)
-                                }
-                            </PopoverContent>
-                        </Popover>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-full h-5/6">
+                                <div className="flex h-full w-full item-center content-center flex-row gap-2">
+                                    <div className='w-1/2'>
+                                        {
+                                            getChartData(chart.value)
+                                        }
+                                    </div>
+                                    <div className='w-1/2'>
+                                        {
+                                            insightData && insightData.countOfFields > 0 && chartUIData &&
+                                            <InsightChart
+                                                insightData={insightData}
+                                                chartDetail={selectedChart}
+                                                chartUIData={chartUIData}
+                                            />
+                                        }
+                                    </div>
+                                </div>
+                            </DialogContent>
+                        </Dialog>
                     )
                 })
             }

@@ -1,41 +1,11 @@
 
 import React, { useEffect, useState } from 'react'
-import { format } from 'sql-formatter';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import {
-    Tabs,
-    TabsContent,
-    TabsList,
-    TabsTrigger,
-} from "@/components/ui/tabs"
-import {
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectLabel,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
-
-import { Card } from "@/components/ui/card"
-import { PlusCircleIcon } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
-import { Textarea } from "@/components/ui/textarea"
-import { ReloadIcon, TrashIcon } from '@radix-ui/react-icons';
-import AceEditor from "react-ace";
-import "ace-builds/src-min-noconflict/mode-mysql";
-import "ace-builds/src-noconflict/theme-monokai";
-import "ace-builds/src-noconflict/theme-terminal";
-import "ace-builds/src-min-noconflict/ext-language_tools";
-import { useTheme } from 'next-themes';
+import { CustomAceEditor } from '../aceEditor/CustomAceEditor';
 
 type QueryInputProps = {
     rawQuery: string,
     setRawQuery: React.Dispatch<React.SetStateAction<string>>,
-    // getInsightData: () => void
-    // loading: boolean | undefined
 }
 
 type ColumnInput = {
@@ -63,8 +33,6 @@ export const SQLQueryInput: React.FC<QueryInputProps> = ({
     const [where, setWhere] = useState<WhereInput>({ columnName: "", condition: "", input: "" } as WhereInput)
     const [sortBy, setSortBy] = useState<string>('')
     const [limit, setLimit] = useState<string>('')
-
-    const { theme } = useTheme()
 
 
     const addColumn = () => {
@@ -340,27 +308,9 @@ export const SQLQueryInput: React.FC<QueryInputProps> = ({
                 //         </Card>
                 //     </TabsContent>
                 // </Tabs>
-
-                <AceEditor
-                    aria-label="editor"
-                    mode="mysql"
-                    theme={theme === "dark" ? "terminal" : "github"}
-                    name="editor"
-                    width="100%"
-                    fontSize={12}
-                    minLines={13}
-                    maxLines={18}
-                    showPrintMargin={false}
-                    showGutter
-                    // placeholder="SELECT * FROM [TABLE_NAME] LIMIT 100"
-                    editorProps={{ $blockScrolling: true }}
-                    setOptions={{
-                        enableBasicAutocompletion: true,
-                        enableLiveAutocompletion: true,
-                        enableSnippets: true
-                    }}
-                    value={rawQuery}
-                    onChange={(value) => setRawQuery(value)}
+                <CustomAceEditor
+                    data={rawQuery}
+                    setData={setRawQuery}
                 />
             }
         </div>

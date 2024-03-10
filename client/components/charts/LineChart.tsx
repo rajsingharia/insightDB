@@ -51,20 +51,17 @@ export const LineChart: React.FC<LineChartProps> = ({
 
     // only if its time axis
     const labels = chartData.map((item: any) => moment(item[xAxis]).format('MMM YYYY'));
-    let bgIdx = 0, boIdx = 0;
 
-    const datasets = yAxis.map(({ column, alias, color, isEnabled, isFilled }) => {
-        if (isEnabled) {
-            return {
-                fill: isFilled,
-                label: alias,
-                data: chartData.map((item: any) => item[column]),
-                backgroundColor: color + "40",
-                borderColor: color,
-                borderWidth: 2
-            };
-        }
-    });
+    const datasets = yAxis
+        .filter(({ isEnabled }) => isEnabled)
+        .map(({ column, alias, color, isFilled }) => ({
+            fill: isFilled,
+            label: alias,
+            data: chartData.map((item: any) => item[column]),
+            backgroundColor: color + "40",
+            borderColor: color,
+            borderWidth: 2
+        }));
 
     const data: ChartData<"line", any[], string> = {
         labels,

@@ -41,8 +41,7 @@ async function startConsumingKafkaEvents() {
 }
 
 async function startCronService() {
-    const cronService = new CronService()
-    await cronService.startAllCronJob()
+    await CronService.getInstance().startAllCronJob()
 }
 
 try {

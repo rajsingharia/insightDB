@@ -12,6 +12,7 @@ import "ace-builds/src-noconflict/theme-monokai";
 import "ace-builds/src-noconflict/theme-terminal";
 import "ace-builds/src-min-noconflict/ext-language_tools";
 import { useTheme } from 'next-themes';
+import { CustomAceEditor } from '../aceEditor/CustomAceEditor';
 
 type QueryInputProps = {
   rawQuery: string,
@@ -66,42 +67,14 @@ export const MongoQueryInput: React.FC<QueryInputProps> = ({
   }, [])
 
 
-  const { theme } = useTheme()
-
 
 
   return (
     <div className="w-full h-full">
-      <AceEditor
-        aria-label="editor"
-        mode="json"
-        theme={theme === "dark" ? "terminal" : "github"}
-        name="editor"
-        width="100%"
-        fontSize={12}
-        minLines={13}
-        maxLines={18}
-        showPrintMargin={false}
-        showGutter
-        editorProps={{ $blockScrolling: true }}
-        setOptions={{
-          enableBasicAutocompletion: true,
-          enableLiveAutocompletion: true,
-          enableSnippets: true
-        }}
-        value={rawQuery}
-        onChange={(value) => setRawQuery(value)}
+      <CustomAceEditor
+        data={rawQuery}
+        setData={setRawQuery}
       />
-      {/* <Button
-        onClick={getInsightData}>
-        {
-          loading &&
-          <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-        }
-        {
-          loading ? "Fetching Data..." : "Get Data"
-        }
-      </Button> */}
     </div>
   )
 }

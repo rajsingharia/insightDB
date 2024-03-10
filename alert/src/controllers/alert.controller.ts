@@ -3,6 +3,7 @@ import createHttpError from "http-errors";
 import { validate } from "class-validator";
 import { AlertService } from "../services/alert.service";
 import { AlertDTO } from "../dto/request/alert.dto";
+import { CronService } from "../services/cron.service";
 
 
 export const getAlerts = async (req: Request, res: Response, next: NextFunction) => {
@@ -28,6 +29,9 @@ export const addAlerts = async (req: Request, res: Response, next: NextFunction)
         }
 
         const response = await AlertService.addAlert(userId, organisationId, newAlert)
+
+        await CronService.getInstance().startNewCronJon(response)
+
         res.status(200).send(response);
     } catch (error) {
         next(error);

@@ -34,7 +34,8 @@ interface ChartSettingsProps {
     setSelectedChart: (chart: ICharts) => void,
     chartUIData: ChartDataInput | undefined,
     setChartUIData: React.Dispatch<React.SetStateAction<ChartDataInput | undefined>>,
-    insightData: FetchDataResponse | undefined
+    insightData: FetchDataResponse | undefined,
+    setInsightData: React.Dispatch<React.SetStateAction<FetchDataResponse | undefined>>,
 }
 
 
@@ -47,7 +48,8 @@ export const ChartSettings: React.FC<ChartSettingsProps> = (
         setSelectedChart,
         chartUIData,
         setChartUIData,
-        insightData }) => {
+        insightData,
+        setInsightData }) => {
 
     const { toast } = useToast();
 
@@ -87,6 +89,9 @@ export const ChartSettings: React.FC<ChartSettingsProps> = (
                 <div className='flex flex-col gap-4 h-20'>
                     <Select
                         onValueChange={(value: string) => {
+                            setChartUIData(undefined)
+                            setInsightData(undefined)
+                            setSelectedChart({} as ICharts)
                             handelSelectedIntegrationChange(value)
                         }}>
                         <SelectTrigger>

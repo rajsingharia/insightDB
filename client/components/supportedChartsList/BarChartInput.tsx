@@ -1,7 +1,7 @@
 "use client"
 
 import { ChartDataInput, FetchDataResponse } from '@/app/(root)/addInsight/page'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
     Select,
     SelectContent,
@@ -57,6 +57,14 @@ export const BarChartInput: React.FC<BarChartInputListProps> = ({
     const [yAxisList, setYAxisList] = useState<BarChartYAxisColumnData>()
 
     const currentChartUIData = chartUIData as BarChartData
+
+    useEffect(() => {
+        console.log(currentChartUIData)
+        if (currentChartUIData) {
+            setXAxis(currentChartUIData.xAxisColumn)
+            setYAxisList(currentChartUIData.yAxis)
+        }
+    }, [])
     // if(currentChartUIData) {
     //     setXAxis(currentChartUIData.xAxisColumn)
     //     setYAxisList(currentChartUIData.yAxis)
@@ -129,7 +137,7 @@ export const BarChartInput: React.FC<BarChartInputListProps> = ({
 
     return (
         <div>
-            <h4 className="scroll-m-20 text-l font-semibold tracking-tight">
+            <h4 className="scroll-m-20 text-l font-semibold tracking-tight mb-5">
                 X Axis
             </h4>
             <Select onValueChange={(value) => onXAxisChange(value)}>
@@ -173,13 +181,14 @@ export const BarChartInput: React.FC<BarChartInputListProps> = ({
                             <TableCell className="font-medium">
                                 <Input
                                     value={yAxis.alias}
+                                    disabled={!yAxis.isEnabled}
                                     onChange={(e) => changeAlias(idx, e.target.value)} />
                             </TableCell>
                             <TableCell>{yAxis.column}</TableCell>
                             <TableCell>
                                 <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                        <div style={{ borderColor: yAxis.color, borderWidth: 2, background: `${yAxis.color}40` }} className={"h-5 w-5"} />
+                                    <DropdownMenuTrigger asChild disabled={!yAxis.isEnabled}>
+                                        <div style={{ borderColor: `${yAxis.isEnabled ? yAxis.color : '#80808040'}`, borderWidth: 2, background: `${yAxis.isEnabled ? yAxis.color : '#808080'}40` }} className={"h-5 w-5"} />
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent className="mr-3">
                                         <SwatchesPicker onChangeComplete={(e) => changeColor(idx, e.hex)} />

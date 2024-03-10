@@ -5,6 +5,7 @@ import React, { useState } from 'react'
 import {
     Select,
     SelectContent,
+    SelectGroup,
     SelectItem,
     SelectTrigger,
     SelectValue,
@@ -30,65 +31,74 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 
-interface LineChartInputListProps {
+interface MultiTypeChartInputListProps {
     chartUIData: ChartDataInput | undefined,
     setChartUIData: React.Dispatch<React.SetStateAction<ChartDataInput | undefined>>,
-    insightData: FetchDataResponse | undefined,
+    insightData: FetchDataResponse | undefined
 }
 
-export type LineChartYAxisColumnData = {
+type MultiTypeChartYAxisColumnData = {
     column: string;
     alias: string;
     color: string;
     isEnabled: boolean;
     isFilled: boolean;
+    type: string;
 }[]
 
-export interface LineChartData extends ChartDataInput {
+export interface MultiTypeChartData extends ChartDataInput {
     xAxisColumn: string;
-    yAxis: LineChartYAxisColumnData
+    yAxis: MultiTypeChartYAxisColumnData
 }
 
-export const LineChartInput: React.FC<LineChartInputListProps> = ({
+export const MultiTypeChartInput: React.FC<MultiTypeChartInputListProps> = ({
     chartUIData,
     setChartUIData,
     insightData }) => {
 
     const [xAxis, setXAxis] = useState<string>();
-    const [yAxisList, setYAxisList] = useState<LineChartYAxisColumnData>()
+    const [yAxisList, setYAxisList] = useState<MultiTypeChartYAxisColumnData>()
 
+    const currentChartUIData = chartUIData as MultiTypeChartData
+    // if(currentChartUIData) {
+    //     setXAxis(currentChartUIData.xAxisColumn)
+    //     setYAxisList(currentChartUIData.yAxis)
+    // }
 
     const onXAxisChange = (value: string) => {
         setXAxis(value)
-
         const randomColors = getRandomNeonColor(Number(insightData?.countOfFields))
-        var lineChartYAxisColumnData: LineChartYAxisColumnData = []
+        var MultiTypeChartYAxisColumnData: MultiTypeChartYAxisColumnData = []
         var idx = 0;
         insightData?.fields.forEach((field) => {
             if (field != value) {
-                lineChartYAxisColumnData.push(
+                MultiTypeChartYAxisColumnData.push(
                     {
                         column: field,
                         alias: field.toUpperCase(),
                         color: randomColors[idx++],
                         isEnabled: true,
-                        isFilled: true
+                        isFilled: true,
+                        type: 'bar'
                     }
                 )
             }
         })
 
-        setYAxisList(lineChartYAxisColumnData)
+        setYAxisList(MultiTypeChartYAxisColumnData)
 
     }
 
     const createChart = () => {
-        const temp: LineChartData = {
-            type: 'line',
-            xAxisColumn: xAxis!,
-            yAxis: yAxisList!
+        if (xAxis && yAxisList) {
+            const temp: MultiTypeChartData = {
+                type: 'MultiType',
+                xAxisColumn: xAxis!,
+                yAxis: yAxisList!
+            }
+            console.log("temp", temp)
+            setChartUIData(temp)
         }
-        setChartUIData(temp)
     }
 
     const changeEnabled = (idx: number, enable: boolean | string) => {
@@ -97,6 +107,16 @@ export const LineChartInput: React.FC<LineChartInputListProps> = ({
             if (prevColumns) {
                 const updatedColumns = [...prevColumns];
                 updatedColumns[idx] = { ...updatedColumns[idx], isEnabled: enable };
+                return updatedColumns;
+            }
+        });
+    }
+
+    const changeAlias = (idx: number, newAlias: string) => {
+        setYAxisList(prevColumns => {
+            if (prevColumns) {
+                const updatedColumns = [...prevColumns];
+                updatedColumns[idx] = { ...updatedColumns[idx], alias: newAlias };
                 return updatedColumns;
             }
         });
@@ -113,11 +133,11 @@ export const LineChartInput: React.FC<LineChartInputListProps> = ({
         });
     }
 
-    const changeAlias = (idx: number, newAlias: string) => {
+    const changeType = (idx: number, type: string) => {
         setYAxisList(prevColumns => {
             if (prevColumns) {
                 const updatedColumns = [...prevColumns];
-                updatedColumns[idx] = { ...updatedColumns[idx], alias: newAlias };
+                updatedColumns[idx] = { ...updatedColumns[idx], type: type };
                 return updatedColumns;
             }
         });
@@ -135,7 +155,7 @@ export const LineChartInput: React.FC<LineChartInputListProps> = ({
 
     return (
         <div>
-            <h4 className="scroll-m-20 text-l font-semibold tracking-tight">
+            <h4 className="scroll-m-20 text-l font-semibold tracking-tight mb-5">
                 X Axis
             </h4>
             <Select onValueChange={(value) => onXAxisChange(value)}>
@@ -167,6 +187,7 @@ export const LineChartInput: React.FC<LineChartInputListProps> = ({
                         <TableHead>Name</TableHead>
                         <TableHead>Column</TableHead>
                         <TableHead>Color</TableHead>
+                        <TableHead>Type</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -199,6 +220,22 @@ export const LineChartInput: React.FC<LineChartInputListProps> = ({
                                     </DropdownMenuContent>
                                 </DropdownMenu>
                             </TableCell>
+                            <TableCell>
+                                <Select
+                                    disabled={!yAxis.isEnabled}
+                                    value={yAxis.type}
+                                    onValueChange={(v) => changeType(idx, v)} >
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Chart Type" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectGroup>
+                                            <SelectItem value="bar">Bar</SelectItem>
+                                            <SelectItem value="line">Line</SelectItem>
+                                        </SelectGroup>
+                                    </SelectContent>
+                                </Select>
+                            </TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
@@ -210,4 +247,4 @@ export const LineChartInput: React.FC<LineChartInputListProps> = ({
     )
 }
 
-export default LineChartInput
+export default MultiTypeChartInput

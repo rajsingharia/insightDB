@@ -139,13 +139,14 @@ export const PieChartInput: React.FC<BarChartInputListProps> = ({
                             <TableCell className="font-medium">
                                 <Input
                                     value={column.alias}
+                                    disabled={!column.isEnabled}
                                     onChange={(e) => changeAlias(idx, e.target.value)} />
                             </TableCell>
                             <TableCell>{column.column}</TableCell>
                             <TableCell>
                                 <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                        <div style={{ borderColor: column.color, borderWidth: 2, background: `${column.color}40` }} className={"h-5 w-5"} />
+                                    <DropdownMenuTrigger asChild disabled={!column.isEnabled}>
+                                        <div style={{ borderColor: `${column.isEnabled ? column.color : '#80808040'}`, borderWidth: 2, background: `${column.isEnabled ? column.color : '#808080'}40` }} className={"h-5 w-5"} />
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent className="mr-3">
                                         <SwatchesPicker onChangeComplete={(e) => changeColor(idx, e.hex)} />

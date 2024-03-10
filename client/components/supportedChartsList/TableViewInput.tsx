@@ -106,6 +106,7 @@ export const TableViewInput: React.FC<TableViewInputListProps> = ({
                             <TableCell className="font-medium">
                                 <Input
                                     value={yAxis.alias}
+                                    disabled={!yAxis.isEnabled}
                                     onChange={(e) => changeAlias(idx, e.target.value)} />
                             </TableCell>
                             <TableCell>{yAxis.column}</TableCell>

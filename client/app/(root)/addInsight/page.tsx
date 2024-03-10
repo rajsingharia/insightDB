@@ -324,6 +324,7 @@ export default function AddInsightPage() {
               chartUIData={chartUIData}
               setChartUIData={setChartUIData}
               insightData={insightData}
+              setInsightData={setInsightData}
             />
           </ResizablePanel>
         </ResizablePanelGroup >

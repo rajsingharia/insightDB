@@ -1,6 +1,5 @@
 import { JsonValue } from "@prisma/client/runtime/library";
 import { AxiosRequestConfig } from "axios";
-import { RedisOptions } from "ioredis";
 
 export class DataSourceConfig {
     public static getPostgresConfig = async (credentials: JsonValue) => {
@@ -29,14 +28,11 @@ export class DataSourceConfig {
     }
 
     public static getRedisConfig = async (credentials: JsonValue) => {
-        credentials = credentials as { host: string; port: string; user: string; password: string; };
-        const redisConfig = {
-            host: credentials.host,
-            port: credentials.port,
-            username: credentials.user,
-            password: credentials.password,
-        } as RedisOptions
-        return redisConfig;
+        console.log(credentials)
+        credentials = credentials as { host: string; port: string; username: string; password: string; };
+        const redisUri = `rediss://${credentials.username}:${credentials.password}@${credentials.host}:${credentials.port}`
+        console.log(redisUri)
+        return redisUri;
     }
 
     public static getMySQLConfig = async (credentials: JsonValue) => {

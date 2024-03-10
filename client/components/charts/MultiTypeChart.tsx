@@ -10,7 +10,7 @@ import {
     Legend,
     ChartData
 } from 'chart.js';
-import { Line } from 'react-chartjs-2';
+import { Chart } from 'react-chartjs-2';
 
 ChartJS.register(
     CategoryScale,
@@ -25,19 +25,21 @@ ChartJS.register(
 
 import moment from 'moment';
 import { LineChartYAxisColumnData } from '@/components/supportedChartsList/LineChartInput';
+import { MultiTypeChartData } from '../supportedChartsList/MultiTypeChartInput';
 
 
-interface LineChartProps {
+interface MultiTypeChartProps {
     chartData: unknown[];
-    xAxis: string;
-    yAxis: LineChartYAxisColumnData
+    multiTypeChartUiData: MultiTypeChartData
 }
 
 
-export const MultiTypeChart: React.FC<LineChartProps> = ({ 
-    chartData, 
-    xAxis, 
-    yAxis }) => {
+export const MultiTypeChart: React.FC<MultiTypeChartProps> = ({
+    chartData,
+    multiTypeChartUiData }) => {
+
+    const xAxis = multiTypeChartUiData.xAxisColumn
+    const yAxis = multiTypeChartUiData.yAxis
 
 
     const options = {
@@ -51,28 +53,27 @@ export const MultiTypeChart: React.FC<LineChartProps> = ({
 
     // only if its time axis
     const labels = chartData.map((item: any) => moment(item[xAxis]).format('MMM YYYY'));
-    let bgIdx = 0, boIdx = 0;
 
-    const datasets = yAxis.map(({column, alias, color, isEnabled, isFilled}) => {
-        if (isEnabled) {
-            return {
-                fill: isFilled,
-                label: alias,
-                data: chartData.map((item: any) => item[column]),
-                backgroundColor: color + "40",
-                borderColor: color,
-                borderWidth: 2
-            };
-        }
-    });
+    const datasets = yAxis
+        .filter(({ isEnabled }) => isEnabled)
+        .map(({ column, alias, color, isFilled, type }) => ({
+            type: type,
+            fill: isFilled,
+            label: alias,
+            data: chartData.map((item: any) => item[column]),
+            backgroundColor: color + '40',
+            borderColor: color,
+            borderWidth: 2,
+        }));
 
-    const data: ChartData<"line", any[], string> = {
+    const data: ChartData<"bar", any[], string> = {
         labels,
         datasets: datasets as any[]
     };
 
     return (
-        <Line
+        <Chart
+            type='bar'
             options={options}
             data={data} />
     );

@@ -4,6 +4,7 @@ import { IntegrationService } from "../services/integration.service";
 import createHttpError from "http-errors";
 import { IntegrationDTO } from "../dto/request/integration.dto";
 import { validate } from "class-validator";
+import { Converter } from "../util/converters";
 
 
 interface IAddIntegrationRequest extends Request {
@@ -23,7 +24,10 @@ export class IntegrationController {
             const organisationId = req.body.organisationId;
             const allIntegrations = await IntegrationService.getOrganisationIntegrations(organisationId);
             if (!allIntegrations) throw createHttpError(404, "User not found");
-            res.status(200).json(allIntegrations);
+            const response = allIntegrations.map((integration) => {
+                return Converter.IntegrationEntityToIntegrationDto(integration)
+            })
+            res.status(200).json(response);
         } catch (error) {
             next(error);
         }
@@ -34,7 +38,8 @@ export class IntegrationController {
             const integrationId = req.params.id;
             const integration = await IntegrationService.getIntegrationById(integrationId);
             if (!integration) throw createHttpError(404, "Integration not found");
-            res.status(200).json(integration);
+            const response = Converter.IntegrationEntityToIntegrationDto(integration)
+            res.status(200).json(response);
         } catch (error) {
             next(error);
         }

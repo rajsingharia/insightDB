@@ -170,9 +170,12 @@ export class fetchDataService {
             if (dataType === 'STRING') {
                 const redisString = await redisClient.get(key);
                 const result: IGetAllData = {
-                    fields: key,
-                    data: [redisString],
+                    fields: [key],
+                    data: [
+                        { [key]: redisString }
+                    ],
                 }
+                console.log(result)
                 return result;
             }
             if (dataType === 'LIST') {

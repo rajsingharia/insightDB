@@ -41,9 +41,9 @@ export class CheckConnectionService {
             }
         }
         else if (type === DataBaseType.REDIS.valueOf()) {
-            const redisConfig = await DataSourceConfig.getRedisConfig(credentials);
+            const redisUri = await DataSourceConfig.getRedisConfig(credentials);
             try {
-                const redisClient = new Redis(redisConfig)
+                const redisClient = new Redis(redisUri)
                 await redisClient.ping();
             } catch (error) {
                 console.log("Error while connecting to redis : " + error)

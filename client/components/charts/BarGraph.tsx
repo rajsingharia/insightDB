@@ -32,9 +32,11 @@ interface TimeBarGraphProps {
 export const BarGraph: React.FC<TimeBarGraphProps> = ({
     chartData,
     barChartUiData }) => {
-    
+
     const xAxis = barChartUiData.xAxisColumn
     const yAxis = barChartUiData.yAxis
+
+    console.log("yAxis", yAxis)
 
     const options = {
         responsive: true,
@@ -53,18 +55,16 @@ export const BarGraph: React.FC<TimeBarGraphProps> = ({
     });
 
 
-    const datasets = yAxis.map(({ column, alias, color, isEnabled }) => {
-        if (isEnabled) {
-            return {
-                fill: true,
-                label: alias,
-                data: chartData.map((item: any) => item[column]),
-                backgroundColor: color + "40",
-                borderColor: color,
-                borderWidth: 2
-            };
-        }
-    });
+    const datasets = yAxis
+        .filter(({ isEnabled }) => isEnabled)
+        .map(({ column, alias, color }) => ({
+            fill: true,
+            label: alias,
+            data: chartData.map((item: any) => item[column]),
+            backgroundColor: color + '40',
+            borderColor: color,
+            borderWidth: 2,
+        }));
 
     const data: ChartData<"bar", any[], string> = {
         labels,

@@ -14,6 +14,7 @@ import { TextAreaData } from "@/components/supportedChartsList/TextInput";
 import { TextArea } from "@/components/charts/TextArea"
 import { TableViewData } from "@/components/supportedChartsList/TableViewInput";
 import { TableView } from "./TableView";
+import { MultiTypeChartData } from "../supportedChartsList/MultiTypeChartInput";
 
 type InsightChartProps = {
     insightData: FetchDataResponse;
@@ -71,12 +72,11 @@ export const InsightChart: React.FC<InsightChartProps> = ({
     }
 
     else if (chartDetail.value === 'multi') {
-        const lineChartUiData = chartUIData as LineChartData
+        const multiTypeChartUiData = chartUIData as MultiTypeChartData
         return (
             <MultiTypeChart
                 chartData={chartData}
-                xAxis={lineChartUiData.xAxisColumn}
-                yAxis={lineChartUiData.yAxis} />
+                multiTypeChartUiData={multiTypeChartUiData} />
         )
     }
 

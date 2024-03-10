@@ -6,12 +6,21 @@ import { FetchDataProducer } from '../events/producers/FetchDataProducer';
 
 export class CronService {
 
+    private static instance: CronService;
     private cronAlertMapping: Map<string, CronJob>
     private fetchDataProducer: FetchDataProducer;
 
     constructor() {
         this.cronAlertMapping = new Map<string, CronJob>
         this.fetchDataProducer = new FetchDataProducer(KafkaService.getInstance());
+    }
+
+    static getInstance(): CronService {
+        if (!CronService.instance) {
+            CronService.instance = new CronService();
+        }
+
+        return CronService.instance;
     }
 
     public async startAllCronJob() {
@@ -49,7 +58,13 @@ export class CronService {
 
     public async startNewCronJon(alertId: string) {
         if (this.cronAlertMapping.get(alertId)) {
-            this.cronAlertMapping.get(alertId)?.start()
+            if (this.cronAlertMapping.get(alertId)?.running == false) {
+                try {
+                    this.cronAlertMapping.get(alertId)?.start()
+                } catch (error) {
+                    console.error('Error in starting the cron job', error)
+                }
+            }
             return
         }
 
@@ -60,10 +75,17 @@ export class CronService {
 
         const alertJob = new CronJob(alert.cronExpression, async () => {
             const integration = await AlertService.getIntegrationFromAlert(alert.id)
-            await this.fetchDataProducer.publish({
-                alert: alert,
-                integrationId: integration?.id ?? ''
-            })
+            if (integration != null) {
+                const data = {
+                    alert: alert,
+                    integrationId: integration.id
+                }
+                console.log("Sending alert data fetching :: ", data);
+                await this.fetchDataProducer.publish(data)
+                console.log("Successfully send alert data for fetching")
+            } else {
+                console.log("Integration for alert :: " + alert.id + " is not found.")
+            }
         });
         this.cronAlertMapping.set(alertId, alertJob)
         this.cronAlertMapping.get(alertId)?.start()
