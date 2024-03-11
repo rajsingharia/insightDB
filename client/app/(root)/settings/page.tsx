@@ -37,6 +37,7 @@ export default function Settings() {
         setLoading(true)
         try {
           const integrationsResponse = await fetchDataAxios.get('/integrations')
+          console.log(integrationsResponse.data)
           setUserIntegrations(integrationsResponse.data)
 
           const allUsersResponse = await orgAxios.get('/user/all')

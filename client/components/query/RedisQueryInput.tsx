@@ -1,10 +1,11 @@
 
 import React, { useEffect, useState } from 'react'
 import { CustomAceEditor } from '../aceEditor/CustomAceEditor';
+var beautify = require("json-beautify");
 
 type QueryInputProps = {
-  rawQuery: string,
-  setRawQuery: React.Dispatch<React.SetStateAction<string>>,
+  rawQuery: string | undefined,
+  setRawQuery: React.Dispatch<React.SetStateAction<string | undefined>>,
 }
 
 
@@ -14,9 +15,12 @@ export const RedisQueryInput: React.FC<QueryInputProps> = ({
 }) => {
 
   useEffect(() => {
-    const sampleJSON = `{\n\t"dataType": "DATA_TYPE",\n\t"key": "KEY"\n}`
+    const redisJSON = {
+      dataType: "DATA_TYPE",
+      key: "KEY"
+    }
     if (!rawQuery) {
-      setRawQuery(sampleJSON)
+      setRawQuery(beautify(redisJSON, null, 2, 80))
     }
   }, [])
 

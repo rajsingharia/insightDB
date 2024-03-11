@@ -89,7 +89,7 @@ export default function AddInsightPageQuery() {
   const [refreshRate, setRefreshRate] = useState<number>();
   const [insightTitle, setInsightTitle] = useState<string>('');
   const [insightDescription, setInsightDescription] = useState<string>('');
-  const [rawQuery, setRawQuery] = useState<string>('');
+  const [rawQuery, setRawQuery] = useState<string>();
   const [insightChartData, setInsightChartData] = useState<FetchDataResponse | undefined>(undefined);
   const [chartUIData, setChartUIData] = useState<ChartDataInput>()
   const [loading, setLoading] = useState<boolean>(true)
@@ -136,8 +136,7 @@ export default function AddInsightPageQuery() {
         setSelectedIntegration(selectedIntegration)
 
         const body = {
-          integrationType: selectedIntegration.type,
-          integrationCredentials: selectedIntegration.credentials,
+          integrationId: insight.integrationId,
           rawQuery: insight.rawQuery
         }
 
@@ -335,7 +334,6 @@ export default function AddInsightPageQuery() {
                     integrationId={selectedIntegration.id}
                     integrationType={selectedIntegration?.type}
                     setInsightData={setInsightChartData}
-                    chartType={selectedChart}
                     rawQuery={rawQuery}
                     setRawQuery={setRawQuery}
                   />
@@ -345,21 +343,18 @@ export default function AddInsightPageQuery() {
 
           </ResizablePanel >
           <ResizableHandle withHandle />
-          <ResizablePanel defaultSize={25} className="flex flex-col justify-start items-center h-full rounded-lg">
-            <div className="flex flex-col justify-start items-center h-[400px] w-full p-1">
-              {
-                <ChartSettings
-                  selectedIntegration={selectedIntegration}
-                  handelSelectedIntegrationChange={handelSelectedIntegrationChange}
-                  userIntegrations={userIntegrations}
-                  selectedChart={selectedChart}
-                  setSelectedChart={setSelectedChart}
-                  chartUIData={chartUIData}
-                  setChartUIData={setChartUIData}
-                  insightData={insightChartData}
-                />
-              }
-            </div>
+          <ResizablePanel defaultSize={25} >
+            <ChartSettings
+              selectedIntegration={selectedIntegration}
+              handelSelectedIntegrationChange={handelSelectedIntegrationChange}
+              userIntegrations={userIntegrations}
+              selectedChart={selectedChart}
+              setSelectedChart={setSelectedChart}
+              chartUIData={chartUIData}
+              setChartUIData={setChartUIData}
+              insightData={insightChartData}
+              setInsightData={setInsightChartData}
+            />
           </ResizablePanel>
         </ResizablePanelGroup >
       }

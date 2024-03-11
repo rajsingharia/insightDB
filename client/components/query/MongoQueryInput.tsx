@@ -13,12 +13,11 @@ import "ace-builds/src-noconflict/theme-terminal";
 import "ace-builds/src-min-noconflict/ext-language_tools";
 import { useTheme } from 'next-themes';
 import { CustomAceEditor } from '../aceEditor/CustomAceEditor';
+var beautify = require("json-beautify");
 
 type QueryInputProps = {
-  rawQuery: string,
-  setRawQuery: React.Dispatch<React.SetStateAction<string>>,
-  // getInsightData: () => void,
-  // loading: boolean | undefined
+  rawQuery: string | undefined,
+  setRawQuery: React.Dispatch<React.SetStateAction<string | undefined>>,
 }
 
 
@@ -30,39 +29,43 @@ export const MongoQueryInput: React.FC<QueryInputProps> = ({
 }) => {
 
   useEffect(() => {
-    const sampleJSON = `{
-            "collection": "COLLECTION_NAME",
-            "pipeline": [
-              {
-                "$match": {
-                  "FIELD_1": "VALUE",
-                  "FIELD_2": { "$gte": 10 }
-                }
-              },
-              {
-                "$project": {
-                  "_id": "0",
-                  "FIELD": 1
-                }
-              },
-              {
-                "$group": {
-                  "_id": "$groupField",
-                  "SUM_FIELD": { "$sum": "$FIELD" }
-                }
-              },
-              {
-                "$sort": {
-                  "FIELD": -1
-                }
-              },
-              {
-                "$limit": 10
-              }
-            ]
-          }`
+    const sampleJSON = {
+      collection: "COLLECTION_NAME",
+      pipeline: [
+        {
+          $match: {
+            FIELD_1: "VALUE",
+            FIELD_2: {
+              $gte: 10
+            }
+          }
+        },
+        {
+          $project: {
+            _id: "0",
+            FIELD: 1
+          }
+        },
+        {
+          $group: {
+            _id: "$groupField",
+            SUM_FIELD: {
+              $sum: "$FIELD"
+            }
+          }
+        },
+        {
+          $sort: {
+            FIELD: -1
+          }
+        },
+        {
+          $limit: 10
+        }
+      ]
+    }
     if (!rawQuery) {
-      setRawQuery(sampleJSON)
+      setRawQuery(beautify(sampleJSON, null, 2, 80))
     }
   }, [])
 

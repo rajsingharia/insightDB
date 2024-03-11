@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { useToast } from '@/components/ui/use-toast'
-import { ScrollArea } from '@radix-ui/react-scroll-area'
 import { Separator } from '@radix-ui/react-select'
 import { useEffect, useState } from 'react'
 import CustomAxios from '@/utils/CustomAxios'
@@ -25,6 +24,7 @@ import {
 import { ICharts } from '@/interfaces/ICharts'
 import { SupportedCharList } from '../supportedChartsList/SupportedCharList'
 import { CircularProgress } from '../common/CircularProgress'
+import { ScrollArea } from '../ui/scroll-area'
 
 interface ChartSettingsProps {
     selectedIntegration: userIntegrationResponse | undefined,
@@ -80,14 +80,15 @@ export const ChartSettings: React.FC<ChartSettingsProps> = (
     }, [toast, selectedIntegration])
 
     return (
-        <Tabs defaultValue="chart_setting" className="p-1">
+        <Tabs defaultValue="chart_setting" className="h-full p-1">
             <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="chart_setting">Setting</TabsTrigger>
                 <TabsTrigger value="visualization">Visualization</TabsTrigger>
             </TabsList>
-            <TabsContent value="chart_setting">
-                <div className='flex flex-col gap-4 h-20'>
+            <TabsContent value="chart_setting" className='h-full'>
+                <div className='flex flex-col h-full'>
                     <Select
+                        value={selectedIntegration?.id}
                         onValueChange={(value: string) => {
                             setChartUIData(undefined)
                             setInsightData(undefined)
@@ -115,25 +116,28 @@ export const ChartSettings: React.FC<ChartSettingsProps> = (
                     </Select>
                     {
                         loading &&
-                        <div className="flex flex-col justify-center items-center w-full h-full ">
+                        <div className="flex flex-col justify-center items-center w-full h-full">
                             <CircularProgress />
                         </div>
                     }
-                    <ScrollArea className='h-20'>
-                        {
-                            !loading &&
-                            dataInfo?.map((tag, i) => (
-                                <>
-                                    <div
-                                        key={i}
-                                        className="text-sm">
-                                        {tag}
-                                    </div>
-                                    <Separator className="my-2" />
-                                </>
-                            ))
-                        }
-                    </ScrollArea>
+                    {
+                        !loading &&
+                        <ScrollArea className='flex h-auto p-2 grow'>
+                            {
+                                !loading &&
+                                dataInfo?.map((tag, i) => (
+                                    <>
+                                        <div
+                                            key={i}
+                                            className="text-sm">
+                                            {tag}
+                                        </div>
+                                        <Separator className="my-2" />
+                                    </>
+                                ))
+                            }
+                        </ScrollArea>
+                    }
                 </div>
             </TabsContent>
             <TabsContent value="visualization">

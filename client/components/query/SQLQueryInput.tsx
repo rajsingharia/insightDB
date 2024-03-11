@@ -4,8 +4,8 @@ import { useToast } from '@/components/ui/use-toast';
 import { CustomAceEditor } from '../aceEditor/CustomAceEditor';
 
 type QueryInputProps = {
-    rawQuery: string,
-    setRawQuery: React.Dispatch<React.SetStateAction<string>>,
+    rawQuery: string | undefined,
+  setRawQuery: React.Dispatch<React.SetStateAction<string | undefined>>,
 }
 
 type ColumnInput = {

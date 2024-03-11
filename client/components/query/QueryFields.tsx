@@ -31,8 +31,8 @@ interface QueryFieldsProps {
     integrationId: string;
     integrationType: string;
     setInsightData: React.Dispatch<React.SetStateAction<FetchDataResponse | undefined>> | undefined;
-    rawQuery: string;
-    setRawQuery: React.Dispatch<React.SetStateAction<string>>;
+    rawQuery: string | undefined;
+    setRawQuery: React.Dispatch<React.SetStateAction<string | undefined>>;
 }
 
 
@@ -113,7 +113,7 @@ export const QueryFields: React.FC<QueryFieldsProps> = ({
 
     return (
         <ScrollArea className="h-full w-full">
-            <div className="flex flex-col h-full w-full gap-1">
+            <div className="flex flex-col h-full w-full gap-2">
                 {
                     getQueryInputForIntegrationType()
                 }

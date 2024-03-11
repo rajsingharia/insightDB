@@ -27,9 +27,7 @@ export const CustomAceEditor: React.FC<AceEditorProps> = ({
       theme={theme === "dark" ? "chaos" : "github"}
       name="editor"
       width="100%"
-      fontSize={12}
-      minLines={13}
-      maxLines={18}
+      height="100%"
       showPrintMargin={false}
       showGutter
       editorProps={{ $blockScrolling: true }}

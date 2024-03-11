@@ -80,7 +80,7 @@ export default function AddInsightPage() {
   const [refreshRate, setRefreshRate] = useState<number>(0);
   const [insightTitle, setInsightTitle] = useState<string>('');
   const [insightDescription, setInsightDescription] = useState<string>('');
-  const [rawQuery, setRawQuery] = useState<string>('');
+  const [rawQuery, setRawQuery] = useState<string>();
   const [insightData, setInsightData] = useState<FetchDataResponse | undefined>(undefined);
   const [chartUIData, setChartUIData] = useState<ChartDataInput>()
   const [loading, setLoading] = useState<boolean>(true)
@@ -126,7 +126,7 @@ export default function AddInsightPage() {
     const selectedIntegration = userIntegrations.find(i => i.id === id)
     console.log("selectedIntegration :: " + JSON.stringify(selectedIntegration))
     try {
-      setRawQuery("")
+      setRawQuery(undefined)
       setSelectedIntegration(selectedIntegration);
     } catch (err) {
       console.log('handelSelectedIntegrationChange Error:: ' + err)

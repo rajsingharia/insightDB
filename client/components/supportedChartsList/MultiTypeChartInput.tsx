@@ -92,7 +92,7 @@ export const MultiTypeChartInput: React.FC<MultiTypeChartInputListProps> = ({
     const createChart = () => {
         if (xAxis && yAxisList) {
             const temp: MultiTypeChartData = {
-                type: 'MultiType',
+                type: 'multi',
                 xAxisColumn: xAxis!,
                 yAxis: yAxisList!
             }
